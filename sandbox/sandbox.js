@@ -1,43 +1,121 @@
-function oval(context, x, y, w, h)
-{
-    context.save();
-    context.beginPath();
-    context.translate(x, y);
-    context.scale(w/2, h/2);
-    context.arc(1, 1, 1, 0, 2*Math.PI, false);
-    context.closePath();
-    context.restore();
+
+// ! variables -------------------------------------------------------------------------------
+var spritesheet = new Image();
+var canvas = document.getElementById('mainCanvas');
+var context = canvas.getContext('2d');
+
+var Piece = function(X, Y, sheet_left, sheet_top) {
+	
+	this.start_left = X;
+	this.start_top  = Y;
+	
+	this.sheet_left = sheet_left, // X position in spritesheet
+	this.sheet_top  = sheet_top,  // Y position in spritesheet
+	
+	this.left		= X;
+	this.top		= Y;
+	
+	this.inHome		= true;
+	
+	this.path 		= undefined;
+	this.path_index = undefined;
 }
 
-function drawCanvas(canvasId)
-{
-    //// General Declarations
-    var canvas = document.getElementById(canvasId);
-    var context = canvas.getContext('2d');
+var y_H1 = new Piece(109, 397, 18, 13);
 
+var stepLimit = 100;
+var step = 1;
 
-    //// Color Declarations
-    var color = 'rgba(255, 255, 29, 1)';
-    var color2 = 'rgba(168, 168, 0, 1)';
-    var color3 = 'rgba(255, 255, 204, 1)';
+function makeEaseInOutTransducer(percentComplete) {
+   
+      return percentComplete - Math.sin(percentComplete*2*Math.PI) / (2*Math.PI);
+};
 
-    //// Oval Drawing
-    oval(context, 134.5, 80.5, 32, 32);
-    context.fillStyle = color;
-    context.fill();
-    context.strokeStyle = color2;
-    context.lineWidth = 0.5;
-    context.stroke();
-
-
-    //// Bezier Drawing
-    context.beginPath();
-    context.moveTo(138.5, 89.32);
-    context.bezierCurveTo(138.5, 89.32, 142.02, 79.68, 152.79, 82.74);
-    context.bezierCurveTo(163.55, 85.79, 163.5, 102.5, 163.5, 102.5);
-    context.bezierCurveTo(163.5, 102.5, 162.57, 92.17, 152.79, 89.32);
-    context.bezierCurveTo(143, 86.47, 138.5, 89.32, 138.5, 89.32);
-    context.closePath();
-    context.fillStyle = color3;
-    context.fill();
+function setX(piece) {
+	
+	if (step < stepLimit) {
+		
+		piece.left = (((192 - piece.start_left) / stepLimit) * step) + piece.start_left;
+		
+	}
+	
 }
+
+function setY(piece) {
+
+	if (step < stepLimit) {
+		
+		piece.top = (((416 - piece.start_top) / stepLimit) * step) + piece.start_top;
+	}
+		
+}
+
+function calculatePiecePos(p) {
+	
+	var destinationX = 400;
+	var destinationY = 400;
+	
+	
+
+	
+	if (step < stepLimit) {
+		var l = (((192 - p.start_left) / stepLimit) * step) + p.start_left;
+		var t = makeEaseInOutTransducer((l / 100) - 1);
+		var newStep = step * t;
+		
+		p.left = (((destinationX - p.start_left) / stepLimit) * newStep) + p.start_left;
+		p.top = (((destinationY - p.start_top) / stepLimit) * newStep) + p.start_top;
+		
+		console.log(t);
+		++step;
+	}
+	
+}
+
+function move() {
+	
+	context.save();
+	context.clearRect(0,0, canvas.width, canvas.height);
+	
+	
+	
+	context.drawImage(spritesheet,
+					  y_H1.sheet_left, 
+					  y_H1.sheet_top,
+					  32, 32,
+					  y_H1.left, 
+					  y_H1.top,
+					  32, 32);
+					  
+/*
+	setX(y_H1);
+	setY(y_H1);
+*/
+	calculatePiecePos(y_H1);
+					  
+	context.restore();
+}
+
+function draw() {
+	move();
+}
+
+function animate() {
+	draw();
+	
+    requestNextAnimationFrame(animate);
+}
+
+function start() {
+	
+	console.log(y_H1);
+
+	spritesheet.src = '../images/spritesheet.png';
+	
+	spritesheet.onload = function (e) {
+    	requestNextAnimationFrame(animate);
+/* 		console.log(gamePiecesArray); */
+    };
+}
+
+start();

@@ -4,7 +4,33 @@ var spritesheet = new Image();
 var canvas = document.getElementById('game_canvas');
 var context = canvas.getContext('2d');
 
-// ! GAMEBOARD cells -----------------------------------------------------------------------------
+// ! constants -------------------------------------------------------------------------------
+var GAMEPICES_CELL_SIZE = 32;
+
+var YELLOW_SINGLE_PIECE_CELL    = { left: 18,  top:13 };
+var RED_SINGLE_PIECE_CELL       = { left: 58,  top:13 };
+var BLUE_SINGLE_PIECE_CELL      = { left: 100, top:13 };
+var GREEN_SINGLE_PIECE_CELL     = { left: 140, top:13 };
+							    
+var YELLOW_DOUBLE_PIECE_CELL    = { left: 18,  top:56 };
+var RED_DOUBLE_PIECE_CELL       = { left: 58,  top:56 };
+var BLUE_DOUBLE_PIECE_CELL      = { left: 99,  top:56 };
+var GREEN_DOUBLE_PIECE_CELL     = { left: 139, top:56 };
+							    
+var YELLOW_TRIPLE_PIECE_CELL    = { left: 18,  top:97 };
+var RED_TRIPLE_PIECE_CELL       = { left: 59,  top:97 };
+var BLUE_TRIPLE_PIECE_CELL      = { left: 99,  top:97 };
+var GREEN_TRIPLE_PIECE_CELL     = { left: 139, top:97 };
+
+var YELLOW_QUATRUPLE_PIECE_CELL = { left: 19,  top:138 };
+var RED_QUATRUPLE_PIECE_CELL    = { left: 59,  top:138 };
+var BLUE_QUATRUPLE_PIECE_CELL   = { left: 99,  top:138 };
+var GREEN_QUATRUPLE_PIECE_CELL  = { left: 139, top:138 };
+
+var CANVAS_SIZE = 480;
+
+
+// ! GREEN cells -----------------------------------------------------------------------------
 
 // ! green path cells
 var g01 = document.getElementById('x6y7');
@@ -24,7 +50,7 @@ var g13 = document.getElementById('x6y9');
 // green path array
 var g_path_cells = new Array(g01, g02, g03, g04, g05, g06, g07, g08, g09, g10, g11, g12, g13);
 
-// green home stretch cells
+// ! green home stretch cells
 var g14 = document.getElementById('x2y8');
 var g15 = document.getElementById('x3y8');
 var g16 = document.getElementById('x4y8');
@@ -34,7 +60,23 @@ var g18 = document.getElementById('x6y8');
 // green homestretch array
 var g_homestretch_cells = new Array(g14, g15, g16, g17, g18);
 
+// ! green house cells
+var g_H1 = document.getElementById('g_H1');
+var g_H2 = document.getElementById('g_H2');
+var g_H3 = document.getElementById('g_H3');
+var g_H4 = document.getElementById('g_H4');
 
+// green house array
+var g_house_cells = new Array(
+						{obj: g_H1, left: 53, top: 108}, 
+						{obj: g_H2, left: 53, top: 53}, 
+						{obj: g_H3, left: 108, top: 108}, 
+						{obj: g_H4, left: 108, top: 53}
+						);
+
+
+
+// ! BLUE cells -----------------------------------------------------------------------------
 
 // ! blue path cells
 var b01 = document.getElementById('x7y10');
@@ -64,6 +106,23 @@ var b18 = document.getElementById('x8y10');
 // blue homestretch array
 var b_homestretch_cells = new Array(b14, b15, b16, b17, b18);
 
+// ! blue house cells
+var b_H1 = document.getElementById('b_H1');
+var b_H2 = document.getElementById('b_H2');
+var b_H3 = document.getElementById('b_H3');
+var b_H4 = document.getElementById('b_H4');
+
+// blue house array
+var b_house_cells = new Array(
+						{obj: b_H1, left: 340, top: 54}, 
+						{obj: b_H2, left: 396, top: 54}, 
+						{obj: b_H3, left: 340, top: 109}, 
+						{obj: b_H4, left: 396, top: 109}
+						);
+
+
+
+// ! RED cells -----------------------------------------------------------------------------
 
 // ! red path cells
 var r01 = document.getElementById('x10y9');
@@ -93,7 +152,23 @@ var r18 = document.getElementById('x10y8');
 // red homestretch array
 var r_homestretch_cells = new Array(r14, r15, r16, r17, r18);
 
+// ! red house cells
+var r_H1 = document.getElementById('r_H1');
+var r_H2 = document.getElementById('r_H2');
+var r_H3 = document.getElementById('r_H3');
+var r_H4 = document.getElementById('r_H4');
 
+// red house array
+var r_house_cells = new Array(
+						{obj: r_H1, left: 395, top: 342}, 
+						{obj: r_H2, left: 395, top: 396}, 
+						{obj: r_H3, left: 339, top: 342}, 
+						{obj: r_H4, left: 339, top: 396}
+						);
+
+
+
+// ! YELLOW cells -----------------------------------------------------------------------------
 
 // ! Yellow path cells
 var y01 = document.getElementById('x9y6');
@@ -123,136 +198,69 @@ var y18 = document.getElementById('x8y6');
 // yellow homestretch array
 var y_homestretch_cells = new Array(y14, y15, y16, y17, y18);
 
+// ! Yellow house cells
+var y_H1 = document.getElementById('y_H1');
+var y_H2 = document.getElementById('y_H2');
+var y_H3 = document.getElementById('y_H3');
+var y_H4 = document.getElementById('y_H4');
 
-
-var Piece = function(X, Y, sheet_left, sheet_top) {
-	
-	this.start_left = X;
-	this.start_top  = Y;
-	
-	this.sheet_left = sheet_left, // X position in spritesheet
-	this.sheet_top  = sheet_top,  // Y position in spritesheet
-	
-	this.left		= X;
-	this.top		= Y;
-	
-	this.inHome		= true;
-	
-	this.path 		= undefined;
-	this.path_index = undefined;
-}
-
-var y_path = y_path_cells.slice(8).concat(g_path_cells).concat(b_path_cells).concat(r_path_cells).concat(y_path_cells.slice(0,7)).concat(y_homestretch_cells);
-
-var y_H1 = new Piece(109, 397, 18, 13);
-	y_H1.path = y_path;
-var y_H2 = new Piece(54,  397, 18, 13);
-	y_H1.path = y_path;
-var y_H3 = new Piece(109, 342, 18, 13);
-	y_H3.path = y_path;
-var y_H4 = new Piece(54,  342, 18, 13);
-	y_H4.path = y_path;
-
-var r_H1 = new Piece(395, 342, 58, 13);
-var r_H2 = new Piece(395, 396, 58, 13);
-var r_H3 = new Piece(339, 342, 58, 13);
-var r_H4 = new Piece(339, 396, 58, 13);
-
-var b_H1 = new Piece(340, 54,  100, 13);
-var b_H2 = new Piece(396, 54,  100, 13);
-var b_H3 = new Piece(340, 109, 100, 13);
-var b_H4 = new Piece(396, 109, 100, 13);
-
-var g_H1 = new Piece(53,  108, 140, 13);
-var g_H2 = new Piece(53,  53,  140, 13);
-var g_H3 = new Piece(108, 108, 140, 13);
-var g_H4 = new Piece(108, 53,  140, 13);
-
-var gamePiecesArray = new Array(
-						new Array(
-							{name: 'y_H1', piece : y_H1},
-							{name: 'y_H2', piece : y_H2},
-							{name: 'y_H3', piece : y_H3},
-							{name: 'y_H4', piece : y_H4}
-						),
-						new Array(
-							{name: 'r_H1', piece : r_H1},
-							{name: 'r_H2', piece : r_H2},
-							{name: 'r_H3', piece : r_H3},
-							{name: 'r_H4', piece : r_H4}
-						),
-						new Array(
-							{name: 'b_H1', piece : b_H1},
-							{name: 'b_H2', piece : b_H2},
-							{name: 'b_H3', piece : b_H3},
-							{name: 'b_H4', piece : b_H4}
-						),
-						new Array(
-							{name: 'g_H1', piece : g_H1},
-							{name: 'g_H2', piece : g_H2},
-							{name: 'g_H3', piece : g_H3},
-							{name: 'g_H4', piece : g_H4}
-						));
+// yellow house array
+var y_house_cells = new Array(
+						{obj: y_H1, left: 109, top: 397}, 
+						{obj: y_H2, left: 54,  top: 397}, 
+						{obj: y_H3, left: 109, top: 342}, 
+						{obj: y_H4, left: 54,  top: 342}
+						);
 
 
 
 // ! functions -----------------------------------------------------------------------------
-var stepLimit = 50;
-var step = 1;
 
-
-function calculatePiecePos(p, i) {
+function get_all_path_cells() {
+	var tmp1 = y_path_cells.concat(g_path_cells);
+	var tmp2 = tmp1.concat(b_path_cells);
+	var tmp3 = tmp2.concat(r_path_cells);
 	
-	var destinationX = p.path[i].offsetLeft;
-	var destinationY = p.path[i].offsetTop;
-	
-	if (step < stepLimit) {
-		p.left = (((destinationX - p.start_left) / stepLimit) * step) + p.start_left;
-		p.top = (((destinationY - p.start_top) / stepLimit) * step) + p.start_top;
-	}
-	++step;
+	return tmp3;
 }
 
-function move() {
-	
-	for (var i = 0; i < gamePiecesArray.length; i++) {
-		
-		for (var j = 0; j < gamePiecesArray[i].length; j++) {
-			
-			gamePiecesArray[0][0].piece.inHome = false;
-			context.drawImage(spritesheet,
-					  gamePiecesArray[0][0].piece.sheet_left, 
-					  gamePiecesArray[0][0].piece.sheet_top,
-					  32, 32,		  
-					  gamePiecesArray[0][0].piece.left, 
-					  gamePiecesArray[0][0].piece.top,
-					  32, 32);
-		} 
-	}
-	
-	calculatePiecePos(gamePiecesArray[0][0].piece, 45);
-	
-}
 
 function drawHomePieces() {
 	
 	context.save();
 	context.clearRect(0,0, canvas.width, canvas.height);
 	
-	for (var i = 0; i < gamePiecesArray.length; i++) {
+	for (var i = 0; i < y_house_cells.length; i++) {
 		
-		for (var j = 0; j < gamePiecesArray[i].length; j++) {
-			
-			if (gamePiecesArray[i][j].piece.inHome) {
-				context.drawImage(spritesheet,
-						  gamePiecesArray[i][j].piece.sheet_left, 
-						  gamePiecesArray[i][j].piece.sheet_top,
+		context.drawImage(spritesheet,
+						  YELLOW_SINGLE_PIECE_CELL.left, YELLOW_SINGLE_PIECE_CELL.top,
 						  32, 32,
-						  gamePiecesArray[i][j].piece.start_left, 
-						  gamePiecesArray[i][j].piece.start_top,
+						  y_house_cells[i].left, y_house_cells[i].top,
 						  32, 32);
-			}
-		} 
+	}
+	for (var i = 0; i < r_house_cells.length; i++) {
+		
+		context.drawImage(spritesheet,
+						  RED_SINGLE_PIECE_CELL.left, RED_SINGLE_PIECE_CELL.top,
+						  32, 32,
+						  r_house_cells[i].left, r_house_cells[i].top,
+						  32, 32);
+	}
+	for (var i = 0; i < b_house_cells.length; i++) {
+		
+		context.drawImage(spritesheet,
+						  BLUE_SINGLE_PIECE_CELL.left, BLUE_SINGLE_PIECE_CELL.top,
+						  32, 32,
+						  b_house_cells[i].left, b_house_cells[i].top,
+						  32, 32);
+	}
+	for (var i = 0; i < g_house_cells.length; i++) {
+		
+		context.drawImage(spritesheet,
+						  GREEN_SINGLE_PIECE_CELL.left, GREEN_SINGLE_PIECE_CELL.top,
+						  32, 32,
+						  g_house_cells[i].left, g_house_cells[i].top,
+						  32, 32);
 	}
 	
 	context.restore();
@@ -261,7 +269,6 @@ function drawHomePieces() {
 
 function draw() {
 	drawHomePieces();
-	move();
 }
 
 function animate() {
@@ -271,15 +278,19 @@ function animate() {
 }
 
 function start() {
+	var all_pathcells = get_all_path_cells();
 	
-	console.log(y_H1.path);
-
 	spritesheet.src = 'images/spritesheet.png';
 	
 	spritesheet.onload = function (e) {
     	requestNextAnimationFrame(animate);
-/* 		console.log(gamePiecesArray); */
     };
 }
 
 start();
+
+/*
+for(var i = 0; i < all_pathcells.length; i++) {
+	all_pathcells[i].style.backgroundColor = 'grey';
+}
+*/
