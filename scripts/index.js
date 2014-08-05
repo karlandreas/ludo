@@ -272,7 +272,7 @@ function animate() {
 
 function start() {
 	
-	console.log(y_H1.path);
+/* 	console.log(y_H1.path); */
 
 	spritesheet.src = 'images/spritesheet.png';
 	
