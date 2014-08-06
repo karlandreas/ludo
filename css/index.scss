@@ -5,10 +5,15 @@ body {
 	width: 100%;
 }
 
+#site {
+	position: relative;
+	margin: 0px;
+	min-width: 1024px;
+}
+
 // ! Table styles ----------------------------------
 table {
 	font-family: helvetica, sans-serif;
-	font-size: .1em;
 	position: relative;
 	margin: 0px auto;
 }
@@ -32,6 +37,7 @@ table {
 .normalcell {
 	width: 30px;
 	height: 30px;
+	font-size: .1em;
 	border: 2px solid black;
 }
 
@@ -45,6 +51,7 @@ table {
 .homecell {
 	width: 35px;
 	height: 35px;
+	font-size: .1em;
 	border: 2px solid black;
 }
 
@@ -121,4 +128,39 @@ linear-gradient(-45deg, yellow 25%, transparent 25%, transparent 75%, cyan 75%, 
 	margin-left: -32px;
 	margin-top: -23px;
 /* 	border: 1px solid black; */
+}
+
+.player {
+	position: relative;
+	width: 76px;
+	height: 76px;
+	border: 1px solid black;
+	border-radius: 5px;
+	display: inline-block;
+	background-image: url('../images/players.svg');
+	p {
+		font-family: helvetica, sans-serif;
+		font-size: 1em;
+		text-align: center;
+		text-shadow: 1px 1px 1px black;
+		color: white;
+		margin-top: 55px;
+	}
+}
+
+
+#player1_div {
+	background-position-x: 0px;
+}
+
+#player2_div {
+	background-position-x: -75px;
+}
+
+#player3_div {
+	background-position-x: -151px;
+}
+
+#player4_div {
+	background-position-x: -226px;
 }

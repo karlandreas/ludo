@@ -6,7 +6,7 @@
 	<link rel='stylesheet' href='css/index.css' type='text/css' />
 	</head>
 	<body>
-		
+		<div id="site">
 		<!-- Canvas container -->
 		<div id="canvascontainer" class="gamecontainer_div">
 		
@@ -373,15 +373,44 @@
 		</div>
 		
 		<div id="controls">
-		
+			
 			<div id="dice_div">
 				<img id="dice_img" src="images/dice.svg" />
 			</div>
+			
 		</div>
 		
+		<table id="playertable" cellpadding="7">
+			<tr>
+				<td>
+				<div id="player1_div" class="player">
+					<p>Player1</p>
+				</div>
+				</td>
+				<td>
+				<div id="player2_div" class="player">
+					<p>Player2</p>
+				</div>
+				</td>
+				<td>
+				<div id="player3_div" class="player">
+					<p>Player3</p>
+				</div>
+				</td>
+				<td>
+				<div id="player4_div" class="player">
+					<p>Player4</p>
+				</div>
+				</td>
+			</tr>
+		</table>
+		
+		
+		</div>
 	</body>
 	<script src='scripts/requestNextAnimationframe.js' type='text/javascript'></script>
-	<script src='scripts/index.js' type='text/javascript'></script>
-	<script src='scripts/diceRoll.js' type='text/javascript'></script>
-<!-- 	<script src='scripts/test1.js' type='text/javascript'></script> -->
+	<script src='scripts/Piece.js' type='text/javascript'></script>
+	<script src='scripts/Dice.js' type='text/javascript'></script>
+	<script src='scripts/Player.js' type='text/javascript'></script>
+	<script src='scripts/LudoObj.js' type='text/javascript'></script>
 </html>
