@@ -92,25 +92,12 @@ Dice.prototype = {
 		this.currentPlayer.diceRoll = this.faceNum;
 		
 		if (this.faceNum == 6 && this.currentPlayer.allInHome) {
+
 			this.currentPlayer.allInHome = false;
-			
-			this.currentPlayer.pieces[0].piece.pathIndex = 0;
-			this.currentPlayer.pieces[0].piece.isAnimating = true;
-			this.currentPlayer.pieces[0].piece.inHome = false;
-			
-		}
-		else if (!this.currentPlayer.allInHome) {
-			
-			for (var i = 0; i < this.currentPlayer.pieces.length; i++) {
-			
-				if (!this.currentPlayer.pieces[i].piece.inHome) {
-					var currentPosition = this.currentPlayer.pieces[i].piece.pathIndex;
-					this.currentPlayer.pieces[i].piece.pathIndex = currentPosition + this.faceNum;
-					this.currentPlayer.pieces[i].piece.isAnimating = true;
-					this.currentPlayer.pieces[i].piece.inHome = false;
-					break;
-				}
-			}
+			this.currentPlayer.pieces[0].piece.moveToFirstPosition();
+			this.currentPlayer.diceRoll = undefined;
+			ludoObject.setActivePlayer();
+			ludoObject.player.giveControl();
 		}
 		
 		
@@ -118,18 +105,18 @@ Dice.prototype = {
 			this.currentPlayer.turnsLeft--;
 			
 			if (this.currentPlayer.turnsLeft < 1) {
+				
 				this.currentPlayer.turnsLeft = 3;
+				this.currentPlayer.diceRoll = undefined;
+				
 				setTimeout(function() {
 					ludoObject.setActivePlayer();
+					ludoObject.player.giveControl();
 				}, 800);
 			}
 		}
 		else {
 			this.currentPlayer.turnsLeft = 1;
-			
-			setTimeout(function() {
-				ludoObject.setActivePlayer();
-			}, 800);
 		}
 		
 	},
@@ -151,4 +138,6 @@ Dice.prototype = {
 	}
 	
 }
+
+
 

@@ -34,6 +34,16 @@ Player.prototype = {
 		this.playerDiv.innerHTML = "<p>" + this.name + "</p>";
 	},
 	
+	giveControl: function() {
+		
+		console.log(this.name + ": Got Control");
+		/*
+setTimeout(function() {
+			ludoObject.setActivePlayer();
+		}, 800);
+*/
+	},
+	
 	turn: function() {
 		this.active = true;
 	}

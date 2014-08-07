@@ -169,16 +169,19 @@ var LudoObj = function() {
 										 this.y17, 
 										 this.y18);
 	
+	
 	// ! ---------------------------- VARIABLES ----------------------------------
 	this.spritesheet = new Image();
 	this.canvas = document.getElementById('game_canvas');
 	this.context = this.canvas.getContext('2d');
 	
-	// players
+	// players (this.player1 = undefined)
 	this.player1 = undefined;
 	this.player2 = undefined;
 	this.player3 = undefined;
 	this.player4 = undefined;
+	// current active player
+	this.player = undefined;
 	// player array
 	this.players = undefined;
 	
@@ -211,10 +214,57 @@ var LudoObj = function() {
 	
 	
 	// ! ---------------------------- CONSTANTS ----------------------------------
+	// spritesheet coordinates
+	this.GS_SINGLE = {x: 140, y: 13};
+	
+	this.BS_SINGLE = {x: 100, y: 13};
+	
+	this.RS_SINGLE = {x:  58, y: 13};
+	
+	this.YS_SINGLE = {x:  18, y: 13};
+
+	// pieces paths
 	this.G_PATH = this.g_path_cells.slice(8).concat(this.b_path_cells).concat(this.r_path_cells).concat(this.y_path_cells).concat(this.g_path_cells.slice(0,7)).concat(this.g_homestretch_cells);
 	this.B_PATH = this.b_path_cells.slice(8).concat(this.r_path_cells).concat(this.y_path_cells).concat(this.g_path_cells).concat(this.b_path_cells.slice(0,7)).concat(this.b_homestretch_cells);
 	this.R_PATH = this.r_path_cells.slice(8).concat(this.y_path_cells).concat(this.g_path_cells).concat(this.b_path_cells).concat(this.r_path_cells.slice(0,7)).concat(this.r_homestretch_cells);
 	this.Y_PATH = this.y_path_cells.slice(8).concat(this.g_path_cells).concat(this.b_path_cells).concat(this.r_path_cells).concat(this.y_path_cells.slice(0,7)).concat(this.y_homestretch_cells);
+	
+	// ! Home Cells
+	// Green Home Cells
+	this.GH1 = {name: g_H1, x:  53, y: 108};
+	this.GH2 = {name: g_H2, x:  53, y:  53};
+	this.GH3 = {name: g_H3, x: 108, y: 108};
+	this.GH4 = {name: g_H4, x: 108, y:  53};
+	// Blue Home Cells
+	this.BH1 = {name: b_H1, x: 340, y:  54};
+	this.BH2 = {name: b_H1, x: 396, y:  54};
+	this.BH3 = {name: b_H1, x: 340, y: 109};
+	this.BH4 = {name: b_H1, x: 396, y: 109};
+	// Red Home Cells
+	this.RH1 = {name: r_H1, x: 395, y: 342};
+	this.RH2 = {name: r_H2, x: 395, y: 396};
+	this.RH3 = {name: r_H3, x: 339, y: 342};
+	this.RH4 = {name: r_H4, x: 339, y: 396};
+	// Yellow Home Cells
+	this.YH1 = {name: y_H1, x: 109, y: 397};
+	this.YH2 = {name: y_H2, x:  54, y: 397};
+	this.YH3 = {name: y_H3, x: 109, y: 342};
+	this.YH4 = {name: y_H4, x:  54, y: 342};
+	// All Home Cell Array
+	this.HOME_CELLS_ARRAY = new Array(
+									new Array(
+										this.YH1, this.YH2, this.YH3, this.YH4
+									),
+									new Array(
+										this.RH1, this.RH2, this.RH3, this.RH4
+									),
+									new Array(
+										this.BH1, this.BH2, this.BH3, this.BH4
+									),
+									new Array(
+										this.GH1, this.GH2, this.GH3, this.GH4
+									)
+								);
 }
 
 LudoObj.prototype = {
@@ -226,40 +276,40 @@ LudoObj.prototype = {
 		
 		// setup game pieces
 		// green
-		this.g_H1 = new Piece(53,  108, 140, 13);
+		this.g_H1 = new Piece(this.GH1.x,  this.GH1.y, this.GS_SINGLE.x, this.GS_SINGLE.y);
 		this.g_H1.path = this.G_PATH;
-		this.g_H2 = new Piece(53,  53,  140, 13);
-		this.g_H1.path = this.G_PATH;
-		this.g_H3 = new Piece(108, 108, 140, 13);
+		this.g_H2 = new Piece(this.GH2.x,  this.GH2.y, this.GS_SINGLE.x, this.GS_SINGLE.y);
+		this.g_H2.path = this.G_PATH;
+		this.g_H3 = new Piece(this.GH3.x,  this.GH3.y, this.GS_SINGLE.x, this.GS_SINGLE.y);
 		this.g_H3.path = this.G_PATH;
-		this.g_H4 = new Piece(108, 53,  140, 13);
+		this.g_H4 = new Piece(this.GH4.x,  this.GH4.y, this.GS_SINGLE.x, this.GS_SINGLE.y);
 		this.g_H4.path = this.G_PATH;
 		// blue
-		this.b_H1 = new Piece(340, 54,  100, 13);
+		this.b_H1 = new Piece(this.BH1.x,  this.BH1.y, this.BS_SINGLE.x, this.BS_SINGLE.y);
 		this.b_H1.path = this.B_PATH;
-		this.b_H2 = new Piece(396, 54,  100, 13);
-		this.b_H1.path = this.B_PATH;
-		this.b_H3 = new Piece(340, 109, 100, 13);
+		this.b_H2 = new Piece(this.BH2.x,  this.BH2.y, this.BS_SINGLE.x, this.BS_SINGLE.y);
+		this.b_H2.path = this.B_PATH;
+		this.b_H3 = new Piece(this.BH3.x,  this.BH3.y, this.BS_SINGLE.x, this.BS_SINGLE.y);
 		this.b_H3.path = this.B_PATH;
-		this.b_H4 = new Piece(396, 109, 100, 13);
+		this.b_H4 = new Piece(this.BH4.x,  this.BH4.y, this.BS_SINGLE.x, this.BS_SINGLE.y);
 		this.b_H4.path = this.B_PATH;
 		// red
-		this.r_H1 = new Piece(395, 342, 58, 13);
+		this.r_H1 = new Piece(this.RH1.x,  this.RH1.y,  this.RS_SINGLE.x, this.RS_SINGLE.y);
 		this.r_H1.path = this.R_PATH;
-		this.r_H2 = new Piece(395, 396, 58, 13);
-		this.r_H1.path = this.R_PATH;
-		this.r_H3 = new Piece(339, 342, 58, 13);
+		this.r_H2 = new Piece(this.RH2.x,  this.RH2.y,  this.RS_SINGLE.x, this.RS_SINGLE.y);
+		this.r_H2.path = this.R_PATH;
+		this.r_H3 = new Piece(this.RH3.x,  this.RH3.y,  this.RS_SINGLE.x, this.RS_SINGLE.y);
 		this.r_H3.path = this.R_PATH;
-		this.r_H4 = new Piece(339, 396, 58, 13);
+		this.r_H4 = new Piece(this.RH4.x,  this.RH4.y,  this.RS_SINGLE.x, this.RS_SINGLE.y);
 		this.r_H4.path = this.R_PATH;
 		// yellow
-		this.y_H1 = new Piece(109, 397, 18, 13);
+		this.y_H1 = new Piece(this.YH1.x,  this.YH1.y, this.YS_SINGLE.x, this.YS_SINGLE.y);
 		this.y_H1.path = this.Y_PATH;
-		this.y_H2 = new Piece(54,  397, 18, 13);
-		this.y_H1.path = this.Y_PATH;
-		this.y_H3 = new Piece(109, 342, 18, 13);
+		this.y_H2 = new Piece(this.YH2.x,  this.YH2.y, this.YS_SINGLE.x, this.YS_SINGLE.y);
+		this.y_H2.path = this.Y_PATH;
+		this.y_H3 = new Piece(this.YH3.x,  this.YH3.y, this.YS_SINGLE.x, this.YS_SINGLE.y);
 		this.y_H3.path = this.Y_PATH;
-		this.y_H4 = new Piece(54,  342, 18, 13);
+		this.y_H4 = new Piece(this.YH4.x,  this.YH4.y, this.YS_SINGLE.x, this.YS_SINGLE.y);
 		this.y_H4.path = this.Y_PATH;
 		// all pieces in one array
 		this.gamePiecesArray = new Array(
@@ -286,7 +336,8 @@ LudoObj.prototype = {
 							{name: 'g_H2', piece : this.g_H2},
 							{name: 'g_H3', piece : this.g_H3},
 							{name: 'g_H4', piece : this.g_H4}
-						));
+						)
+						);
 		// initialize players
 		this.player1 = new Player("yellow", "Kalle");
 		this.player1.init();
@@ -307,7 +358,6 @@ LudoObj.prototype = {
 		this.players = new Array(this.player1, this.player2, this.player3, this.player4);
 		// keep track of current player
 		this.activePlayer = 0;
-		this.player = undefined;
 	},
 	
 	drawAllPieces: function() {
@@ -370,29 +420,73 @@ LudoObj.prototype = {
 		
 		if (this.player != undefined) {
 			this.player.playerDiv.style.backgroundPositionY = "0px";
+			this.player.active = false;
 		}
 		
 		switch(this.activePlayer) {
 			case 1:
 				this.player = this.player1;
 				this.dice.currentPlayer = this.player1;
+				this.player.active = true;
 				break;
 			case 2:
 				this.player = this.player2;
 				this.dice.currentPlayer = this.player2;
+				this.player.active = true;
 				break;
 			case 3:
 				this.player = this.player3;
 				this.dice.currentPlayer = this.player3;
+				this.player.active = true;
 				break;
 			case 4:
 				this.player = this.player4;
 				this.dice.currentPlayer = this.player4;
+				this.player.active = true;
 				break;
 			default:
 				console.log("Error setting active player");
 		}
 		this.player.playerDiv.style.backgroundPositionY = "-75px";
+	},
+	
+	clearHighlightedFields: function() {
+		
+		for (var i = 0; i < this.g_path_cells.length; i++) {
+			if(i == 8) {
+				this.g_path_cells[i].style.backgroundColor = 'lime';
+			}
+			else {
+				this.g_path_cells[i].style.backgroundColor = 'white';
+			}
+		}
+		
+		for (var i = 0; i < this.b_path_cells.length; i++) {
+			if(i == 8) {
+				this.b_path_cells[i].style.backgroundColor = 'aqua';
+			}
+			else {
+				this.b_path_cells[i].style.backgroundColor = 'white';
+			}
+		}
+		
+		for (var i = 0; i < this.r_path_cells.length; i++) {
+			if(i == 8) {
+				this.r_path_cells[i].style.backgroundColor = 'red';
+			}
+			else {
+				this.r_path_cells[i].style.backgroundColor = 'white';
+			}
+		}
+		
+		for (var i = 0; i < this.y_path_cells.length; i++) {
+			if (i == 8) {
+				this.y_path_cells[i].style.backgroundColor = 'yellow';
+			}
+			else {
+				this.y_path_cells[i].style.backgroundColor = 'white';
+			}
+		}
 	},
 	
 	startGame: function() {
@@ -413,19 +507,61 @@ ludoObject.startGame();
 // ! ---------------------------- EVENT HANDLERS ----------------------------
 
 ludoObject.dice.img.onmouseup = function() {
+	
 	if (!ludoObject.dice.disabled) {
 		ludoObject.dice.rollDice();
-		if (ludoObject.player1.active) {
-			
+	}
+}
+
+ludoObject.canvas.onmouseup = function(e) {
+
+	if (!ludoObject.player.allInHome && ludoObject.player.diceRoll == 6) {
+		for (var i = 0; i < 4; i++) {
+			if (ludoObject.player.pieces[i].piece.inHome) {
+				if (e.offsetX > ludoObject.player.pieces[i].piece.left && e.offsetX < ludoObject.player.pieces[i].piece.left + 32) {
+					if (e.offsetY > ludoObject.player.pieces[i].piece.top && e.offsetY < ludoObject.player.pieces[i].piece.top + 32) {
+						document.getElementById(ludoObject.player.pieces[i].name).style.backgroundColor = 'aquamarine';
+					}
+				}
+			}
 		}
-		else if (ludoObject.player2.active) {
-			
+	}
+	else if (ludoObject.player.diceRoll != undefined) {
+		for (var k = 0; k < 4; k++) {
+			if (!ludoObject.player.pieces[k].piece.inHome) {
+				if (e.offsetX > ludoObject.player.pieces[k].piece.left && e.offsetX < ludoObject.player.pieces[k].piece.left + 32) {
+					if (e.offsetY > ludoObject.player.pieces[k].piece.top && e.offsetY < ludoObject.player.pieces[k].piece.top + 32) {
+						
+						var pathIndex = ludoObject.player.pieces[k].piece.pathIndex;
+						ludoObject.player.pieces[k].piece.path[pathIndex].style.backgroundColor = 'aquamarine';
+						ludoObject.player.pieces[k].piece.highlightMoveToPos(ludoObject.player.diceRoll);
+						
+					}
+				}
+			}
 		}
-		else if (ludoObject.player3.active) {
-			
-		}
-		else if (ludoObject.player4.active) {
-			
+	}
+	
+	for (var j = 0; j < 4; j++) {
+		if (ludoObject.player.pieces[j].piece.selected) {
+			if (e.offsetX > ludoObject.player.pieces[j].piece.canMoveTo.x1 && e.offsetX < ludoObject.player.pieces[j].piece.canMoveTo.x2) {
+				if (e.offsetY > ludoObject.player.pieces[j].piece.canMoveTo.y1 && e.offsetY < ludoObject.player.pieces[j].piece.canMoveTo.y2) {
+					
+					var indexPath = ludoObject.player.pieces[j].piece.pathIndex;
+					ludoObject.player.pieces[j].piece.move(ludoObject.player.diceRoll + indexPath);
+					ludoObject.clearHighlightedFields();
+					ludoObject.setActivePlayer();
+					ludoObject.player.giveControl();
+				}
+			}
 		}
 	}
 }
+
+document.getElementById('six_btn').onclick = function() {
+
+	ludoObject.dice.faceNum = 6;
+	ludoObject.dice.handleRolledNumber();
+	
+}
+
