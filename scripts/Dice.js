@@ -96,12 +96,8 @@ Dice.prototype = {
 			this.currentPlayer.allInHome = false;
 			this.currentPlayer.pieces[0].piece.moveToFirstPosition();
 			this.currentPlayer.diceRoll = undefined;
-			ludoObject.setActivePlayer();
-			ludoObject.player.giveControl();
 		}
-		
-		
-		if (this.currentPlayer.allInHome && this.currentPlayer.turnsLeft > 0) {
+		else if (this.currentPlayer.allInHome && this.currentPlayer.turnsLeft > 0) {
 			this.currentPlayer.turnsLeft--;
 			
 			if (this.currentPlayer.turnsLeft < 1) {

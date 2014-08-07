@@ -1,6 +1,8 @@
 
 
-var Piece = function(X, Y, sheet_left, sheet_top) {
+var Piece = function(color, X, Y, sheet_left, sheet_top) {
+	
+	this.color = color;
 	
 	this.start_left = X;
 	this.start_top  = Y;
@@ -27,6 +29,7 @@ var Piece = function(X, Y, sheet_left, sheet_top) {
 Piece.prototype = {
 	
 	calculatePiecePos: function(i) {
+		
 		var destinationX = this.path[i].offsetLeft;
 		var destinationY = this.path[i].offsetTop;
 		
@@ -35,11 +38,19 @@ Piece.prototype = {
 			this.top = (((destinationY - this.start_top) / this.stepLimit) * this.step) + this.start_top;
 			this.step++;
 		}
+		else if (this.step == this.stepLimit) {
+
+			// check if there is a piece on this field
+			this.checkForMultiplePiecesOnPos();
+			this.step++;
+		}
 		else {
 			this.isAnimating = false;
 			this.step = 0;
 			this.start_left = this.left;
 			this.start_top = this.top;
+			ludoObject.setActivePlayer();
+			ludoObject.player.giveControl();
 		}
 	},
 	
@@ -48,6 +59,34 @@ Piece.prototype = {
 		this.pathIndex 		= 0;
 		this.isAnimating 	= true;
 		this.inHome 		= false;
+		
+		
+	},
+	
+	checkForMultiplePiecesOnPos: function() {
+		
+		for (var j = 0; j < 4; j++) {
+			if (ludoObject.player.pieces[j].piece.pathIndex == this.pathIndex && !ludoObject.player.pieces[j].piece.isAnimating) {
+				
+				if (this.color == "yellow") {
+					this.sheet_left = ludoObject.YS_DOUBLE.x;
+					this.sheet_top  = ludoObject.YS_DOUBLE.y;
+				}
+				else if (this.color == "red") {
+					this.sheet_left = ludoObject.RS_DOUBLE.x;
+					this.sheet_top  = ludoObject.RS_DOUBLE.y;
+				}
+				else if (this.color == "blue") {
+					this.sheet_left = ludoObject.BS_DOUBLE.x;
+					this.sheet_top  = ludoObject.BS_DOUBLE.y;
+				}
+				else if (this.color == "green") {
+					this.sheet_left = ludoObject.GS_DOUBLE.x;
+					this.sheet_top  = ludoObject.GS_DOUBLE.y;
+				}
+				
+			}
+		}
 	},
 	
 	highlightMoveToPos: function(diceRoll) {
