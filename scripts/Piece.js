@@ -45,17 +45,20 @@ Piece.prototype = {
 			this.step++;
 		}
 		else {
+			var count = this.path[this.pathIndex].getAttribute('count');
 			this.isAnimating = false;
 			this.step = 0;
 			this.start_left = this.left;
 			this.start_top = this.top;
+			this.selected = false;
+			this.path[this.pathIndex].setAttribute('count', new Number(count) + 1);
 			ludoObject.setActivePlayer();
 			ludoObject.player.giveControl();
 		}
 	},
 	
 	moveToFirstPosition: function() {
-			
+				
 		this.pathIndex 		= 0;
 		this.isAnimating 	= true;
 		this.inHome 		= false;
@@ -65,33 +68,50 @@ Piece.prototype = {
 	
 	checkForMultiplePiecesOnPos: function() {
 		
-		for (var j = 0; j < 4; j++) {
-			if (ludoObject.player.pieces[j].piece.pathIndex == this.pathIndex && !ludoObject.player.pieces[j].piece.isAnimating) {
-				
-				if (this.color == "yellow") {
-					this.sheet_left = ludoObject.YS_DOUBLE.x;
-					this.sheet_top  = ludoObject.YS_DOUBLE.y;
-				}
-				else if (this.color == "red") {
-					this.sheet_left = ludoObject.RS_DOUBLE.x;
-					this.sheet_top  = ludoObject.RS_DOUBLE.y;
-				}
-				else if (this.color == "blue") {
-					this.sheet_left = ludoObject.BS_DOUBLE.x;
-					this.sheet_top  = ludoObject.BS_DOUBLE.y;
-				}
-				else if (this.color == "green") {
-					this.sheet_left = ludoObject.GS_DOUBLE.x;
-					this.sheet_top  = ludoObject.GS_DOUBLE.y;
-				}
-				
+		var count = this.path[this.pathIndex].getAttribute('count');
+		
+		if (new Number(count) == 1) {
+			if (this.color == "yellow") {
+				this.sheet_left = ludoObject.YS_SINGLE.x;
+				this.sheet_top  = ludoObject.YS_SINGLE.y;
+			}
+			else if (this.color == "red") {
+				this.sheet_left = ludoObject.RS_SINGLE.x;
+				this.sheet_top  = ludoObject.RS_SINGLE.y;
+			}
+			else if (this.color == "blue") {
+				this.sheet_left = ludoObject.BS_SINGLE.x;
+				this.sheet_top  = ludoObject.BS_SINGLE.y;
+			}
+			else if (this.color == "green") {
+				this.sheet_left = ludoObject.GS_SINGLE.x;
+				this.sheet_top  = ludoObject.GS_SINGLE.y;
 			}
 		}
+		else if (new Number(count) == 2) {
+			if (this.color == "yellow") {
+				this.sheet_left = ludoObject.YS_DOUBLE.x;
+				this.sheet_top  = ludoObject.YS_DOUBLE.y;
+			}
+			else if (this.color == "red") {
+				this.sheet_left = ludoObject.RS_DOUBLE.x;
+				this.sheet_top  = ludoObject.RS_DOUBLE.y;
+			}
+			else if (this.color == "blue") {
+				this.sheet_left = ludoObject.BS_DOUBLE.x;
+				this.sheet_top  = ludoObject.BS_DOUBLE.y;
+			}
+			else if (this.color == "green") {
+				this.sheet_left = ludoObject.GS_DOUBLE.x;
+				this.sheet_top  = ludoObject.GS_DOUBLE.y;
+			}
+		}
+		
 	},
 	
 	highlightMoveToPos: function(diceRoll) {
 		
-		this.selected = true;
+		this.setSelected();
 		
 		var moveToPos = this.pathIndex + diceRoll;
 		this.path[moveToPos].style.backgroundColor = 'bisque';
@@ -104,11 +124,17 @@ Piece.prototype = {
 						};
 	},
 	
-	move: function(i) {
+	setSelected: function() {
+		for (var i = 0; i < 4; i++) {
+			ludoObject.player.pieces[i].piece.selected = false;
+		}
+		this.selected = true;
+	},
+	
+	move: function() {
 		
-		this.pathIndex = i;
 		this.isAnimating = true;
 		
-		this.calculatePiecePos(i);
+		this.calculatePiecePos(this.pathIndex);
 	}
 }

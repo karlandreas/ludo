@@ -2,17 +2,18 @@
 
 var Player = function(color, name) {
 	
-	this.name 		= name;
-	this.color 		= color;
-	
-	this.pieces		= undefined;
-	this.allInHome  = true;
-	
-	this.diceRoll 	= undefined;
-	this.turnsLeft	= 3;
-	
-	this.playerDiv  = undefined;
-	this.active		= false;
+	this.name 		 = name;
+	this.color 		 = color;
+					 
+	this.pieces		 = undefined;
+	this.allInHome   = true;
+					 
+	this.diceRoll 	 = undefined;
+	this.turnsLeft	 = 3;
+					 
+	this.playerDiv   = undefined;
+	this.active		 = false;
+	this.readyToMove = false;
 }
 
 Player.prototype = {
@@ -37,11 +38,7 @@ Player.prototype = {
 	giveControl: function() {
 		
 		console.log(this.name + ": Got Control");
-		/*
-setTimeout(function() {
-			ludoObject.setActivePlayer();
-		}, 800);
-*/
+		
 	},
 	
 	turn: function() {

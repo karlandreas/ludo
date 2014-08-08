@@ -31,7 +31,7 @@ var LudoObj = function() {
 								  this.g11, 
 								  this.g12, 
 								  this.g13);
-	
+								  
 	// green home stretch cells
 	this.g14 = document.getElementById('x2y8');
 	this.g15 = document.getElementById('x3y8');
@@ -215,18 +215,25 @@ var LudoObj = function() {
 	
 	// ! ---------------------------- CONSTANTS ----------------------------------
 	// spritesheet coordinates
-	this.GS_SINGLE = {x: 140, y: 13};
-	this.GS_DOUBLE = {x: 139, y: 56};
+	this.GS_SINGLE    = {x: 140, y:  13};
+	this.BS_SINGLE    = {x: 100, y:  13};
+	this.RS_SINGLE    = {x:  58, y:  13};
+	this.YS_SINGLE    = {x:  18, y:  13};
+				      				 
+	this.GS_DOUBLE    = {x: 139, y:  56};
+	this.BS_DOUBLE    = {x:  99, y:  56};
+	this.RS_DOUBLE    = {x:  58, y:  56};
+	this.YS_DOUBLE    = {x:  18, y:  56};
+				      				 
+	this.GS_TRIPLE    = {x: 139, y:  97};
+	this.BS_TRIPLE    = {x:  99, y:  97};
+	this.RS_TRIPLE    = {x:  59, y:  97};
+	this.YS_TRIPLE    = {x:  18, y:  97};
 	
-	this.BS_SINGLE = {x: 100, y: 13};
-	this.BS_DOUBLE = {x:  99, y: 56};
-	
-	this.RS_SINGLE = {x:  58, y: 13};
-	this.RS_DOUBLE = {x:  58, y: 56};
-	
-	this.YS_SINGLE = {x:  18, y: 13};
-	this.YS_DOUBLE = {x:  18, y: 56};
-	
+	this.YS_QUATRUPLE = {x:  19, y: 138};
+	this.RS_QUATRUPLE = {x:  59, y: 138};
+	this.BS_QUATRUPLE = {x:  99, y: 138};
+	this.GS_QUATRUPLE = {x: 139, y: 138};
 
 	// pieces paths
 	this.G_PATH = this.g_path_cells.slice(8).concat(this.b_path_cells).concat(this.r_path_cells).concat(this.y_path_cells).concat(this.g_path_cells.slice(0,7)).concat(this.g_homestretch_cells);
@@ -386,7 +393,7 @@ LudoObj.prototype = {
 				else {
 					// animate currently moving pieces
 					if (this.gamePiecesArray[i][j].piece.isAnimating) {
-						this.gamePiecesArray[i][j].piece.move(this.gamePiecesArray[i][j].piece.pathIndex);
+						this.gamePiecesArray[i][j].piece.move();
 					}
 					
 					this.context.drawImage(this.spritesheet,
@@ -452,6 +459,34 @@ LudoObj.prototype = {
 				console.log("Error setting active player");
 		}
 		this.player.playerDiv.style.backgroundPositionY = "-75px";
+		this.dice.disabled = false;
+	},
+	
+	checkForPieceOnCoord: function(offX, offY, pLeft, pTop) {
+		
+		var result = undefined;
+		
+		if (offX > pLeft && offX < pLeft + 32) {
+			if (offY > pTop && offY < pTop + 32) {
+				result = true;
+			}
+			else {
+				result = false;
+			}
+		}
+		else {
+			result = false;
+		}
+		
+		return result;
+	},
+	
+	highlightFields: function(i) {
+		
+		var pathIndex = this.player.pieces[i].piece.pathIndex;
+		this.player.pieces[i].piece.path[pathIndex].style.backgroundColor = 'aquamarine';
+		this.player.pieces[i].piece.highlightMoveToPos(this.player.diceRoll);
+		
 	},
 	
 	clearHighlightedFields: function() {
@@ -518,50 +553,75 @@ ludoObject.dice.img.onmouseup = function() {
 }
 
 ludoObject.canvas.onmouseup = function(e) {
-
-	if (!ludoObject.player.allInHome && ludoObject.player.diceRoll == 6) {
+	
+	if (ludoObject.player.readyToMove) {
+		for (var j = 0; j < 4; j++) {
+		
+			if (ludoObject.player.pieces[j].piece.selected) {
+				
+				if (e.offsetX > ludoObject.player.pieces[j].piece.canMoveTo.x1 && e.offsetX < ludoObject.player.pieces[j].piece.canMoveTo.x2) {
+					if (e.offsetY > ludoObject.player.pieces[j].piece.canMoveTo.y1 && e.offsetY < ludoObject.player.pieces[j].piece.canMoveTo.y2) {
+						
+						var indexPath = ludoObject.player.pieces[j].piece.pathIndex;
+						var count = ludoObject.player.pieces[j].piece.path[indexPath].getAttribute('count');
+						
+						if (count > 1) {
+							// console.log("Double Position");
+							ludoObject.player.pieces[j].piece.path[indexPath].setAttribute('count', new Number(count) - 1);
+							ludoObject.player.pieces[j].piece.checkForMultiplePiecesOnPos();
+							ludoObject.player.pieces[j].piece.pathIndex = ludoObject.player.diceRoll + indexPath;
+							
+							ludoObject.player.pieces[j].piece.move();
+						} else {
+							ludoObject.player.pieces[j].piece.path[indexPath].setAttribute('count', new Number(count) - 1);
+							ludoObject.player.pieces[j].piece.checkForMultiplePiecesOnPos();
+							ludoObject.player.pieces[j].piece.pathIndex = ludoObject.player.diceRoll + indexPath;
+							
+							ludoObject.player.pieces[j].piece.move();
+						}
+						
+						
+						ludoObject.clearHighlightedFields();
+						ludoObject.player.readyToMove = false;
+					}
+				}
+			}
+		}
+	}
+	else if (ludoObject.player.diceRoll == 6) {
 		
 		for (var i = 0; i < 4; i++) {
 			
 			if (ludoObject.player.pieces[i].piece.inHome) {
-				if (e.offsetX > ludoObject.player.pieces[i].piece.left && e.offsetX < ludoObject.player.pieces[i].piece.left + 32) {
-					if (e.offsetY > ludoObject.player.pieces[i].piece.top && e.offsetY < ludoObject.player.pieces[i].piece.top + 32) {
-						ludoObject.player.pieces[i].piece.moveToFirstPosition();
-					}
+			
+				if (ludoObject.checkForPieceOnCoord(e.offsetX, e.offsetY, ludoObject.player.pieces[i].piece.left, ludoObject.player.pieces[i].piece.top)) {
+					ludoObject.player.pieces[i].piece.moveToFirstPosition(ludoObject.player.pieces[i].piece.path[0]);
+				}
+			}
+			else {
+			
+				if (ludoObject.checkForPieceOnCoord(e.offsetX, e.offsetY, ludoObject.player.pieces[i].piece.left, ludoObject.player.pieces[i].piece.top)) {
+					ludoObject.highlightFields(i);
+					ludoObject.player.readyToMove = true;
 				}
 			}
 		}
 	}
 	else if (ludoObject.player.diceRoll != undefined) {
-		for (var k = 0; k < 4; k++) {
-			if (!ludoObject.player.pieces[k].piece.inHome) {
-				if (e.offsetX > ludoObject.player.pieces[k].piece.left && e.offsetX < ludoObject.player.pieces[k].piece.left + 32) {
-					if (e.offsetY > ludoObject.player.pieces[k].piece.top && e.offsetY < ludoObject.player.pieces[k].piece.top + 32) {
-						
-						var pathIndex = ludoObject.player.pieces[k].piece.pathIndex;
-						ludoObject.player.pieces[k].piece.path[pathIndex].style.backgroundColor = 'aquamarine';
-						ludoObject.player.pieces[k].piece.highlightMoveToPos(ludoObject.player.diceRoll);
-						
-					}
+		
+		for (var i = 0; i < 4; i++) {
+			
+			if (!ludoObject.player.pieces[i].piece.inHome) {
+				
+				if (ludoObject.checkForPieceOnCoord(e.offsetX, e.offsetY, ludoObject.player.pieces[i].piece.left, ludoObject.player.pieces[i].piece.top)) {
+					
+					ludoObject.highlightFields(i);
+					ludoObject.player.readyToMove = true;
 				}
 			}
 		}
 	}
 	
-	for (var j = 0; j < 4; j++) {
-		if (ludoObject.player.pieces[j].piece.selected) {
-			if (e.offsetX > ludoObject.player.pieces[j].piece.canMoveTo.x1 && e.offsetX < ludoObject.player.pieces[j].piece.canMoveTo.x2) {
-				if (e.offsetY > ludoObject.player.pieces[j].piece.canMoveTo.y1 && e.offsetY < ludoObject.player.pieces[j].piece.canMoveTo.y2) {
-					
-					var indexPath = ludoObject.player.pieces[j].piece.pathIndex;
-					ludoObject.player.pieces[j].piece.move(ludoObject.player.diceRoll + indexPath);
-					ludoObject.clearHighlightedFields();
-					ludoObject.setActivePlayer();
-					ludoObject.player.giveControl();
-				}
-			}
-		}
-	}
 }
 
 document.getElementById('six_btn').onclick = function() {
