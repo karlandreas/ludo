@@ -41,19 +41,22 @@ Piece.prototype = {
 		else if (this.step == this.stepLimit) {
 
 			// check if there is a piece on this field
+			var count = this.path[this.pathIndex].getAttribute('count');
+			this.path[this.pathIndex].setAttribute('count', new Number(count) + 1);
 			this.checkForMultiplePiecesOnPos();
 			this.step++;
 		}
 		else {
-			var count = this.path[this.pathIndex].getAttribute('count');
 			this.isAnimating = false;
 			this.step = 0;
 			this.start_left = this.left;
 			this.start_top = this.top;
 			this.selected = false;
-			this.path[this.pathIndex].setAttribute('count', new Number(count) + 1);
-			ludoObject.setActivePlayer();
-			ludoObject.player.giveControl();
+			
+			if (ludoObject.player.turnsLeft < 1) {
+				ludoObject.setActivePlayer();
+				ludoObject.player.giveControl();
+			}
 		}
 	},
 	
@@ -66,6 +69,15 @@ Piece.prototype = {
 		
 	},
 	
+	updateAllPlayerMultiplePieces: function(sheet_left, sheet_top) {
+		for (var i = 0; i < 4; i++) {
+			if (ludoObject.player.pieces[i].piece.pathIndex == this.pathIndex) {
+				ludoObject.player.pieces[i].piece.sheet_left = sheet_left;
+				ludoObject.player.pieces[i].piece.sheet_top = sheet_top;
+			}
+		}
+	},
+	
 	checkForMultiplePiecesOnPos: function() {
 		
 		var count = this.path[this.pathIndex].getAttribute('count');
@@ -74,36 +86,88 @@ Piece.prototype = {
 			if (this.color == "yellow") {
 				this.sheet_left = ludoObject.YS_SINGLE.x;
 				this.sheet_top  = ludoObject.YS_SINGLE.y;
+				this.updateAllPlayerMultiplePieces(ludoObject.YS_SINGLE.x, ludoObject.YS_SINGLE.y);
 			}
 			else if (this.color == "red") {
 				this.sheet_left = ludoObject.RS_SINGLE.x;
 				this.sheet_top  = ludoObject.RS_SINGLE.y;
+				this.updateAllPlayerMultiplePieces(ludoObject.RS_SINGLE.x, ludoObject.RS_SINGLE.y);
 			}
 			else if (this.color == "blue") {
 				this.sheet_left = ludoObject.BS_SINGLE.x;
 				this.sheet_top  = ludoObject.BS_SINGLE.y;
+				this.updateAllPlayerMultiplePieces(ludoObject.BS_SINGLE.x, ludoObject.BS_SINGLE.y);
 			}
 			else if (this.color == "green") {
 				this.sheet_left = ludoObject.GS_SINGLE.x;
 				this.sheet_top  = ludoObject.GS_SINGLE.y;
+				this.updateAllPlayerMultiplePieces(ludoObject.GS_SINGLE.x, ludoObject.GS_SINGLE.y);
 			}
 		}
 		else if (new Number(count) == 2) {
 			if (this.color == "yellow") {
 				this.sheet_left = ludoObject.YS_DOUBLE.x;
 				this.sheet_top  = ludoObject.YS_DOUBLE.y;
+				this.updateAllPlayerMultiplePieces(ludoObject.YS_DOUBLE.x, ludoObject.YS_DOUBLE.y);
 			}
 			else if (this.color == "red") {
 				this.sheet_left = ludoObject.RS_DOUBLE.x;
 				this.sheet_top  = ludoObject.RS_DOUBLE.y;
+				this.updateAllPlayerMultiplePieces(ludoObject.RS_DOUBLE.x, ludoObject.RS_DOUBLE.y);
 			}
 			else if (this.color == "blue") {
 				this.sheet_left = ludoObject.BS_DOUBLE.x;
 				this.sheet_top  = ludoObject.BS_DOUBLE.y;
+				this.updateAllPlayerMultiplePieces(ludoObject.BS_DOUBLE.x, ludoObject.BS_DOUBLE.y);
 			}
 			else if (this.color == "green") {
 				this.sheet_left = ludoObject.GS_DOUBLE.x;
 				this.sheet_top  = ludoObject.GS_DOUBLE.y;
+				this.updateAllPlayerMultiplePieces(ludoObject.GS_DOUBLE.x, ludoObject.GS_DOUBLE.y);
+			}
+		}
+		else if (new Number(count) == 3) {
+			if (this.color == "yellow") {
+				this.sheet_left = ludoObject.YS_TRIPLE.x;
+				this.sheet_top  = ludoObject.YS_TRIPLE.y;
+				this.updateAllPlayerMultiplePieces(ludoObject.YS_TRIPLE.x, ludoObject.YS_TRIPLE.y);
+			}
+			else if (this.color == "red") {
+				this.sheet_left = ludoObject.RS_TRIPLE.x;
+				this.sheet_top  = ludoObject.RS_TRIPLE.y;
+				this.updateAllPlayerMultiplePieces(ludoObject.RS_TRIPLE.x, ludoObject.RS_TRIPLE.y);
+			}
+			else if (this.color == "blue") {
+				this.sheet_left = ludoObject.BS_TRIPLE.x;
+				this.sheet_top  = ludoObject.BS_TRIPLE.y;
+				this.updateAllPlayerMultiplePieces(ludoObject.BS_TRIPLE.x, ludoObject.BS_TRIPLE.y);
+			}
+			else if (this.color == "green") {
+				this.sheet_left = ludoObject.GS_TRIPLE.x;
+				this.sheet_top  = ludoObject.GS_TRIPLE.y;
+				this.updateAllPlayerMultiplePieces(ludoObject.GS_TRIPLE.x, ludoObject.GS_TRIPLE.y);
+			}
+		}
+		else if (new Number(count) == 4) {
+			if (this.color == "yellow") {
+				this.sheet_left = ludoObject.YS_QUATRUPLE.x;
+				this.sheet_top  = ludoObject.YS_QUATRUPLE.y;
+				this.updateAllPlayerMultiplePieces(ludoObject.YS_QUATRUPLE.x, ludoObject.YS_QUATRUPLE.y);
+			}
+			else if (this.color == "red") {
+				this.sheet_left = ludoObject.RS_QUATRUPLE.x;
+				this.sheet_top  = ludoObject.RS_QUATRUPLE.y;
+				this.updateAllPlayerMultiplePieces(ludoObject.RS_QUATRUPLE.x, ludoObject.RS_QUATRUPLE.y);
+			}
+			else if (this.color == "blue") {
+				this.sheet_left = ludoObject.BS_QUATRUPLE.x;
+				this.sheet_top  = ludoObject.BS_QUATRUPLE.y;
+				this.updateAllPlayerMultiplePieces(ludoObject.BS_QUATRUPLE.x, ludoObject.BS_QUATRUPLE.y);
+			}
+			else if (this.color == "green") {
+				this.sheet_left = ludoObject.GS_QUATRUPLE.x;
+				this.sheet_top  = ludoObject.GS_QUATRUPLE.y;
+				this.updateAllPlayerMultiplePieces(ludoObject.GS_QUATRUPLE.x, ludoObject.GS_QUATRUPLE.y);
 			}
 		}
 		

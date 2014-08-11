@@ -97,6 +97,9 @@ Dice.prototype = {
 			this.currentPlayer.pieces[0].piece.moveToFirstPosition();
 			this.currentPlayer.diceRoll = undefined;
 		}
+		else if (this.faceNum == 6) {
+			this.currentPlayer.turnsLeft = 1;
+		}
 		else if (this.currentPlayer.allInHome && this.currentPlayer.turnsLeft > 0) {
 			this.currentPlayer.turnsLeft--;
 			
@@ -112,7 +115,7 @@ Dice.prototype = {
 			}
 		}
 		else {
-			this.currentPlayer.turnsLeft = 1;
+			this.currentPlayer.turnsLeft = 0;
 			this.disabled = true;
 		}
 		
