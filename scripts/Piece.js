@@ -4,6 +4,8 @@ var Piece = function(color, X, Y, sheet_left, sheet_top) {
 	
 	this.color = color;
 	
+	this.home_left  = X;
+	this.home_top   = Y;
 	this.start_left = X;
 	this.start_top  = Y;
 	
@@ -17,6 +19,7 @@ var Piece = function(color, X, Y, sheet_left, sheet_top) {
 	
 	this.path 		= undefined;
 	this.pathIndex 	= undefined;
+	this.pathID		= undefined;
 	
 	this.isAnimating = false;
 	this.selected 	= false;
@@ -39,19 +42,27 @@ Piece.prototype = {
 			this.step++;
 		}
 		else if (this.step == this.stepLimit) {
-
-			// check if there is a piece on this field
+			
+			// get the destination field count
 			var count = this.path[this.pathIndex].getAttribute('count');
-			this.path[this.pathIndex].setAttribute('count', new Number(count) + 1);
+			
+			// if there is not a competitor piece on the field we increase the fields count by 1
+			if (!this.checkForCompetitorPieceOnPos(this.path[this.pathIndex].id)) {
+				
+				this.path[this.pathIndex].setAttribute('count', new Number(count) + 1);
+			}
+			
+			
 			this.checkForMultiplePiecesOnPos();
 			this.step++;
 		}
 		else {
-			this.isAnimating = false;
-			this.step = 0;
-			this.start_left = this.left;
-			this.start_top = this.top;
-			this.selected = false;
+			this.isAnimating 	= false;
+			this.step 			= 0;
+			this.start_left 	= this.left;
+			this.start_top 		= this.top;
+			this.selected 		= false;
+			this.pathID			= this.path[this.pathIndex].id;
 			
 			if (ludoObject.player.turnsLeft < 1) {
 				ludoObject.setActivePlayer();
@@ -69,6 +80,17 @@ Piece.prototype = {
 		
 	},
 	
+	moveToHomePosition: function() {
+		
+		this.pathIndex 		= undefined;
+		this.left			= this.home_left;
+		this.top			= this.home_top;
+		this.start_left		= this.home_left;
+		this.start_top		= this.home_top;
+		this.inHome		 	= true;
+		console.log("Moving to home");
+	},
+	
 	updateAllPlayerMultiplePieces: function(sheet_left, sheet_top) {
 		for (var i = 0; i < 4; i++) {
 			if (ludoObject.player.pieces[i].piece.pathIndex == this.pathIndex) {
@@ -82,10 +104,15 @@ Piece.prototype = {
 		
 		var count = this.path[this.pathIndex].getAttribute('count');
 		
+		var id = this.path[this.pathIndex].getAttribute('id');
+		
+		/* console.log("Destination ID: " + id); */
+		
 		if (new Number(count) == 1) {
 			if (this.color == "yellow") {
 				this.sheet_left = ludoObject.YS_SINGLE.x;
 				this.sheet_top  = ludoObject.YS_SINGLE.y;
+				
 				this.updateAllPlayerMultiplePieces(ludoObject.YS_SINGLE.x, ludoObject.YS_SINGLE.y);
 			}
 			else if (this.color == "red") {
@@ -171,6 +198,45 @@ Piece.prototype = {
 			}
 		}
 		
+	},
+	
+	checkForCompetitorPieceOnPos: function(id) {
+		
+		var result = false;
+		
+		// we loop through all the playable paths on the game-board
+		for (var i = 0; i < 52; i++) {
+			
+			// when we find our destination path ID 
+			if (ludoObject.complete_path[i].id == id) {
+				
+				// if the destination's piece-count = 1
+				if (ludoObject.complete_path[i].getAttribute('count') == 1) {
+					
+					// we loop through all players
+					for (var j = 0; j < 4; j++) {
+						
+						// excluding ourselves
+						if (ludoObject.players[j].color != this.color) {
+							
+							// we loop through each of our competitors pieces
+							for (var k = 0; k < 4; k++) {
+								
+								// if we find a competitor on our destination id, we hit him home
+								if (ludoObject.players[j].pieces[k].piece.pathID == id) {
+									
+									console.log("Got: " + ludoObject.players[j].color + " on field " + id);
+									var result = true;
+									ludoObject.players[j].pieces[k].piece.moveToHomePosition();
+								}
+							}
+						}
+					}
+					
+				}
+			}
+		}
+		return result;
 	},
 	
 	highlightMoveToPos: function(diceRoll) {

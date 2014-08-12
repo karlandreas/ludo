@@ -14,6 +14,8 @@ var Player = function(color, name) {
 	this.playerDiv   = undefined;
 	this.active		 = false;
 	this.readyToMove = false;
+	
+	this.displaysMoveToIndicator = false;
 }
 
 Player.prototype = {

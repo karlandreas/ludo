@@ -96,6 +96,7 @@ Dice.prototype = {
 			this.currentPlayer.allInHome = false;
 			this.currentPlayer.pieces[0].piece.moveToFirstPosition();
 			this.currentPlayer.diceRoll = undefined;
+			this.currentPlayer.turnsLeft = 0;
 		}
 		else if (this.faceNum == 6) {
 			this.currentPlayer.turnsLeft = 1;

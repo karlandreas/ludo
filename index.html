@@ -7,6 +7,32 @@
 	</head>
 	<body>
 		<div id="site">
+		
+		<table id="playertable" cellpadding="7">
+			<tr>
+				<td>
+				<div id="player1_div" class="player">
+					<p>Player1</p>
+				</div>
+				</td>
+				<td>
+				<div id="player2_div" class="player">
+					<p>Player2</p>
+				</div>
+				</td>
+				<td>
+				<div id="player3_div" class="player">
+					<p>Player3</p>
+				</div>
+				</td>
+				<td>
+				<div id="player4_div" class="player">
+					<p>Player4</p>
+				</div>
+				</td>
+			</tr>
+		</table>
+		
 		<!-- Canvas container -->
 		<div id="canvascontainer" class="gamecontainer_div">
 		
@@ -44,7 +70,7 @@
 							   border-right:2px solid black;"></td>
 				</tr>
 				
-				<tr id="y4">
+				<tr id="y14">
 					<td class="green wallcell"></td>
 					
 					<!-- Home Green cell -->
@@ -372,39 +398,22 @@
 		
 		</div>
 		
-		<div id="controls">
+		<div id="controls_div">
 			
 			<div id="dice_div">
 				<img id="dice_img" src="images/dice.svg" />
 			</div>
-			<button id="six_btn">Roll a Six</button>
+			
+			<select id="select_dice_num">
+				<option value="6">Roll a Six</option>
+				<option value="5">Roll a Five</option>
+				<option value="4">Roll a Four</option>
+				<option value="3">Roll a Three</option>
+				<option value="2">Roll a Two</option>
+				<option value="1">Roll a One</option>
+			</select>
+			<button id="roll_num_btn">Roll</button>
 		</div>
-		
-		<table id="playertable" cellpadding="7">
-			<tr>
-				<td>
-				<div id="player1_div" class="player">
-					<p>Player1</p>
-				</div>
-				</td>
-				<td>
-				<div id="player2_div" class="player">
-					<p>Player2</p>
-				</div>
-				</td>
-				<td>
-				<div id="player3_div" class="player">
-					<p>Player3</p>
-				</div>
-				</td>
-				<td>
-				<div id="player4_div" class="player">
-					<p>Player4</p>
-				</div>
-				</td>
-			</tr>
-		</table>
-		
 		
 		</div>
 	</body>

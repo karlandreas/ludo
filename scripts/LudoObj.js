@@ -169,6 +169,8 @@ var LudoObj = function() {
 										 this.y17, 
 										 this.y18);
 	
+	// full path array
+	this.complete_path = this.y_path_cells.concat(this.r_path_cells).concat(this.b_path_cells).concat(this.g_path_cells);
 	
 	// ! ---------------------------- VARIABLES ----------------------------------
 	this.spritesheet = new Image();
@@ -481,12 +483,131 @@ LudoObj.prototype = {
 		return result;
 	},
 	
-	highlightFields: function(i) {
+	checkForClickOnBlank: function(offX, offY) {
 		
-		var pathIndex = this.player.pieces[i].piece.pathIndex;
-		this.player.pieces[i].piece.path[pathIndex].style.backgroundColor = 'aquamarine';
-		this.player.pieces[i].piece.highlightMoveToPos(this.player.diceRoll);
+		var breakOuter = false;
+		var result = true;
 		
+		for (var i = 0; i < 4; i++) {
+			
+			if (breakOuter) {
+				break;
+			}
+			
+			for (var j = 0; j < 4; j++) {
+				
+				if (offX > this.players[i].pieces[j].piece.left && offY > this.players[i].pieces[j].piece.top) {
+					if (offX < this.players[i].pieces[j].piece.left +  32 && offY < this.players[i].pieces[j].piece.top + 32) {
+						result = false;
+						breakOuter = true;
+						break;
+					}
+				}
+			}
+		}
+		
+		return result;
+	},
+	
+	checkForClickOnHighlight: function(offX, offY) {
+		
+		var result = false;
+		
+		for (var i = 0; i < 4; i++) {
+		
+			if (ludoObject.player.pieces[i].piece.selected) {
+				if (offX > this.player.pieces[i].piece.canMoveTo.x1 && offX < ludoObject.player.pieces[i].piece.canMoveTo.x2) {
+					if (offY > ludoObject.player.pieces[i].piece.canMoveTo.y1 && offY < ludoObject.player.pieces[i].piece.canMoveTo.y2) {
+						result = true;
+						break;
+					}
+				}
+			}
+		}
+		return result;
+	},
+	
+	highlightFields: function(index) {
+		
+		// get the current pathIndex of the selected piece
+		var pathIndex = this.player.pieces[index].piece.pathIndex;
+		var blockOnPath = false;
+		var breakFieldChecks = false;
+		var numberOfFieldsToGreyOut = undefined;
+		
+		for (var i = pathIndex + 1; i <= pathIndex + this.player.diceRoll; i++) {
+			
+			if (breakFieldChecks) {
+				break;
+			}
+			
+			if (new Number(this.player.pieces[index].piece.path[i].getAttribute('count')) > 1) {
+				
+				for (var j = 0; j < 4; j++) {
+					// if one of our pieces is on the field with more than one piece, we set blockOnPath to false
+					if (this.player.pieces[j].piece.pathID != this.player.pieces[index].piece.path[i].id) {
+						blockOnPath = true;
+						breakFieldChecks = true;
+						numberOfFieldsToGreyOut = i - pathIndex;
+					}
+					else {
+						blockOnPath = false;
+						breakFieldChecks = false;
+						break; // we don't need to check for other pieces on this field
+					}
+				}
+			}			
+		}
+		
+		if (!blockOnPath) {
+			this.player.pieces[index].piece.path[pathIndex].style.backgroundColor = 'aquamarine';
+			this.player.pieces[index].piece.highlightMoveToPos(this.player.diceRoll);
+		}
+		else {
+			
+			var piecesInPlay = 0;
+						
+			this.player.readyToMove = false;
+			
+			// loop through this players pieces
+			for (var i = 0; i < 4; i++) {
+				
+				// when we find the selected piece
+				if (this.player.pieces[i].piece.selected) {
+					
+					// we go through the path up to the block
+					for (var j = 0; j < numberOfFieldsToGreyOut; j++) {
+						// and set every path backgound color to black
+						this.player.pieces[i].piece.path[pathIndex + j].style.backgroundColor = 'grey';
+					}
+				}
+				// we keep track of this current players pieces that is in play
+				if (!this.player.pieces[i].piece.inHome) {
+					piecesInPlay++;
+				}
+			}
+			// if the current player only has this one piece in play that he cannot move
+			if (piecesInPlay == 1) {
+				
+				// we clear the marked paths and set next player to go.
+				setTimeout(function() {
+					ludoObject.clearHighlightedFields();
+					ludoObject.setActivePlayer();
+				}, 2000);
+			}
+			else {
+				// else we just clear the marked paths.
+				setTimeout(function() {
+					ludoObject.clearHighlightedFields();
+					for (var i = 0; i < 4; i++) {
+						ludoObject.player.pieces[i].piece.selected = false;
+					}
+					ludoObject.player.readyToMove = false;
+				}, 2000);
+			}
+			
+			
+		}
 	},
 	
 	clearHighlightedFields: function() {
@@ -554,69 +675,78 @@ ludoObject.dice.img.onmouseup = function() {
 
 ludoObject.canvas.onmouseup = function(e) {
 	
-	if (ludoObject.player.readyToMove) {
-		for (var j = 0; j < 4; j++) {
+	if (ludoObject.checkForClickOnBlank(e.offsetX, e.offsetY) && !ludoObject.checkForClickOnHighlight(e.offsetX, e.offsetY)) {
 		
-			if (ludoObject.player.pieces[j].piece.selected) {
+		ludoObject.clearHighlightedFields();
+		for (var k = 0; k < 4; k++) {
+			ludoObject.player.pieces[k].piece.selected = false;
+		}
+		ludoObject.player.readyToMove = false;
+	}
+	else {
+		if (ludoObject.player.readyToMove) {
+			
+			// we check if the click occurred in this piece's moveTo position
+			if (ludoObject.checkForClickOnHighlight(e.offsetX, e.offsetY)) {
 				
-				if (e.offsetX > ludoObject.player.pieces[j].piece.canMoveTo.x1 && e.offsetX < ludoObject.player.pieces[j].piece.canMoveTo.x2) {
-					if (e.offsetY > ludoObject.player.pieces[j].piece.canMoveTo.y1 && e.offsetY < ludoObject.player.pieces[j].piece.canMoveTo.y2) {
+				// then loop through current players pieces
+				for (var j = 0; j < 4; j++) {
+					
+					// when we find the piece that is selected, we move it etc.
+					if (ludoObject.player.pieces[j].piece.selected) {
 						
 						var indexPath = ludoObject.player.pieces[j].piece.pathIndex;
 						var count = ludoObject.player.pieces[j].piece.path[indexPath].getAttribute('count');
 						
-						if (count > 1) {
-							// console.log("Double Position");
-							ludoObject.player.pieces[j].piece.path[indexPath].setAttribute('count', new Number(count) - 1);
-							ludoObject.player.pieces[j].piece.checkForMultiplePiecesOnPos();
-							ludoObject.player.pieces[j].piece.pathIndex = ludoObject.player.diceRoll + indexPath;
+						ludoObject.player.pieces[j].piece.path[indexPath].setAttribute('count', new Number(count) - 1);
+						ludoObject.player.pieces[j].piece.checkForMultiplePiecesOnPos();
+						ludoObject.player.pieces[j].piece.pathIndex = ludoObject.player.diceRoll + indexPath;
 							
-							ludoObject.player.pieces[j].piece.move();
-						} else {
-							ludoObject.player.pieces[j].piece.path[indexPath].setAttribute('count', new Number(count) - 1);
-							ludoObject.player.pieces[j].piece.checkForMultiplePiecesOnPos();
-							ludoObject.player.pieces[j].piece.pathIndex = ludoObject.player.diceRoll + indexPath;
-							
-							ludoObject.player.pieces[j].piece.move();
-						}
+						ludoObject.player.pieces[j].piece.move();
 						
 						
 						ludoObject.clearHighlightedFields();
 						ludoObject.player.readyToMove = false;
 					}
-				}
-			}
-		}
-	}
-	else if (ludoObject.player.diceRoll == 6) {
-		
-		for (var i = 0; i < 4; i++) {
-			
-			if (ludoObject.player.pieces[i].piece.inHome) {
-			
-				if (ludoObject.checkForPieceOnCoord(e.offsetX, e.offsetY, ludoObject.player.pieces[i].piece.left, ludoObject.player.pieces[i].piece.top)) {
-					ludoObject.player.pieces[i].piece.moveToFirstPosition(ludoObject.player.pieces[i].piece.path[0]);
-				}
-			}
-			else {
-			
-				if (ludoObject.checkForPieceOnCoord(e.offsetX, e.offsetY, ludoObject.player.pieces[i].piece.left, ludoObject.player.pieces[i].piece.top)) {
-					ludoObject.highlightFields(i);
-					ludoObject.player.readyToMove = true;
-				}
-			}
-		}
-	}
-	else if (ludoObject.player.diceRoll != undefined) {
-		
-		for (var i = 0; i < 4; i++) {
-			
-			if (!ludoObject.player.pieces[i].piece.inHome) {
-				
-				if (ludoObject.checkForPieceOnCoord(e.offsetX, e.offsetY, ludoObject.player.pieces[i].piece.left, ludoObject.player.pieces[i].piece.top)) {
 					
-					ludoObject.highlightFields(i);
-					ludoObject.player.readyToMove = true;
+				}
+				
+			}
+			
+		}
+		else if (ludoObject.player.diceRoll == 6) {
+			
+			for (var i = 0; i < 4; i++) {
+				
+				if (ludoObject.player.pieces[i].piece.inHome) {
+				
+					if (ludoObject.checkForPieceOnCoord(e.offsetX, e.offsetY, ludoObject.player.pieces[i].piece.left, ludoObject.player.pieces[i].piece.top)) {
+						ludoObject.player.pieces[i].piece.moveToFirstPosition(ludoObject.player.pieces[i].piece.path[0]);
+					}
+				}
+				else {
+				
+					if (ludoObject.checkForPieceOnCoord(e.offsetX, e.offsetY, ludoObject.player.pieces[i].piece.left, ludoObject.player.pieces[i].piece.top)) {
+						
+						ludoObject.player.pieces[i].piece.selected = true;
+						ludoObject.highlightFields(i);
+						ludoObject.player.readyToMove = true;
+					}
+				}
+			}
+		}
+		else if (ludoObject.player.diceRoll != undefined) {
+			
+			for (var i = 0; i < 4; i++) {
+				
+				if (!ludoObject.player.pieces[i].piece.inHome) {
+					
+					if (ludoObject.checkForPieceOnCoord(e.offsetX, e.offsetY, ludoObject.player.pieces[i].piece.left, ludoObject.player.pieces[i].piece.top)) {
+						
+						ludoObject.player.pieces[i].piece.selected = true;
+						ludoObject.highlightFields(i);
+						ludoObject.player.readyToMove = true;
+					}
 				}
 			}
 		}
@@ -624,10 +754,30 @@ ludoObject.canvas.onmouseup = function(e) {
 	
 }
 
-document.getElementById('six_btn').onclick = function() {
-
-	ludoObject.dice.faceNum = 6;
-	ludoObject.dice.displaySix();
+document.getElementById('roll_num_btn').onclick = function() {
+	
+	var select_div = document.getElementById('select_dice_num');
+	var index = select_div.selectedIndex;
+	var value = select_div.options[index].value;
+	ludoObject.dice.faceNum = new Number(value);
+	if (value == "6") {
+		ludoObject.dice.displaySix();
+	}
+	else if (value == "5") {
+		ludoObject.dice.displayFive();
+	}
+	else if (value == "4") {
+		ludoObject.dice.displayFour();
+	}
+	else if (value == "3") {
+		ludoObject.dice.displayThree();
+	}
+	else if (value == "2") {
+		ludoObject.dice.displayTwo();
+	}
+	else if (value == "1") {
+		ludoObject.dice.displayOne();
+	}
 	ludoObject.dice.handleRolledNumber();
 	
 }
