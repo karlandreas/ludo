@@ -65,6 +65,7 @@ Piece.prototype = {
 			this.pathID			= this.path[this.pathIndex].id;
 			
 			if (ludoObject.player.turnsLeft < 1) {
+				ludoObject.player.diceRoll = undefined;
 				ludoObject.setActivePlayer();
 				ludoObject.player.giveControl();
 			}
@@ -76,8 +77,6 @@ Piece.prototype = {
 		this.pathIndex 		= 0;
 		this.isAnimating 	= true;
 		this.inHome 		= false;
-		
-		
 	},
 	
 	moveToHomePosition: function() {
@@ -88,7 +87,29 @@ Piece.prototype = {
 		this.start_left		= this.home_left;
 		this.start_top		= this.home_top;
 		this.inHome		 	= true;
-		console.log("Moving to home");
+	},
+	
+	moveToGoal: function(color) {
+		
+		this.pathIndex 		= undefined;
+		
+		if (color == "green") {
+			this.left 			= this.path[56].offsetLeft + 3;
+			this.start_left		= this.path[56].offsetLeft + 3;
+		}
+		else if (color == "blue") {
+			this.top 			= this.path[56].offsetTop + 3;
+			this.start_top		= this.path[56].offsetTop + 3;
+		}
+		else if (color == "red") {
+			this.left 			= this.path[56].offsetLeft + 63;
+			this.start_left		= this.path[56].offsetLeft + 63;
+		}
+		else if (color == "yellow") {
+			this.top 			= this.path[56].offsetTop + 63;
+			this.start_top		= this.path[56].offsetTop + 63;
+		}
+		
 	},
 	
 	updateAllPlayerMultiplePieces: function(sheet_left, sheet_top) {

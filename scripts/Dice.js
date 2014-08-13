@@ -86,6 +86,42 @@ Dice.prototype = {
 		this.diceIndex++;
 	},
 	
+	checkForAnyMovablePieces: function() {
+		
+		var movable = 0;
+		var pIndex = undefined;
+		var blockOnPath = false;
+		
+		for (var i = 0; i < 4; i++) {
+			
+			if (movable < 1) {
+				pIndex = this.currentPlayer.pieces[i].piece.pathIndex;
+			} 
+			else {
+				break;
+			}
+			
+			if (!this.currentPlayer.pieces[i].piece.inHome) {
+				
+				for (var j = pIndex + 1; j <= this.currentPlayer.diceRoll + pIndex; j++) {
+					
+					if (ludoObject.checkForBlockOnField(this.currentPlayer.pieces[i].piece.path[j], this.currentPlayer.pieces[i].piece.path[j].id)) {
+						
+						blockOnPath = true;
+						break;
+					}
+					
+					if (j == this.currentPlayer.diceRoll + pIndex) {
+						movable = 1;
+					}
+				}
+				
+			}
+		}
+		
+		return movable;
+	},
+	
 	handleRolledNumber: function() {
 		
 		
@@ -114,6 +150,16 @@ Dice.prototype = {
 					ludoObject.player.giveControl();
 				}, 800);
 			}
+		}
+		else if (this.checkForAnyMovablePieces() < 1) {
+			
+			this.currentPlayer.diceRoll = undefined;
+			this.currentPlayer.turnsLeft = 0;
+			
+			setTimeout(function() {
+				ludoObject.setActivePlayer();
+				ludoObject.player.giveControl();
+			}, 800);
 		}
 		else {
 			this.currentPlayer.turnsLeft = 0;

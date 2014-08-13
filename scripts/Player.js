@@ -37,10 +37,27 @@ Player.prototype = {
 		this.playerDiv.innerHTML = "<p>" + this.name + "</p>";
 	},
 	
+	checkForAllInHome: function() {
+		var allInHome = true;
+		
+		// check if all pieces is inHome
+		for (var i = 0; i < 4; i++) {
+			
+			if (!this.pieces[i].piece.inHome) {
+				allInHome = false;
+			}
+		}
+		
+		if (allInHome) {
+			console.log(this.name + ": has all pieces in home");
+			this.allInHome = true;
+			this.turnsLeft = 3;
+		}
+	},
+	
 	giveControl: function() {
 		
-		console.log(this.name + ": Got Control");
-		
+		this.checkForAllInHome();
 	},
 	
 	turn: function() {
