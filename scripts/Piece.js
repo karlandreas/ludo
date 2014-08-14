@@ -6,8 +6,12 @@ var Piece = function(color, X, Y, sheet_left, sheet_top) {
 	
 	this.home_left  = X;
 	this.home_top   = Y;
+	
 	this.start_left = X;
 	this.start_top  = Y;
+	
+	this.goal_left  = undefined;
+	this.goal_top   = undefined;
 	
 	this.sheet_left = sheet_left, // X position in spritesheet
 	this.sheet_top  = sheet_top,  // Y position in spritesheet
@@ -16,20 +20,28 @@ var Piece = function(color, X, Y, sheet_left, sheet_top) {
 	this.top		= Y;
 	
 	this.inHome		= true;
+	this.inGoal		= false;
 	
 	this.path 		= undefined;
 	this.pathIndex 	= undefined;
 	this.pathID		= undefined;
 	
-	this.isAnimating = false;
 	this.selected 	= false;
 	this.step		= 0;
 	this.stepLimit  = 50;
 	
-	this.canMoveTo		= undefined;
+	this.canMoveTo	= undefined;
+	this.isAnimating = false;
 }
 
 Piece.prototype = {
+
+	init: function(path, gLeft, gTop) {
+		this.path = path;
+		
+		this.goal_left  = gLeft;
+		this.goal_top   = gTop;
+	},
 	
 	calculatePiecePos: function(i) {
 		
@@ -44,16 +56,18 @@ Piece.prototype = {
 		else if (this.step == this.stepLimit) {
 			
 			// get the destination field count
-			var count = this.path[this.pathIndex].getAttribute('count');
+			var tmpCount = this.path[this.pathIndex].getAttribute('count');
 			
 			// if there is not a competitor piece on the field we increase the fields count by 1
 			if (!this.checkForCompetitorPieceOnPos(this.path[this.pathIndex].id)) {
 				
-				this.path[this.pathIndex].setAttribute('count', new Number(count) + 1);
+				tmpCount = new Number(tmpCount) + 1;
+				this.path[this.pathIndex].setAttribute('count',tmpCount);
+				
 			}
 			
 			
-			this.checkForMultiplePiecesOnPos();
+			this.setSpritesheetCoordsTo(tmpCount);
 			this.step++;
 		}
 		else {
@@ -82,6 +96,7 @@ Piece.prototype = {
 	moveToHomePosition: function() {
 		
 		this.pathIndex 		= undefined;
+		this.pathID 		= undefined;
 		this.left			= this.home_left;
 		this.top			= this.home_top;
 		this.start_left		= this.home_left;
@@ -89,31 +104,24 @@ Piece.prototype = {
 		this.inHome		 	= true;
 	},
 	
-	moveToGoal: function(color) {
+	moveToGoal: function(numInGoal) {
 		
-		this.pathIndex 		= undefined;
+		this.pathIndex 	= 56;
+		this.inGoal		= true;
+		this.left 		= this.goal_left;
+		this.top 		= this.goal_top;
 		
-		if (color == "green") {
-			this.left 			= this.path[56].offsetLeft + 3;
-			this.start_left		= this.path[56].offsetLeft + 3;
-		}
-		else if (color == "blue") {
-			this.top 			= this.path[56].offsetTop + 3;
-			this.start_top		= this.path[56].offsetTop + 3;
-		}
-		else if (color == "red") {
-			this.left 			= this.path[56].offsetLeft + 63;
-			this.start_left		= this.path[56].offsetLeft + 63;
-		}
-		else if (color == "yellow") {
-			this.top 			= this.path[56].offsetTop + 63;
-			this.start_top		= this.path[56].offsetTop + 63;
-		}
+		this.setSpritesheetCoordsTo(numInGoal);
 		
+		console.log("Player has: " + numInGoal + " Pieces in Goal");
 	},
 	
 	updateAllPlayerMultiplePieces: function(sheet_left, sheet_top) {
+		
+		// we loop through all of this players pieces
 		for (var i = 0; i < 4; i++) {
+			
+			// if we find a piece on the destination field we set it's spritsheet coords to the same as this piece
 			if (ludoObject.player.pieces[i].piece.pathIndex == this.pathIndex) {
 				ludoObject.player.pieces[i].piece.sheet_left = sheet_left;
 				ludoObject.player.pieces[i].piece.sheet_top = sheet_top;
@@ -121,15 +129,10 @@ Piece.prototype = {
 		}
 	},
 	
-	checkForMultiplePiecesOnPos: function() {
-		
-		var count = this.path[this.pathIndex].getAttribute('count');
-		
-		var id = this.path[this.pathIndex].getAttribute('id');
-		
-		/* console.log("Destination ID: " + id); */
-		
+	setSpritesheetCoordsTo: function(count) {
+								
 		if (new Number(count) == 1) {
+			
 			if (this.color == "yellow") {
 				this.sheet_left = ludoObject.YS_SINGLE.x;
 				this.sheet_top  = ludoObject.YS_SINGLE.y;
@@ -153,6 +156,7 @@ Piece.prototype = {
 			}
 		}
 		else if (new Number(count) == 2) {
+			
 			if (this.color == "yellow") {
 				this.sheet_left = ludoObject.YS_DOUBLE.x;
 				this.sheet_top  = ludoObject.YS_DOUBLE.y;
@@ -175,6 +179,7 @@ Piece.prototype = {
 			}
 		}
 		else if (new Number(count) == 3) {
+			
 			if (this.color == "yellow") {
 				this.sheet_left = ludoObject.YS_TRIPLE.x;
 				this.sheet_top  = ludoObject.YS_TRIPLE.y;
@@ -224,39 +229,83 @@ Piece.prototype = {
 	checkForCompetitorPieceOnPos: function(id) {
 		
 		var result = false;
+		var safeFieldColor = undefined;
+		var offset = undefined;
+		var field = document.getElementById(id);
 		
-		// we loop through all the playable paths on the game-board
-		for (var i = 0; i < 52; i++) {
-			
-			// when we find our destination path ID 
-			if (ludoObject.complete_path[i].id == id) {
+		// if the destination field's count equals 1
+		if (new Number(field.getAttribute('count')) == 1) {
+		
+			if (id == "x7y2") {
+				safeFieldColor = "yellow";
+				offset = -15;
+			}
+			else if (id == "x14y7") {
+				safeFieldColor = "red";
+				offset = 15;
+			}
+			else if (id == "x9y14") {
+				safeFieldColor = "blue";
+				offset = 15;
+			}
+			else if (id == "x2y9") {
+				safeFieldColor = "green";
+				offset = -15;
+			}
+		
+			// we loop through all players
+			for (var j = 0; j < 4; j++) {
 				
-				// if the destination's piece-count = 1
-				if (ludoObject.complete_path[i].getAttribute('count') == 1) {
+				// excluding ourselves
+				if (ludoObject.players[j].color != this.color) {
 					
-					// we loop through all players
-					for (var j = 0; j < 4; j++) {
+					// we loop through each of our competitors pieces
+					for (var k = 0; k < 4; k++) {
 						
-						// excluding ourselves
-						if (ludoObject.players[j].color != this.color) {
+						// if we find a competitor on our destination id
+						if (ludoObject.players[j].pieces[k].piece.pathID == id) {
 							
-							// we loop through each of our competitors pieces
-							for (var k = 0; k < 4; k++) {
+							// if our destination is a safe-field
+							if (safeFieldColor != undefined) {
 								
-								// if we find a competitor on our destination id, we hit him home
-								if (ludoObject.players[j].pieces[k].piece.pathID == id) {
+								// if the color of the piece on the safe-field is the same as the safeFieldColor
+								if (ludoObject.players[j].pieces[k].piece.color == safeFieldColor) {
 									
-									console.log("Got: " + ludoObject.players[j].color + " on field " + id);
-									var result = true;
-									ludoObject.players[j].pieces[k].piece.moveToHomePosition();
+									// we put our piece beside it
+									result = true;
+									
+									if (safeFieldColor == "yellow" || safeFieldColor == "blue") {
+										this.left = this.left + offset;
+									}
+									else {
+										this.top = this.top + offset;
+									}
 								}
+								else {
+									
+									// if the color of this piece is the same as the piece on the safeField
+									if (this.color == safeFieldColor) {
+										// we hit it home and leave the result variable to false, which will increase this field count to 2
+										ludoObject.players[j].pieces[k].piece.moveToHomePosition();
+									}
+									else {
+										// if color of the piece is not the same as the safeFieldColor we hit it home
+										result = true;
+										ludoObject.players[j].pieces[k].piece.moveToHomePosition();
+									}
+								}
+							}
+							else {
+								// if this is not a safe-field we hit the piece to home.
+								result = true;
+								ludoObject.players[j].pieces[k].piece.moveToHomePosition();
 							}
 						}
 					}
-					
 				}
 			}
 		}
+		
 		return result;
 	},
 	

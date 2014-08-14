@@ -244,7 +244,13 @@ var LudoObj = function() {
 	this.RS_QUATRUPLE = {x:  59, y: 138};
 	this.BS_QUATRUPLE = {x:  99, y: 138};
 	this.GS_QUATRUPLE = {x: 139, y: 138};
-
+	
+	// pieces goal coordinates
+	this.G_GOAL = {gLeft: 194, gTop: 224};
+	this.B_GOAL = {gLeft: 224, gTop: 195};
+	this.R_GOAL = {gLeft: 252, gTop: 224};
+	this.Y_GOAL = {gLeft: 224, gTop: 255};
+	
 	// pieces paths
 	this.G_PATH = this.g_path_cells.slice(8).concat(this.b_path_cells).concat(this.r_path_cells).concat(this.y_path_cells).concat(this.g_path_cells.slice(0,7)).concat(this.g_homestretch_cells);
 	this.B_PATH = this.b_path_cells.slice(8).concat(this.r_path_cells).concat(this.y_path_cells).concat(this.g_path_cells).concat(this.b_path_cells.slice(0,7)).concat(this.b_homestretch_cells);
@@ -253,25 +259,25 @@ var LudoObj = function() {
 	
 	// ! Home Cells
 	// Green Home Cells
-	this.GH1 = {name: g_H1, x:  53, y: 108};
-	this.GH2 = {name: g_H2, x:  53, y:  53};
-	this.GH3 = {name: g_H3, x: 108, y: 108};
-	this.GH4 = {name: g_H4, x: 108, y:  53};
+	this.GH1 = {name: 'g_H1', x:  53, y: 108};
+	this.GH2 = {name: 'g_H2', x:  53, y:  53};
+	this.GH3 = {name: 'g_H3', x: 108, y: 108};
+	this.GH4 = {name: 'g_H4', x: 108, y:  53};
 	// Blue Home Cells
-	this.BH1 = {name: b_H1, x: 340, y:  54};
-	this.BH2 = {name: b_H1, x: 396, y:  54};
-	this.BH3 = {name: b_H1, x: 340, y: 109};
-	this.BH4 = {name: b_H1, x: 396, y: 109};
+	this.BH1 = {name: 'b_H1', x: 340, y:  54};
+	this.BH2 = {name: 'b_H1', x: 396, y:  54};
+	this.BH3 = {name: 'b_H1', x: 340, y: 109};
+	this.BH4 = {name: 'b_H1', x: 396, y: 109};
 	// Red Home Cells
-	this.RH1 = {name: r_H1, x: 395, y: 342};
-	this.RH2 = {name: r_H2, x: 395, y: 396};
-	this.RH3 = {name: r_H3, x: 339, y: 342};
-	this.RH4 = {name: r_H4, x: 339, y: 396};
+	this.RH1 = {name: 'r_H1', x: 395, y: 342};
+	this.RH2 = {name: 'r_H2', x: 395, y: 396};
+	this.RH3 = {name: 'r_H3', x: 339, y: 342};
+	this.RH4 = {name: 'r_H4', x: 339, y: 396};
 	// Yellow Home Cells
-	this.YH1 = {name: y_H1, x: 109, y: 397};
-	this.YH2 = {name: y_H2, x:  54, y: 397};
-	this.YH3 = {name: y_H3, x: 109, y: 342};
-	this.YH4 = {name: y_H4, x:  54, y: 342};
+	this.YH1 = {name: 'y_H1', x: 109, y: 397};
+	this.YH2 = {name: 'y_H2', x:  54, y: 397};
+	this.YH3 = {name: 'y_H3', x: 109, y: 342};
+	this.YH4 = {name: 'y_H4', x:  54, y: 342};
 	// All Home Cell Array
 	this.HOME_CELLS_ARRAY = new Array(
 									new Array(
@@ -299,40 +305,48 @@ LudoObj.prototype = {
 		// setup game pieces
 		// green
 		this.g_H1 = new Piece("green", this.GH1.x,  this.GH1.y, this.GS_SINGLE.x, this.GS_SINGLE.y);
-		this.g_H1.path = this.G_PATH;
 		this.g_H2 = new Piece("green", this.GH2.x,  this.GH2.y, this.GS_SINGLE.x, this.GS_SINGLE.y);
-		this.g_H2.path = this.G_PATH;
 		this.g_H3 = new Piece("green", this.GH3.x,  this.GH3.y, this.GS_SINGLE.x, this.GS_SINGLE.y);
-		this.g_H3.path = this.G_PATH;
 		this.g_H4 = new Piece("green", this.GH4.x,  this.GH4.y, this.GS_SINGLE.x, this.GS_SINGLE.y);
-		this.g_H4.path = this.G_PATH;
+
+		this.g_H1.init(this.G_PATH, this.G_GOAL.gLeft, this.G_GOAL.gTop);
+		this.g_H2.init(this.G_PATH, this.G_GOAL.gLeft, this.G_GOAL.gTop);
+		this.g_H3.init(this.G_PATH, this.G_GOAL.gLeft, this.G_GOAL.gTop);
+		this.g_H4.init(this.G_PATH, this.G_GOAL.gLeft, this.G_GOAL.gTop);
+
 		// blue
 		this.b_H1 = new Piece("blue", this.BH1.x,  this.BH1.y, this.BS_SINGLE.x, this.BS_SINGLE.y);
-		this.b_H1.path = this.B_PATH;
 		this.b_H2 = new Piece("blue", this.BH2.x,  this.BH2.y, this.BS_SINGLE.x, this.BS_SINGLE.y);
-		this.b_H2.path = this.B_PATH;
 		this.b_H3 = new Piece("blue", this.BH3.x,  this.BH3.y, this.BS_SINGLE.x, this.BS_SINGLE.y);
-		this.b_H3.path = this.B_PATH;
 		this.b_H4 = new Piece("blue", this.BH4.x,  this.BH4.y, this.BS_SINGLE.x, this.BS_SINGLE.y);
-		this.b_H4.path = this.B_PATH;
+
+		this.b_H1.init(this.B_PATH, this.B_GOAL.gLeft, this.B_GOAL.gTop);
+		this.b_H2.init(this.B_PATH, this.B_GOAL.gLeft, this.B_GOAL.gTop);
+		this.b_H3.init(this.B_PATH, this.B_GOAL.gLeft, this.B_GOAL.gTop);
+		this.b_H4.init(this.B_PATH, this.B_GOAL.gLeft, this.B_GOAL.gTop);
+
 		// red
 		this.r_H1 = new Piece("red", this.RH1.x,  this.RH1.y,  this.RS_SINGLE.x, this.RS_SINGLE.y);
-		this.r_H1.path = this.R_PATH;
 		this.r_H2 = new Piece("red", this.RH2.x,  this.RH2.y,  this.RS_SINGLE.x, this.RS_SINGLE.y);
-		this.r_H2.path = this.R_PATH;
 		this.r_H3 = new Piece("red", this.RH3.x,  this.RH3.y,  this.RS_SINGLE.x, this.RS_SINGLE.y);
-		this.r_H3.path = this.R_PATH;
 		this.r_H4 = new Piece("red", this.RH4.x,  this.RH4.y,  this.RS_SINGLE.x, this.RS_SINGLE.y);
-		this.r_H4.path = this.R_PATH;
+
+		this.r_H1.init(this.R_PATH, this.R_GOAL.gLeft, this.R_GOAL.gTop);
+		this.r_H2.init(this.R_PATH, this.R_GOAL.gLeft, this.R_GOAL.gTop);
+		this.r_H3.init(this.R_PATH, this.R_GOAL.gLeft, this.R_GOAL.gTop);
+		this.r_H4.init(this.R_PATH, this.R_GOAL.gLeft, this.R_GOAL.gTop);
+
 		// yellow
 		this.y_H1 = new Piece("yellow", this.YH1.x,  this.YH1.y, this.YS_SINGLE.x, this.YS_SINGLE.y);
-		this.y_H1.path = this.Y_PATH;
 		this.y_H2 = new Piece("yellow", this.YH2.x,  this.YH2.y, this.YS_SINGLE.x, this.YS_SINGLE.y);
-		this.y_H2.path = this.Y_PATH;
 		this.y_H3 = new Piece("yellow", this.YH3.x,  this.YH3.y, this.YS_SINGLE.x, this.YS_SINGLE.y);
-		this.y_H3.path = this.Y_PATH;
 		this.y_H4 = new Piece("yellow", this.YH4.x,  this.YH4.y, this.YS_SINGLE.x, this.YS_SINGLE.y);
-		this.y_H4.path = this.Y_PATH;
+
+		this.y_H1.init(this.Y_PATH, this.Y_GOAL.gLeft, this.Y_GOAL.gTop);
+		this.y_H2.init(this.Y_PATH, this.Y_GOAL.gLeft, this.Y_GOAL.gTop);
+		this.y_H3.init(this.Y_PATH, this.Y_GOAL.gLeft, this.Y_GOAL.gTop);
+		this.y_H4.init(this.Y_PATH, this.Y_GOAL.gLeft, this.Y_GOAL.gTop);
+
 		// all pieces in one array
 		this.gamePiecesArray = new Array(
 						new Array(
@@ -360,19 +374,21 @@ LudoObj.prototype = {
 							{name: 'g_H4', piece : this.g_H4}
 						)
 						);
+		
 		// initialize players
+		// player1 
 		this.player1 = new Player("yellow", "Kalle");
 		this.player1.init();
 		this.player1.pieces = this.gamePiecesArray[0];
-		
+		// player2
 		this.player2 = new Player("red", "Compu 1");
 		this.player2.init();
 		this.player2.pieces = this.gamePiecesArray[1];
-		
+		// player3
 		this.player3 = new Player("blue", "Compu 2");
 		this.player3.init();
 		this.player3.pieces = this.gamePiecesArray[2];
-		
+		// player4
 		this.player4 = new Player("green", "Compu 3");
 		this.player4.init();
 		this.player4.pieces = this.gamePiecesArray[3];
@@ -590,8 +606,10 @@ LudoObj.prototype = {
 		else if (pathIndex + this.player.diceRoll + 1 == this.player.pieces[index].piece.path.length) {
 			
 			console.log("Move piece to Goal");
-			this.player.pieces[index].piece.moveToGoal(this.player.color);
+
 			this.player.readyToMove = false;
+			this.player.piecesInGoal++;
+			this.player.pieces[index].piece.moveToGoal(this.player.piecesInGoal);
 			
 			// we clear the marked paths and set next player to go.
 			setTimeout(function() {
@@ -777,12 +795,15 @@ ludoObject.canvas.onmouseup = function(e) {
 					if (ludoObject.player.pieces[j].piece.selected) {
 						
 						var indexPath = ludoObject.player.pieces[j].piece.pathIndex;
-						var count = ludoObject.player.pieces[j].piece.path[indexPath].getAttribute('count');
+						var tmpCount = ludoObject.player.pieces[j].piece.path[indexPath].getAttribute('count');
+						tmpCount = new Number(tmpCount) - 1;
+						ludoObject.player.pieces[j].piece.setSpritesheetCoordsTo(tmpCount);
 						
-						ludoObject.player.pieces[j].piece.path[indexPath].setAttribute('count', new Number(count) - 1);
-						ludoObject.player.pieces[j].piece.checkForMultiplePiecesOnPos();
+						ludoObject.player.pieces[j].piece.path[indexPath].setAttribute('count', tmpCount);
+
 						ludoObject.player.pieces[j].piece.pathIndex = ludoObject.player.diceRoll + indexPath;
-							
+						ludoObject.player.pieces[j].piece.setSpritesheetCoordsTo(1);
+						
 						ludoObject.player.pieces[j].piece.move();
 						
 						

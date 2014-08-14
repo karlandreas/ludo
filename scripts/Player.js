@@ -14,7 +14,9 @@ var Player = function(color, name) {
 	this.playerDiv   = undefined;
 	this.active		 = false;
 	this.readyToMove = false;
-	
+
+	this.piecesInGoal = 0;
+		
 	this.displaysMoveToIndicator = false;
 }
 
