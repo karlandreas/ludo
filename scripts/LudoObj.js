@@ -576,6 +576,30 @@ LudoObj.prototype = {
 		return blockOnField;
 	},
 	
+	checkForDoublePosOnSafeField: function(id) {
+		
+		var result = false;
+		
+		// we loop through all players
+		for (var i = 0; i < 4; i++) {
+			
+			// excluding ourselves
+			if (ludoObject.players[i].color != this.player.color) {
+				
+				// we loop through each of our competitors pieces
+				for (var j = 0; j < 4; j++) {
+					
+					// if we find a competitor on our safe-field id
+					if (this.players[i].pieces[j].piece.pathID == id) {
+						
+						result = true;
+					}
+				}
+			}
+		}
+		return result;
+	},
+	
 	greyOutFields: function(piece, startIndex, endIndex) {
 		
 		for (var i = startIndex; i < endIndex; i++) {
@@ -615,7 +639,7 @@ LudoObj.prototype = {
 			setTimeout(function() {
 				ludoObject.clearHighlightedFields();
 				ludoObject.setActivePlayer();
-			}, 2000);
+			}, 1000);
 		}
 		else {
 		
@@ -766,6 +790,10 @@ ludoObject.dice.img.onmouseup = function() {
 
 ludoObject.canvas.onmouseup = function(e) {
 	
+	if (ludoObject.dice.isAnimating) {
+		return;
+	}
+	
 	// check for click on blank
 	if (ludoObject.checkForClickOnBlank(e.offsetX, e.offsetY) && !ludoObject.checkForClickOnHighlight(e.offsetX, e.offsetY)) {
 		
@@ -796,12 +824,58 @@ ludoObject.canvas.onmouseup = function(e) {
 						
 						var indexPath = ludoObject.player.pieces[j].piece.pathIndex;
 						var tmpCount = ludoObject.player.pieces[j].piece.path[indexPath].getAttribute('count');
-						tmpCount = new Number(tmpCount) - 1;
-						ludoObject.player.pieces[j].piece.setSpritesheetCoordsTo(tmpCount);
+						var id = ludoObject.player.pieces[j].piece.path[indexPath].id;
+						var movingPieceFromSafe = false;
 						
-						ludoObject.player.pieces[j].piece.path[indexPath].setAttribute('count', tmpCount);
-
+						ludoObject.player.pieces[j].piece.setSpritesheetCoordsTo(new Number(tmpCount) - 1);
+						
+						// we don't want to reduce the count if we have a mixed-color double position on a safe-field
+						if (id == "x7y2"  && ludoObject.player.color == "yellow" ||
+							id == "x14y7" && ludoObject.player.color == "red"	 ||
+							id == "x9y14" && ludoObject.player.color == "blue"	 ||
+							id == "x2y9"  && ludoObject.player.color == "green") {
+								
+								// when we move a piece of it's safe-field we have to check for a competitor double-position on the field
+								if (!ludoObject.checkForDoublePosOnSafeField(id)) {
+									
+									// if there is no competitor double-position we can reduse the field count by 1
+									ludoObject.player.pieces[j].piece.path[indexPath].setAttribute('count', new Number(tmpCount) - 1);
+								} 
+								else {
+									movingPieceFromSafe = true;
+								}
+								
+						}
+						// if we are not moving away from a safe field we reduce the count by 1 no mather what.
+						else if (id != "x7y2" && id != "x14y7" && id != "x9y14" && id != "x2y9") {
+							
+							ludoObject.player.pieces[j].piece.path[indexPath].setAttribute('count', new Number(tmpCount) - 1);
+						}
+						// if the color moving away from the safe-field is not the same as the safe-field color 
+						else if (tmpCount >= 1) { // and tmpCount is higher than or equal to 1
+							
+							// and if there is no double-position we reduce the count by 1
+							if (!ludoObject.checkForDoublePosOnSafeField(id)) {
+								ludoObject.player.pieces[j].piece.path[indexPath].setAttribute('count', new Number(tmpCount) - 1);
+							}
+							else if (tmpCount > 3) {
+								ludoObject.player.pieces[j].piece.path[indexPath].setAttribute('count', new Number(tmpCount) - 1);
+							}
+							else if (tmpCount > 1) {
+								ludoObject.player.pieces[j].piece.path[indexPath].setAttribute('count', 1);
+							}
+						}
+						
+						// if the tmpCount is higher than 1 and we are moving a piece away from it's safe-field
+						if (tmpCount > 1 && movingPieceFromSafe) {
+							
+							// we reduce the count by one
+							ludoObject.player.pieces[j].piece.path[indexPath].setAttribute('count', new Number(tmpCount) - 1);
+						}
+						
 						ludoObject.player.pieces[j].piece.pathIndex = ludoObject.player.diceRoll + indexPath;
+						
+						// while moving this piece will show as one piece
 						ludoObject.player.pieces[j].piece.setSpritesheetCoordsTo(1);
 						
 						ludoObject.player.pieces[j].piece.move();
@@ -844,8 +918,14 @@ ludoObject.canvas.onmouseup = function(e) {
 		}
 		else if (ludoObject.player.diceRoll != undefined) {
 			
+			var piecesInGoal = ludoObject.player.piecesInGoal;
+			
 			// if we have a dice-roll other than 6, we loop through the players pieces
 			for (var i = 0; i < 4; i++) {
+				
+				if (piecesInGoal < ludoObject.player.piecesInGoal) {
+					break;
+				}
 				
 				// when we find a piece that is not in the home position 
 				if (!ludoObject.player.pieces[i].piece.inHome) {

@@ -92,6 +92,7 @@ Dice.prototype = {
 		var pIndex = undefined;
 		var blockOnPath = false;
 		
+		// we loop through all the players pieces
 		for (var i = 0; i < 4; i++) {
 			
 			if (movable < 1) {
@@ -101,18 +102,25 @@ Dice.prototype = {
 				break;
 			}
 			
-			if (!this.currentPlayer.pieces[i].piece.inHome) {
+			// if the piece is not in the home position or not in goal
+			if (this.currentPlayer.diceRoll == 6 && this.currentPlayer.pieces[i].piece.inHome) {
+				movable = 1;
+			}
+			if (!this.currentPlayer.pieces[i].piece.inHome && !this.currentPlayer.pieces[i].piece.inGoal) {
 				
 				for (var j = pIndex + 1; j <= this.currentPlayer.diceRoll + pIndex; j++) {
 					
-					if (ludoObject.checkForBlockOnField(this.currentPlayer.pieces[i].piece.path[j], this.currentPlayer.pieces[i].piece.path[j].id)) {
+					// we don't want to check for a block on the Goal field
+					if (j < 57) {
+						if (ludoObject.checkForBlockOnField(this.currentPlayer.pieces[i].piece.path[j], this.currentPlayer.pieces[i].piece.path[j].id)) {
 						
-						blockOnPath = true;
-						break;
-					}
-					
-					if (j == this.currentPlayer.diceRoll + pIndex) {
-						movable = 1;
+							blockOnPath = true;
+							break;
+						}
+						
+						if (j == this.currentPlayer.diceRoll + pIndex) {
+							movable = 1;
+						}
 					}
 				}
 				
@@ -120,6 +128,16 @@ Dice.prototype = {
 		}
 		
 		return movable;
+	},
+	
+	endTurn: function() {
+		
+		this.currentPlayer.diceRoll = undefined;
+		
+		setTimeout(function() {
+			ludoObject.setActivePlayer();
+			ludoObject.player.giveControl();
+		}, 800);
 	},
 	
 	handleRolledNumber: function() {
@@ -134,32 +152,25 @@ Dice.prototype = {
 			this.currentPlayer.diceRoll = undefined;
 			this.currentPlayer.turnsLeft = 0;
 		}
-		else if (this.faceNum == 6) {
-			this.currentPlayer.turnsLeft = 1;
-		}
 		else if (this.currentPlayer.allInHome && this.currentPlayer.turnsLeft > 0) {
+			
 			this.currentPlayer.turnsLeft--;
 			
 			if (this.currentPlayer.turnsLeft < 1) {
 				
 				this.currentPlayer.turnsLeft = 3;
-				this.currentPlayer.diceRoll = undefined;
 				
-				setTimeout(function() {
-					ludoObject.setActivePlayer();
-					ludoObject.player.giveControl();
-				}, 800);
+				this.endTurn();
 			}
 		}
 		else if (this.checkForAnyMovablePieces() < 1) {
 			
-			this.currentPlayer.diceRoll = undefined;
 			this.currentPlayer.turnsLeft = 0;
-			
-			setTimeout(function() {
-				ludoObject.setActivePlayer();
-				ludoObject.player.giveControl();
-			}, 800);
+			this.endTurn(0);
+		}
+		else if (this.faceNum == 6) {
+
+			this.currentPlayer.turnsLeft = 1;
 		}
 		else {
 			this.currentPlayer.turnsLeft = 0;

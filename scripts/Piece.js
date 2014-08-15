@@ -106,7 +106,7 @@ Piece.prototype = {
 	
 	moveToGoal: function(numInGoal) {
 		
-		this.pathIndex 	= 56;
+		this.pathIndex 	= 57;
 		this.inGoal		= true;
 		this.left 		= this.goal_left;
 		this.top 		= this.goal_top;
@@ -337,4 +337,5 @@ Piece.prototype = {
 		
 		this.calculatePiecePos(this.pathIndex);
 	}
+	
 }
