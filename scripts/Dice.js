@@ -112,7 +112,7 @@ Dice.prototype = {
 					
 					// we don't want to check for a block on the Goal field
 					if (j < 57) {
-						if (ludoObject.checkForBlockOnField(this.currentPlayer.pieces[i].piece.path[j], this.currentPlayer.pieces[i].piece.path[j].id)) {
+						if (ludoObject.checkForBlockOnField(this.currentPlayer.pieces[i].piece.path[j].id)) {
 						
 							blockOnPath = true;
 							break;
@@ -165,6 +165,7 @@ Dice.prototype = {
 		}
 		else if (this.checkForAnyMovablePieces() < 1) {
 			
+			this.currentPlayer.displayNoMovablePieces();
 			this.currentPlayer.turnsLeft = 0;
 			this.endTurn(0);
 		}

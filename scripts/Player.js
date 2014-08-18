@@ -16,8 +16,7 @@ var Player = function(color, name) {
 	this.readyToMove = false;
 
 	this.piecesInGoal = 0;
-		
-	this.displaysMoveToIndicator = false;
+
 }
 
 Player.prototype = {
@@ -55,6 +54,30 @@ Player.prototype = {
 			this.allInHome = true;
 			this.turnsLeft = 3;
 		}
+	},
+	
+	displayNoMovablePieces: function() {
+		
+		var msgDiv = document.createElement('div');
+		var imgTag = document.createElement('img');
+		
+		msgDiv.style.position = "absolute";
+		msgDiv.style.width  = "900px";
+		msgDiv.style.height = "300px";
+		msgDiv.style.top = "0px";
+		msgDiv.style.left = "0px";
+		msgDiv.style.zIndex = "10";
+		
+		imgTag.src = "images/NoMovesPossible.svg";
+		
+		msgDiv.appendChild(imgTag);
+		
+		document.getElementsByTagName('body')[0].appendChild(msgDiv);
+		
+		setTimeout(function() {
+			document.getElementsByTagName('body')[0].removeChild(msgDiv);
+		}, 2000);
+		
 	},
 	
 	giveControl: function() {

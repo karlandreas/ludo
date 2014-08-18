@@ -48,28 +48,82 @@ Piece.prototype = {
 		var destinationX = this.path[i].offsetLeft;
 		var destinationY = this.path[i].offsetTop;
 		
+		// for every step we update the pieces position
 		if (this.step < this.stepLimit) {
 			this.left = (((destinationX - this.start_left) / this.stepLimit) * this.step) + this.start_left;
 			this.top = (((destinationY - this.start_top) / this.stepLimit) * this.step) + this.start_top;
 			this.step++;
 		}
+		// on the second to last step we do aditional checks
 		else if (this.step == this.stepLimit) {
 			
-			// get the destination field count
-			var tmpCount = this.path[this.pathIndex].getAttribute('count');
+			// get the destination field count and id
+			var tmpCount 	= this.path[this.pathIndex].getAttribute('count');
+			var id 		 	= this.path[this.pathIndex].id;
+			var pieceOnPath = undefined;
 			
 			// if there is not a competitor piece on the field we increase the fields count by 1
-			if (!this.checkForCompetitorPieceOnPos(this.path[this.pathIndex].id)) {
+			if (!this.checkForCompetitorPieceOnPos(id)) {
 				
+				// we need to check if there
 				tmpCount = new Number(tmpCount) + 1;
 				this.path[this.pathIndex].setAttribute('count',tmpCount);
 				
+			}
+			// if there is a competitor on the field 
+			else {
+				// we get the piece
+				pieceOnPath = this.getPieceOnID(id);
+				
+				// we check if it's on it's safe field
+				if (this.checkForSafeField(id)) {
+					
+					// and if it is. Is the piece safe ( -the same color as the field)
+					if (pieceOnPath.color == this.getSafeFieldColor(id)) {
+						
+						// if we are moving on to a safe-field with a piece, we set an offset for our piece
+						this.setSafeFieldOffset(id);
+						
+						// we also have to check if we have a piece there already
+						for (var i = 0; i < 4; i++) {
+							
+							if (ludoObject.player.pieces[i].piece.pathID == id) {
+								
+								// if we do we increase the count of the safe-field by 1
+								tmpCount = new Number(tmpCount) + 1;
+								this.path[this.pathIndex].setAttribute('count',tmpCount);
+								break;
+							}
+						}
+					}
+					// else if we are moving on to a field with a color that is not safe
+					else {
+						
+						// we check to see if it's a block
+						if (ludoObject.checkForBlockOnField(id)) {
+							
+							// if it's a block we we offset our piece on the safe field
+							tmpCount = 1; // and set it's spritesheet coords to the single piece, !THIS COULD BE 2 IN RARE EVENTS..
+							this.setSafeFieldOffset(id);
+						}
+						else {
+							// if it's not a block, we hit it home
+							pieceOnPath.moveToHomePosition();
+						}
+					}
+				}
+				// if this is not a safe-field we hit the piece home
+				else {
+					
+					pieceOnPath.moveToHomePosition();
+				}
 			}
 			
 			
 			this.setSpritesheetCoordsTo(tmpCount);
 			this.step++;
 		}
+		// when we have reached our destination we stop and give up control
 		else {
 			this.isAnimating 	= false;
 			this.step 			= 0;
@@ -226,81 +280,114 @@ Piece.prototype = {
 		
 	},
 	
+	checkForSafeField: function(id) {
+		
+		var result = false;
+		
+		if (id == "x7y2" || id == "x14y7" || id == "x9y14" || id == "x2y9") {
+			result = true;
+		}
+		
+		return result;
+	},
+	
+	getSafeFieldColor: function(id) {
+		
+		var color = undefined;
+		
+		if (id == "x7y2") {
+			color = "yellow";
+		}
+		else if (id == "x14y7") {
+			color = "red";
+		}
+		else if (id == "x9y14") {
+			color = "blue";
+		}
+		else if (id == "x2y9") {
+			color = "green";
+		}
+		
+		return color;
+	},
+	
+	getPieceOnID: function(id) {
+		
+		var piece = undefined;
+		var breakOuter  = false;
+		
+		for (var i = 0; i < 4; i++) {
+			
+			if (breakOuter) {
+				break;
+			}
+			
+			for (var j = 0; j < 4; j++) {
+				
+				if (ludoObject.players[i].pieces[j].piece.pathID == id) {
+					piece = ludoObject.players[i].pieces[j].piece;
+					breakOuter = true;
+					break;
+				}
+			}
+		}
+		
+		return piece;
+	},
+	
+	setSafeFieldOffset: function(id) {
+		
+		var color = this.getSafeFieldColor(id);
+		var offset = 0;
+		var result = 0;
+		
+		if (color == "yellow" || color == "green") {
+			offset = -15;
+		}
+		else if (color == "red" || color == "blue") {
+			offset = 15;
+		}
+		else {
+			result = 1;
+		}
+		
+		if (color == "yellow" || color == "blue") {
+			
+			this.left = this.left + offset;
+		}
+		else if (color == "red" || color == "green") {
+			this.top = this.top + offset;
+		}
+		
+		return result;
+	},
+	
 	checkForCompetitorPieceOnPos: function(id) {
 		
 		var result = false;
-		var safeFieldColor = undefined;
-		var offset = undefined;
 		var field = document.getElementById(id);
+		var breakOuter = false;
 		
-		// if the destination field's count equals 1
-		if (new Number(field.getAttribute('count')) == 1) {
+		// we loop through all players
+		for (var j = 0; j < 4; j++) {
 		
-			if (id == "x7y2") {
-				safeFieldColor = "yellow";
-				offset = -15;
+			if (breakOuter) {
+				break;
 			}
-			else if (id == "x14y7") {
-				safeFieldColor = "red";
-				offset = 15;
-			}
-			else if (id == "x9y14") {
-				safeFieldColor = "blue";
-				offset = 15;
-			}
-			else if (id == "x2y9") {
-				safeFieldColor = "green";
-				offset = -15;
-			}
-		
-			// we loop through all players
-			for (var j = 0; j < 4; j++) {
+			
+			// excluding ourselves
+			if (ludoObject.players[j].color != this.color) {
 				
-				// excluding ourselves
-				if (ludoObject.players[j].color != this.color) {
+				// we loop through each of our competitors pieces
+				for (var k = 0; k < 4; k++) {
 					
-					// we loop through each of our competitors pieces
-					for (var k = 0; k < 4; k++) {
+					// if we find a competitor on our destination id
+					if (ludoObject.players[j].pieces[k].piece.pathID == id) {
 						
-						// if we find a competitor on our destination id
-						if (ludoObject.players[j].pieces[k].piece.pathID == id) {
-							
-							// if our destination is a safe-field
-							if (safeFieldColor != undefined) {
-								
-								// if the color of the piece on the safe-field is the same as the safeFieldColor
-								if (ludoObject.players[j].pieces[k].piece.color == safeFieldColor) {
-									
-									// we put our piece beside it
-									result = true;
-									
-									if (safeFieldColor == "yellow" || safeFieldColor == "blue") {
-										this.left = this.left + offset;
-									}
-									else {
-										this.top = this.top + offset;
-									}
-								}
-								else {
-									
-									// if the color of this piece is the same as the piece on the safeField
-									if (this.color == safeFieldColor) {
-										// we hit it home and leave the result variable to false, which will increase this field count to 2
-										ludoObject.players[j].pieces[k].piece.moveToHomePosition();
-									}
-									else {
-										// if color of the piece is not the same as the safeFieldColor we hit it home
-										result = true;
-										ludoObject.players[j].pieces[k].piece.moveToHomePosition();
-									}
-								}
-							}
-							else {
-								// if this is not a safe-field we hit the piece to home.
-								result = true;
-								ludoObject.players[j].pieces[k].piece.moveToHomePosition();
-							}
-						}
+						// we set the result to true
+						result = true;
+						breakOuter = true;
+						break;
 					}
 				}
 			}

@@ -551,16 +551,17 @@ LudoObj.prototype = {
 		return result;
 	},
 	
-	checkForBlockOnField: function(field, pathID) {
+	checkForBlockOnField: function(id) {
 		
 		var blockOnField = false;
+		var field = document.getElementById(id);
 		
 		if (new Number(field.getAttribute('count')) > 1) {
 			
 			for (var i = 0; i < 4; i++) {
 				
 				// if we find a double piece whitch's id does not match one of our own pieces
-				if (this.player.pieces[i].piece.pathID != pathID) {
+				if (this.player.pieces[i].piece.pathID != id) {
 					
 					// then there is a block on the pieces path
 					blockOnField = true;
@@ -630,10 +631,15 @@ LudoObj.prototype = {
 		else if (pathIndex + this.player.diceRoll + 1 == this.player.pieces[index].piece.path.length) {
 			
 			console.log("Move piece to Goal");
+			
+			var pathIndex = this.player.pieces[index].piece.pathIndex;
+			var tmpCount = this.player.pieces[index].piece.path[pathIndex].getAttribute('count');
 
 			this.player.readyToMove = false;
 			this.player.piecesInGoal++;
 			this.player.pieces[index].piece.moveToGoal(this.player.piecesInGoal);
+			
+			this.player.pieces[index].piece.path[pathIndex].setAttribute('count', new Number(tmpCount) - 1);
 			
 			// we clear the marked paths and set next player to go.
 			setTimeout(function() {
@@ -650,7 +656,7 @@ LudoObj.prototype = {
 					break;
 				}
 				
-				if (this.checkForBlockOnField(this.player.pieces[index].piece.path[i], this.player.pieces[index].piece.path[i].id)) {
+				if (this.checkForBlockOnField(this.player.pieces[index].piece.path[i].id)) {
 					breakFieldChecks = true;
 					blockOnPath = true;
 					numberOfFieldsToGreyOut = i - pathIndex;
@@ -827,9 +833,13 @@ ludoObject.canvas.onmouseup = function(e) {
 						var id = ludoObject.player.pieces[j].piece.path[indexPath].id;
 						var movingPieceFromSafe = false;
 						
+						// this will only have an affect if there is more than one piece one the field
+						// when we move away from a multiple-position field we draw the underlying piece from count - 1
 						ludoObject.player.pieces[j].piece.setSpritesheetCoordsTo(new Number(tmpCount) - 1);
 						
-						// we don't want to reduce the count if we have a mixed-color double position on a safe-field
+						
+						// if we are moving away from our safe-field
+						// we don't want to reduce the count if we have a mixed-color double position on the field
 						if (id == "x7y2"  && ludoObject.player.color == "yellow" ||
 							id == "x14y7" && ludoObject.player.color == "red"	 ||
 							id == "x9y14" && ludoObject.player.color == "blue"	 ||
@@ -841,10 +851,6 @@ ludoObject.canvas.onmouseup = function(e) {
 									// if there is no competitor double-position we can reduse the field count by 1
 									ludoObject.player.pieces[j].piece.path[indexPath].setAttribute('count', new Number(tmpCount) - 1);
 								} 
-								else {
-									movingPieceFromSafe = true;
-								}
-								
 						}
 						// if we are not moving away from a safe field we reduce the count by 1 no mather what.
 						else if (id != "x7y2" && id != "x14y7" && id != "x9y14" && id != "x2y9") {
@@ -864,13 +870,6 @@ ludoObject.canvas.onmouseup = function(e) {
 							else if (tmpCount > 1) {
 								ludoObject.player.pieces[j].piece.path[indexPath].setAttribute('count', 1);
 							}
-						}
-						
-						// if the tmpCount is higher than 1 and we are moving a piece away from it's safe-field
-						if (tmpCount > 1 && movingPieceFromSafe) {
-							
-							// we reduce the count by one
-							ludoObject.player.pieces[j].piece.path[indexPath].setAttribute('count', new Number(tmpCount) - 1);
 						}
 						
 						ludoObject.player.pieces[j].piece.pathIndex = ludoObject.player.diceRoll + indexPath;
