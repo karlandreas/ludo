@@ -4,8 +4,10 @@ var Player = function(color, name) {
 	
 	this.name 		 = name;
 	this.color 		 = color;
+	this.computer	 = true;
 					 
 	this.pieces		 = undefined;
+	this.readyToMovePiece = undefined;
 	this.allInHome   = true;
 					 
 	this.diceRoll 	 = undefined;
@@ -16,12 +18,16 @@ var Player = function(color, name) {
 	this.readyToMove = false;
 
 	this.piecesInGoal = 0;
+	
+	this.newPlayerDiv = document.getElementById('new_player_div');
+	this.newPlayerFormActive = false;
 
 }
 
 Player.prototype = {
 	
 	init: function() {
+		
 		if (this.color == "yellow") {
 			this.playerDiv = document.getElementById('player1_div');
 		}
@@ -50,7 +56,7 @@ Player.prototype = {
 		}
 		
 		if (allInHome) {
-			console.log(this.name + ": has all pieces in home");
+			/* 	console.log(this.name + ": has all pieces in home"); */
 			this.allInHome = true;
 			this.turnsLeft = 3;
 		}
@@ -58,31 +64,101 @@ Player.prototype = {
 	
 	displayNoMovablePieces: function() {
 		
-		var msgDiv = document.createElement('div');
-		var imgTag = document.createElement('img');
+		setTimeout(function() {
+			ludoObject.msgDiv.style.opacity = "1";
+		}, 100);
 		
-		msgDiv.style.position = "absolute";
-		msgDiv.style.width  = "900px";
-		msgDiv.style.height = "300px";
-		msgDiv.style.top = "0px";
-		msgDiv.style.left = "0px";
-		msgDiv.style.zIndex = "10";
-		
-		imgTag.src = "images/NoMovesPossible.svg";
-		
-		msgDiv.appendChild(imgTag);
-		
-		document.getElementsByTagName('body')[0].appendChild(msgDiv);
+		document.getElementsByTagName('body')[0].appendChild(ludoObject.msgDiv);
 		
 		setTimeout(function() {
-			document.getElementsByTagName('body')[0].removeChild(msgDiv);
-		}, 2000);
+
+			ludoObject.msgDiv.style.opacity = "0.1";
+			setTimeout(function() {
+				
+				document.getElementsByTagName('body')[0].removeChild(ludoObject.msgDiv);
+			}, 900);
+		}, 1200);
 		
+	},
+	
+	displayWinnerGraphic: function() {
+		
+		
+		document.getElementsByTagName('body')[0].appendChild(ludoObject.winnerDiv);
+		
+		setTimeout(function() {
+
+			document.getElementsByTagName('body')[0].removeChild(ludoObject.winnerDiv);
+		}, 15000);
+	},
+	
+	toggleNewPlayerForm: function() {
+		
+		this.newPlayerDiv.style.backgroundColor = this.color;
+		
+		if (this.newPlayerFormActive) {
+			this.newPlayerDiv.style.marginTop = "-600px";
+			this.newPlayerFormActive = false;
+			document.getElementById('player_name').value = "";
+			document.getElementById('new_player_btn').setAttribute('disabled', true);
+		}
+		else {
+			this.newPlayerDiv.style.marginTop = "0px";
+			this.newPlayerFormActive = true;	
+		}
+	},
+	
+	tryToMoveOutOfHome: function() {
+		
+		var result = false;
+		
+		for (var i = 0; i < 4; i++) {
+			if (this.pieces[i].piece.inHome) {
+				this.pieces[i].piece.moveToFirstPosition();
+				result = true;
+				break;
+			}
+		}
+		
+		return result;
+	},
+	
+	tryToMakeReadyToMove: function() {
+				
+		for (var i = 0; i < 4; i++) {
+			
+			// we try to move the first piece we find
+			if (!this.pieces[i].piece.inHome) {
+				
+					
+				if (!ludoObject.checkIfCanMoveToGoal(this.pieces[i].piece)) {
+						
+					// we highlight it's path and set player ready to move
+					if (ludoObject.highlightFields(this.pieces[i].piece)) {
+						this.readyToMove = true;
+						this.readyToMovePiece = this.pieces[i].piece;
+						this.pieces[i].piece.selected = true;
+						break;
+					}
+				}
+				else {
+					// if the piece was moved in to the Goal area, we break
+					break;
+				}
+			}
+		}
+		return this.readyToMove;
 	},
 	
 	giveControl: function() {
 		
 		this.checkForAllInHome();
+		
+		if (this.computer) {
+			setTimeout(function() {
+				ludoObject.dice.rollDice();
+			}, 500);
+		}
 	},
 	
 	turn: function() {

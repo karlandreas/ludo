@@ -3,6 +3,8 @@ ludo
 
 HTML 5 ludo game
 
+Game has computer simulation, for up to 4 players
+
 - FIXED:
 * Moving a second piece on to another color's safe-field where the there is a safe piece leaves count at 1 (should be 2)
 * When there is one piece on it's safe-field and two of another color's pieces the count for the field is 1 (should be 2)
@@ -11,3 +13,4 @@ HTML 5 ludo game
 
 
 - TODO:
+* Make playable over network using WebSockets

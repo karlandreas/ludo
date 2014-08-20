@@ -45,6 +45,14 @@ Piece.prototype = {
 	
 	calculatePiecePos: function(i) {
 		
+		// debug
+		if (this.path[i] == undefined || this.path[i] == undefined) {
+			console.log("Error: i = " + i);
+			console.log("Path Index: " + this.pathIndex);
+			console.log("In Home: " + this.inHome);
+			console.log(arguments.callee.caller.toString());
+		}
+		
 		var destinationX = this.path[i].offsetLeft;
 		var destinationY = this.path[i].offsetTop;
 		
@@ -134,7 +142,7 @@ Piece.prototype = {
 			
 			if (ludoObject.player.turnsLeft < 1) {
 				ludoObject.player.diceRoll = undefined;
-				ludoObject.setActivePlayer();
+				ludoObject.switchPlayer();
 				ludoObject.player.giveControl();
 			}
 		}
@@ -167,7 +175,12 @@ Piece.prototype = {
 		
 		this.setSpritesheetCoordsTo(numInGoal);
 		
-		console.log("Player has: " + numInGoal + " Pieces in Goal");
+		console.log(ludoObject.player.name + " has: " + numInGoal + " Pieces in Goal");
+		
+		if (numInGoal == 4) {
+			console.log("Play winner animation");
+			ludoObject.player.displayWinnerGraphic();
+		}
 	},
 	
 	updateAllPlayerMultiplePieces: function(sheet_left, sheet_top) {
@@ -419,9 +432,7 @@ Piece.prototype = {
 	},
 	
 	move: function() {
-		
-		this.isAnimating = true;
-		
+				
 		this.calculatePiecePos(this.pathIndex);
 	}
 	

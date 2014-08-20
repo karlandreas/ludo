@@ -3,6 +3,7 @@ body {
 	margin: 0px;
 	padding: 0px;
 	width: 100%;
+	font-family: helvetica, sans-serif;
 }
 
 #site {
@@ -110,14 +111,6 @@ linear-gradient(-45deg, yellow 25%, transparent 25%, transparent 75%, cyan 75%, 
 	border: 1px solid black;
 }
 
-.dev_dice_btn {
-	position: relative;
-	margin-left: auto;
-	margin-right: auto;
-	width: 150px;
-	display: block;
-}
-
 #dice_div {
 	position: relative;
 	margin-left: auto;
@@ -138,6 +131,18 @@ linear-gradient(-45deg, yellow 25%, transparent 25%, transparent 75%, cyan 75%, 
 /* 	border: 1px solid black; */
 }
 
+.input_text_field {
+	height: 25px;
+}
+
+.input_btn {
+	font-size: medium;
+	height: 55px;
+	margin-top: 20px;
+}
+
+// ! Player divs
+
 .player {
 	position: relative;
 	width: 76px;
@@ -156,6 +161,27 @@ linear-gradient(-45deg, yellow 25%, transparent 25%, transparent 75%, cyan 75%, 
 	}
 }
 
+#new_player_div {
+	
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: -600px;
+	padding: 20px;
+	border-radius: 22px;
+	width: 500px;
+	height: 350px;
+	z-index: 10;
+	font-size: x-large;
+	border: 10px solid #000;
+	-webkit-transition: margin-top 1s ease 0.3s;
+	box-shadow: -5px 10px 15px 1px rgba(43,32,32,0.5);
+	
+	h1 {
+		text-align: center;
+		color: white;
+	}
+}
 
 #player1_div {
 	background-position-x: 0px;
