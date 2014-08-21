@@ -108,6 +108,71 @@ Player.prototype = {
 		}
 	},
 	
+	checkForCompetitorOnField: function(id) {
+		
+		var competitorOnField = false;
+		var field = document.getElementById(id);
+		
+		// if there is one and only one piece on the field
+		if (new Number(field.getAttribute('count')) == 1) {
+			
+			// we loop through our own pieces
+			for (var i = 0; i < 4; i++) {
+				
+				// if none of our pieces has this field's id
+				if (this.pieces[i].piece.pathID != id) {
+					
+					// then there is a competitor on this field
+					competitorOnField = true;
+				}
+				else {
+					// if we find one of our own pieces, we set competitorOnField to false, and break
+					competitorOnField = false;
+					break; // no need to check more pieces
+				}
+			}
+		}
+		
+		return competitorOnField;
+	},
+	
+	checkForStrikeOutPossibility: function() {
+		
+		var canStrikeOut = false;
+		var pathIndex = undefined;
+		var destinationIndex = undefined;
+		
+		// we loop through our pieces		
+		for (var i = 0; i < 4; i++) {
+			
+			pathIndex = this.pieces[i].piece.pathIndex;
+			destinationIndex = pathIndex + this.diceRoll;
+			
+			// we only check pieces in play, that is not trying to enter the Goal area
+			if (!this.pieces[i].piece.inHome && !this.pieces[i].piece.inGoal && destinationIndex < ludoObject.PATH_LENGTH - 5) {
+				
+				if (this.checkForCompetitorOnField(this.pieces[i].piece.path[destinationIndex].id)) {
+					
+					// we then check for a block on this piece's path
+					var block = ludoObject.checkForBlockOnPath(this.pieces[i].piece);
+					
+					// if block returns 0
+					if (block == 0) {
+						console.log(this.name + "'s piece: " + this.pieces[i].name + " will strike on ID: " + this.pieces[i].piece.path[destinationIndex].id);
+						// we highlight it's path and set player ready to move
+						canStrikeOut = true;
+						ludoObject.highlightFields(this.pieces[i].piece);
+						this.readyToMove = true;
+						this.readyToMovePiece = this.pieces[i].piece;
+						this.pieces[i].piece.selected = true;
+						break;
+					}
+				}
+			}
+		}
+		return canStrikeOut;
+	},
+	
 	tryToMoveOutOfHome: function() {
 		
 		var result = false;
@@ -124,25 +189,37 @@ Player.prototype = {
 	},
 	
 	tryToMakeReadyToMove: function() {
-				
+		
+		// if we find a strike out opportunity we return
+		if (this.checkForStrikeOutPossibility()) {
+			return this.readyToMove;
+		}
+		
+		// we loop through our pieces		
 		for (var i = 0; i < 4; i++) {
-			
-			// we try to move the first piece we find
-			if (!this.pieces[i].piece.inHome) {
-				
 					
+			// we try to move the first piece we find, that is not in home or in goal
+			if (!this.pieces[i].piece.inHome && !this.pieces[i].piece.inGoal) {
+			
 				if (!ludoObject.checkIfCanMoveToGoal(this.pieces[i].piece)) {
+					
+					// we check for a block on this piece's path
+					var block = ludoObject.checkForBlockOnPath(this.pieces[i].piece);
+					
+					// if block returns 0
+					if (block == 0) {
 						
-					// we highlight it's path and set player ready to move
-					if (ludoObject.highlightFields(this.pieces[i].piece)) {
+						// we highlight it's path and set player ready to move
+						console.log(this.name + "'s piece: " + this.pieces[i].name + " is Ready to move on a " + this.diceRoll);
+						ludoObject.highlightFields(this.pieces[i].piece);
 						this.readyToMove = true;
 						this.readyToMovePiece = this.pieces[i].piece;
 						this.pieces[i].piece.selected = true;
 						break;
 					}
 				}
+				// else if the piece was moved in to the Goal area, we break.
 				else {
-					// if the piece was moved in to the Goal area, we break
 					break;
 				}
 			}

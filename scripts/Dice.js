@@ -139,11 +139,12 @@ Dice.prototype = {
 	endTurn: function() {
 		
 		this.currentPlayer.diceRoll = undefined;
+		this.currentPlayer.readyToMove = false;
 		
 		setTimeout(function() {
 			ludoObject.switchPlayer();
 			ludoObject.player.giveControl();
-		}, 800);
+		}, 1000);
 	},
 	
 	handleRolledNumber: function() {
@@ -181,6 +182,7 @@ Dice.prototype = {
 			}
 			// else if there are turns left and this is the computer player 
 			else if (this.currentPlayer.computer) {
+				
 				// we roll the dice again
 				setTimeout(function() {
 					ludoObject.dice.rollDice();
@@ -192,13 +194,14 @@ Dice.prototype = {
 			
 			this.currentPlayer.displayNoMovablePieces();
 			this.currentPlayer.turnsLeft = 0;
-			this.endTurn(0);
+			this.endTurn();
 		}
 		// else if we have movable pieces and roll a 6
 		else if (this.faceNum == 6) {
 			
 			// we set turns left to 1
 			this.currentPlayer.turnsLeft = 1;
+			this.disabled = true;
 			
 			// if this is a computer player
 			if (this.currentPlayer.computer) {
@@ -213,8 +216,6 @@ Dice.prototype = {
 				}
 				// if we have all our pieces out of home, we try to highlight the first pieces path
 				else if (this.currentPlayer.tryToMakeReadyToMove()) {
-					// and log this
-					console.log(this.currentPlayer.name + " is Ready to move on a " + this.faceNum);
 					
 					// if the piece is made ready to move 
 					setTimeout(function() {
@@ -240,8 +241,6 @@ Dice.prototype = {
 				
 				// we try to highlight the first pieces path
 				if (this.currentPlayer.tryToMakeReadyToMove()) {
-					// and log this
-					console.log(this.currentPlayer.name + " is Ready to move on a " + this.faceNum);
 					
 					// if the piece is made ready to move 
 					setTimeout(function() {
@@ -255,6 +254,10 @@ Dice.prototype = {
 	},
 	
 	rollDice: function() {
+		
+		if (this.currentPlayer.computer && ludoObject.paused) {
+			return;
+		}
 		
 		// we get a random number to display as the dice is rolling
 		this.numberOfRolls = Math.round(Math.random() * (16 - 4) + 4);

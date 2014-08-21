@@ -30,7 +30,7 @@ var Piece = function(color, X, Y, sheet_left, sheet_top) {
 	this.step		= 0;
 	this.stepLimit  = 50;
 	
-	this.canMoveTo	= undefined;
+	this.canMoveTo	= undefined; // this is coordinate based, not field id
 	this.isAnimating = false;
 }
 
@@ -46,7 +46,7 @@ Piece.prototype = {
 	calculatePiecePos: function(i) {
 		
 		// debug
-		if (this.path[i] == undefined || this.path[i] == undefined) {
+		if (this.path[i] == undefined) {
 			console.log("Error: i = " + i);
 			console.log("Path Index: " + this.pathIndex);
 			console.log("In Home: " + this.inHome);
@@ -110,7 +110,7 @@ Piece.prototype = {
 						// we check to see if it's a block
 						if (ludoObject.checkForBlockOnField(id)) {
 							
-							// if it's a block we we offset our piece on the safe field
+							// if it's a block we offset our piece on the safe field
 							tmpCount = 1; // and set it's spritesheet coords to the single piece, !THIS COULD BE 2 IN RARE EVENTS..
 							this.setSafeFieldOffset(id);
 						}
@@ -120,9 +120,9 @@ Piece.prototype = {
 						}
 					}
 				}
-				// if this is not a safe-field we hit the piece home
+				// if this is not a safe-field 
 				else {
-					
+					// we hit the piece home
 					pieceOnPath.moveToHomePosition();
 				}
 			}
@@ -141,9 +141,7 @@ Piece.prototype = {
 			this.pathID			= this.path[this.pathIndex].id;
 			
 			if (ludoObject.player.turnsLeft < 1) {
-				ludoObject.player.diceRoll = undefined;
-				ludoObject.switchPlayer();
-				ludoObject.player.giveControl();
+				ludoObject.dice.endTurn();
 			}
 		}
 	},
