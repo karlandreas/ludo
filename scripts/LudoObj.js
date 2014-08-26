@@ -190,13 +190,16 @@ var LudoObj = function() {
 	this.msgDiv 		= document.createElement('div');
 	this.winnerDiv 		= document.createElement('div');
 	this.pausedDiv		= document.createElement('div');
+	this.startDiv		= document.createElement('div');
 	// images
 	this.msgImg			= new Image();
 	this.winnerImg		= new Image();
 	this.pauseImg		= new Image();
+	this.startImg		= new Image();
 	
 	// game pause variable
 	this.paused			= false;
+	this.gameIsRunning	= false;
 	
 	// site divs
 	this.controlsDiv	= document.getElementById('controls_div');
@@ -317,6 +320,8 @@ var LudoObj = function() {
 
 LudoObj.prototype = {
 	
+	// ! ---------------------------- FUNCTIONS ----------------------------------
+	
 	setupGame: function() {
 		
 		// setup game pieces
@@ -401,6 +406,7 @@ LudoObj.prototype = {
 		this.winnerImg.src	 = 'images/WeHaveaWinner.svg';
 		this.msgImg.src	 	 = 'images/NoMovesPossible.svg';
 		this.pauseImg.src	 = 'images/Paused.svg';
+		this.startImg.src	 = 'images/ClickDiceToStart.svg';
 		
 		// set the styles of the message divs
 		// the no moves posiible div
@@ -426,6 +432,13 @@ LudoObj.prototype = {
 		this.pausedDiv.style.top 		= "0px";
 		this.pausedDiv.style.left 		= "0px";
 		this.pausedDiv.style.zIndex 	= "10";
+		// the start div
+		this.startDiv.style.position 	= "absolute";
+		this.startDiv.style.width  		= "100%";
+		this.startDiv.style.height 		= "100%";
+		this.startDiv.style.top 		= "-50px";
+		this.startDiv.style.left 		= "0px";
+		this.startDiv.style.zIndex 		= "10";
 		
 		// set the styles for the images
 		this.winnerImg.style.position 		= "relative";
@@ -446,15 +459,22 @@ LudoObj.prototype = {
 		this.pauseImg.style.marginTop	 	= "100px";
 		this.pauseImg.style.display	 		= "block";
 		
+		this.startImg.style.position 		= "relative";
+		this.startImg.style.marginLeft 		= "auto";
+		this.startImg.style.marginRight 	= "auto";
+		this.startImg.style.marginTop	 	= "100px";
+		this.startImg.style.display	 		= "block";
+		
 		// add the images to the divs
 		this.msgDiv.appendChild(this.msgImg);
 		this.winnerDiv.appendChild(this.winnerImg);
 		this.pausedDiv.appendChild(this.pauseImg);
+		this.startDiv.appendChild(this.startImg);
 	},
 	
 	initializePlayers: function() {
 		
-		this.player1 = new Player("yellow", "Kalle");
+		this.player1 = new Player("yellow", "Compu Y");
 		this.player1.init();
 /* 		this.player1.computer = false;  */
 		this.player1.pieces = this.gamePiecesArray[0];
@@ -479,6 +499,7 @@ LudoObj.prototype = {
 		this.players.push(this.player4); // push player into the players array
 		
 		this.player1.toggleNewPlayerForm();
+		this.switchPlayer();
 	},
 	
 	setPlayerName: function(value) {
@@ -654,7 +675,10 @@ LudoObj.prototype = {
 		
 		this.player.playerDiv.style.backgroundPositionY = "-75px";
 		this.controlsDiv.style.backgroundColor = this.player.color;
-		this.dice.disabled = false;
+		
+		if (this.gameIsRunning) {
+			this.dice.disabled = false;
+		}
 	},
 	
 	checkForPieceOnCoord: function(offX, offY, pLeft, pTop) {
@@ -798,6 +822,61 @@ LudoObj.prototype = {
 			}
 		}
 		return result;
+	},
+	
+	checkForSafeField: function(id) {
+		
+		var result = false;
+		
+		if (id == "x7y2" || id == "x14y7" || id == "x9y14" || id == "x2y9") {
+			result = true;
+		}
+		
+		return result;
+	},
+	
+	getSafeFieldColor: function(id) {
+		
+		var color = undefined;
+		
+		if (id == "x7y2") {
+			color = "yellow";
+		}
+		else if (id == "x14y7") {
+			color = "red";
+		}
+		else if (id == "x9y14") {
+			color = "blue";
+		}
+		else if (id == "x2y9") {
+			color = "green";
+		}
+		
+		return color;
+	},
+	
+	getPieceOnID: function(id) {
+		
+		var piece = undefined;
+		var breakOuter  = false;
+		
+		for (var i = 0; i < 4; i++) {
+			
+			if (breakOuter) {
+				break;
+			}
+			
+			for (var j = 0; j < 4; j++) {
+				
+				if (ludoObject.players[i].pieces[j].piece.pathID == id) {
+					piece = ludoObject.players[i].pieces[j].piece;
+					breakOuter = true;
+					break;
+				}
+			}
+		}
+		
+		return piece;
 	},
 	
 	checkIfCanMoveToGoal: function(piece) {
@@ -986,9 +1065,17 @@ LudoObj.prototype = {
 	
 	startGame: function() {
 		
-		this.switchPlayer();
-		
 		this.dice.disabled = false;
+		
+		this.gameIsRunning = true;
+		
+		setTimeout(function() {
+			document.getElementsByTagName('body')[0].appendChild(ludoObject.startDiv);
+		}, 1000);
+		
+		setTimeout(function() {
+			document.getElementsByTagName('body')[0].removeChild(ludoObject.startDiv);
+		}, 3000);
 		
 		this.player.turn();
 		
@@ -1000,7 +1087,7 @@ var ludoObject = new LudoObj();
 ludoObject.setupGame();
 ludoObject.setupImages();
 ludoObject.initializePlayers();
-ludoObject.startGame();
+/* ludoObject.startGame(); */
 
 
 // ! ---------------------------- EVENT HANDLERS ----------------------------
@@ -1194,22 +1281,39 @@ document.getElementById('new_computer_btn').onclick = function() {
 }
 
 window.onblur = function() {
-	console.log("Blur");
 	
-	ludoObject.paused = true;
-	document.getElementsByTagName('body')[0].appendChild(ludoObject.pausedDiv);
+	// if the game is running (all players has been set and game has started)
+	if (ludoObject.gameIsRunning) {
+		/* console.log("Blur"); */
+		
+		// if the current player is a computer player
+		if (ludoObject.player.computer) {
+			
+			// we pause the game and display the Paused sign
+			ludoObject.paused = true;
+			document.getElementsByTagName('body')[0].appendChild(ludoObject.pausedDiv);
+		}
+	}
 }
 
 window.onfocus = function() {
-	console.log("Focus");
 	
-	ludoObject.paused = false;
-	document.getElementsByTagName('body')[0].removeChild(ludoObject.pausedDiv);
-	
-	if (ludoObject.player.computer) {
-		setTimeout(function() {
-			ludoObject.dice.rollDice();
-		}, 1000);
+	// if the game is running (all players has been set and game has started)
+	if (ludoObject.gameIsRunning) {
+		/* console.log("Focus"); */
+		
+		// if the current player is a computer player
+		if (ludoObject.player.computer) {
+			
+			// we unpause the game and remove the Paused sign
+			ludoObject.paused = false;
+			document.getElementsByTagName('body')[0].removeChild(ludoObject.pausedDiv);
+			
+			// we roll the dice for the computer player after 1 second
+			setTimeout(function() {
+				ludoObject.dice.rollDice();
+			}, 1000);
+		}
 	}
 }
 

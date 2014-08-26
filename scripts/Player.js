@@ -153,11 +153,27 @@ Player.prototype = {
 				
 				if (this.checkForCompetitorOnField(this.pieces[i].piece.path[destinationIndex].id)) {
 					
+					var safeFieldStrike = true;
+					
+					// we want to know if the competitor is on a safe-field
+					if (ludoObject.checkForSafeField(this.pieces[i].piece.path[destinationIndex].id)) {
+							
+							var colorOnSafe = ludoObject.getSafeFieldColor();
+							var pieceOnSafe = ludoObject.getPieceOnID(this.pieces[i].piece.path[destinationIndex].id);
+							
+							// and if it is is it it's own safe-field
+							if (colorOnSafe == pieceOnSafe.color) {
+								safeFieldStrike = false;
+								console.log("Found " + pieceOnSafe.color + " piece on " + colorOnSafe + " safe-field, can't strike out");
+							}
+					}
+					
 					// we then check for a block on this piece's path
 					var block = ludoObject.checkForBlockOnPath(this.pieces[i].piece);
 					
 					// if block returns 0
-					if (block == 0) {
+					if (block == 0 && !safeFieldStrike) {
+						
 						console.log(this.name + "'s piece: " + this.pieces[i].name + " will strike on ID: " + this.pieces[i].piece.path[destinationIndex].id);
 						// we highlight it's path and set player ready to move
 						canStrikeOut = true;
@@ -188,10 +204,52 @@ Player.prototype = {
 		return result;
 	},
 	
+	tryToMoveMostAdvancedPiece: function() {
+		
+		var result = false;
+		
+		var h1_i = this.pieces[0].piece.pathIndex ? this.pieces[0].piece.pathIndex : -1;
+		var h2_i = this.pieces[1].piece.pathIndex ? this.pieces[1].piece.pathIndex : -1;
+		var h3_i = this.pieces[2].piece.pathIndex ? this.pieces[2].piece.pathIndex : -1;
+		var h4_i = this.pieces[3].piece.pathIndex ? this.pieces[3].piece.pathIndex : -1;
+		
+		var mostAdvancedIndex = Math.max(h1_i, h2_i, h3_i, h4_i);
+		
+		if (mostAdvancedIndex != -1 && mostAdvancedIndex < ludoObject.PATH_LENGTH - 5) {
+			
+			// we loop through our pieces skipping the first piece
+			for (var i = 1; i < 4; i++) {
+				
+				if (this.pieces[i].piece.pathIndex == mostAdvancedIndex) {
+					
+					// we then check for a block on this piece's path
+					var block = ludoObject.checkForBlockOnPath(this.pieces[i].piece);
+					
+					// if block returns 0
+					if (block == 0) {
+						// we highlight it's path and set player ready to move
+						console.log(this.name + "'s piece: " + this.pieces[i].name + " is the most advanced");
+						result = true;
+						ludoObject.highlightFields(this.pieces[i].piece);
+						this.readyToMove = true;
+						this.readyToMovePiece = this.pieces[i].piece;
+						this.pieces[i].piece.selected = true;
+						break;
+					}
+				}
+			}
+		}
+		return result;
+	},
+	
 	tryToMakeReadyToMove: function() {
 		
 		// if we find a strike out opportunity we return
 		if (this.checkForStrikeOutPossibility()) {
+			return this.readyToMove;
+		}
+		
+		if (this.tryToMoveMostAdvancedPiece()) {
 			return this.readyToMove;
 		}
 		

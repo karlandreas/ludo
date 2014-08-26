@@ -81,13 +81,13 @@ Piece.prototype = {
 			// if there is a competitor on the field 
 			else {
 				// we get the piece
-				pieceOnPath = this.getPieceOnID(id);
+				pieceOnPath = ludoObject.getPieceOnID(id);
 				
 				// we check if it's on it's safe field
-				if (this.checkForSafeField(id)) {
+				if (ludoObject.checkForSafeField(id)) {
 					
 					// and if it is. Is the piece safe ( -the same color as the field)
-					if (pieceOnPath.color == this.getSafeFieldColor(id)) {
+					if (pieceOnPath.color == ludoObject.getSafeFieldColor(id)) {
 						
 						// if we are moving on to a safe-field with a piece, we set an offset for our piece
 						this.setSafeFieldOffset(id);
@@ -166,7 +166,7 @@ Piece.prototype = {
 	
 	moveToGoal: function(numInGoal) {
 		
-		this.pathIndex 	= 57;
+		this.pathIndex 	= undefined;
 		this.inGoal		= true;
 		this.left 		= this.goal_left;
 		this.top 		= this.goal_top;
@@ -291,64 +291,9 @@ Piece.prototype = {
 		
 	},
 	
-	checkForSafeField: function(id) {
-		
-		var result = false;
-		
-		if (id == "x7y2" || id == "x14y7" || id == "x9y14" || id == "x2y9") {
-			result = true;
-		}
-		
-		return result;
-	},
-	
-	getSafeFieldColor: function(id) {
-		
-		var color = undefined;
-		
-		if (id == "x7y2") {
-			color = "yellow";
-		}
-		else if (id == "x14y7") {
-			color = "red";
-		}
-		else if (id == "x9y14") {
-			color = "blue";
-		}
-		else if (id == "x2y9") {
-			color = "green";
-		}
-		
-		return color;
-	},
-	
-	getPieceOnID: function(id) {
-		
-		var piece = undefined;
-		var breakOuter  = false;
-		
-		for (var i = 0; i < 4; i++) {
-			
-			if (breakOuter) {
-				break;
-			}
-			
-			for (var j = 0; j < 4; j++) {
-				
-				if (ludoObject.players[i].pieces[j].piece.pathID == id) {
-					piece = ludoObject.players[i].pieces[j].piece;
-					breakOuter = true;
-					break;
-				}
-			}
-		}
-		
-		return piece;
-	},
-	
 	setSafeFieldOffset: function(id) {
 		
-		var color = this.getSafeFieldColor(id);
+		var color = ludoObject.getSafeFieldColor(id);
 		var offset = 0;
 		var result = 0;
 		
