@@ -4,6 +4,10 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<title> Ludo </title>
 	<link rel='stylesheet' href='css/index.css' type='text/css' />
+	<script>
+		// we store the ip of the visiting ludo player client
+		var ip = new String("<?php echo($_SERVER['REMOTE_ADDR']); ?>");
+	</script>
 	</head>
 	<body>
 		<div id="site">
@@ -413,7 +417,7 @@
 		
 		</div>
 		
-		<div id="new_player_div">
+		<div id="new_player_div" class="startup_form">
 			<h1>New Player</h1>
 			<table>
 				<tr>
@@ -445,6 +449,18 @@
 					</td>
 				</tr>
 			</table>
+		</div>
+		
+		<div id="game_type_div" class="startup_form">
+			<h1>Choose a game type</h1>
+			
+			<div class="game_type_btn" onclick="javascript:ludoObject.playLocally();">
+				<h2>Play Locally</h2>
+			</div>
+			
+			<div class="game_type_btn" onclick="javascript:ludoObject.playOnline(ip);">
+				<h2>Play Online</h2>
+			</div>
 			
 		</div>
 	</body>

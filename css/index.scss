@@ -161,7 +161,7 @@ linear-gradient(-45deg, yellow 25%, transparent 25%, transparent 75%, cyan 75%, 
 	}
 }
 
-#new_player_div {
+.startup_form {
 	
 	position: relative;
 	margin-left: auto;
@@ -181,6 +181,28 @@ linear-gradient(-45deg, yellow 25%, transparent 25%, transparent 75%, cyan 75%, 
 		text-align: center;
 		color: white;
 	}
+}
+
+.game_type_btn {
+	position: relative;
+	width: 150px;
+	height:150px;
+	border: 5px solid black;
+	margin-left: 55px;
+	display: inline-block;
+	
+	h2 {
+		margin-left: 10px;
+	}
+}
+
+#new_player_div {
+	display: none;
+}
+
+#game_type_div {
+	display: none;
+	background-color: fuchsia;
 }
 
 #player1_div {

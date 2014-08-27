@@ -133,7 +133,7 @@ table {
     color: white;
     margin-top: 55px; }
 
-#new_player_div {
+.startup_form {
   position: relative;
   margin-left: auto;
   margin-right: auto;
@@ -147,9 +147,26 @@ table {
   border: 10px solid #000;
   -webkit-transition: margin-top 1s ease 0.3s;
   box-shadow: -5px 10px 15px 1px rgba(43, 32, 32, 0.5); }
-  #new_player_div h1 {
+  .startup_form h1 {
     text-align: center;
     color: white; }
+
+.game_type_btn {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border: 5px solid black;
+  margin-left: 55px;
+  display: inline-block; }
+  .game_type_btn h2 {
+    margin-left: 10px; }
+
+#new_player_div {
+  display: none; }
+
+#game_type_div {
+  display: none;
+  background-color: fuchsia; }
 
 #player1_div {
   background-position-x: 0px; }

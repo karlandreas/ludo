@@ -97,12 +97,17 @@ Player.prototype = {
 		this.newPlayerDiv.style.backgroundColor = this.color;
 		
 		if (this.newPlayerFormActive) {
+			
 			this.newPlayerDiv.style.marginTop = "-600px";
+			setTimeout(function() {
+				ludoObject.player.newPlayerDiv.style.display = "none";
+			}, 1000);
 			this.newPlayerFormActive = false;
 			document.getElementById('player_name').value = "";
 			document.getElementById('new_player_btn').setAttribute('disabled', true);
 		}
 		else {
+			this.newPlayerDiv.style.display = "block";
 			this.newPlayerDiv.style.marginTop = "0px";
 			this.newPlayerFormActive = true;	
 		}
@@ -294,6 +299,13 @@ Player.prototype = {
 				ludoObject.dice.rollDice();
 			}, 500);
 		}
+	},
+	
+	setName: function(value) {
+		this.name = value;
+		this.computer = false;
+		this.init();
+		this.toggleNewPlayerForm();
 	},
 	
 	turn: function() {

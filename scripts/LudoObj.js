@@ -186,6 +186,11 @@ var LudoObj = function() {
 	this.canvas 		= document.getElementById('game_canvas');
 	this.context 		= this.canvas.getContext('2d');
 	
+	// online vars
+	this.connection 	= undefined;
+	this.clientIP		= undefined;
+	this.isOnlineGame	= false;
+	
 	// messages
 	this.msgDiv 		= document.createElement('div');
 	this.winnerDiv 		= document.createElement('div');
@@ -196,13 +201,16 @@ var LudoObj = function() {
 	this.winnerImg		= new Image();
 	this.pauseImg		= new Image();
 	this.startImg		= new Image();
+	// game type chooser
+	this.gameTypeDiv	= document.getElementById('game_type_div');
 	
 	// game pause variable
 	this.paused			= false;
 	this.gameIsRunning	= false;
 	
 	// site divs
-	this.controlsDiv	= document.getElementById('controls_div');
+	this.controlsDiv			= document.getElementById('controls_div');
+	this.gameTypeFormActive		= false;
 	
 	// players (this.player1 = undefined)
 	this.player1 = undefined;
@@ -498,8 +506,110 @@ LudoObj.prototype = {
 		this.player4.pieces = this.gamePiecesArray[3];
 		this.players.push(this.player4); // push player into the players array
 		
-		this.player1.toggleNewPlayerForm();
+		
+		this.toggleGameTypeForm();
 		this.switchPlayer();
+	},
+	
+	toggleGameTypeForm: function() {
+		
+		if (this.gameTypeFormActive) {
+			this.gameTypeDiv.style.marginTop = "-600px";
+			this.gameTypeFormActive = false;
+			setTimeout(function() {
+				ludoObject.gameTypeDiv.style.display	 = "none";
+			}, 1000);
+		}
+		else {
+			this.gameTypeDiv.style.display	 = "block";
+			this.gameTypeDiv.style.marginTop = "0px";
+			this.gameTypeFormActive = true;	
+		}
+	},
+	
+	playLocally: function() {
+		this.toggleGameTypeForm();
+		
+		setTimeout(function() {
+			
+			ludoObject.player.toggleNewPlayerForm();
+		}, 1000);
+	},
+	
+	playOnline: function(ip) {
+		console.log("Play Online");
+		
+		this.isOnlineGame = true;
+		
+		if (ip != "::1" && ip != "127.0.0.1") {
+			this.clientIP = ip;
+			
+			try {
+				this.connection = new WebSocket('ws://mserve.kajohansen.com:5301');
+				this.connection.onopen		= this.onlineOpen;
+				this.connection.onmessage	= this.onlineMessage;
+				this.connection.onerror 	= this.onlineError;
+				this.connection.onclose 	= this.onlineClose;
+				
+			}
+			catch(err) {
+				console.log("WebSocket creation error: " + err);
+			}
+		}
+		
+	},
+	
+	onlineOpen: function(event) {
+		console.log("Connection: " + event.type);
+		ludoObject.gameTypeDiv.innerHTML = "<h1>Connection: " + event.type + "</h1>";
+		ludoObject.connection.send(ludoObject.clientIP);
+	},
+	
+	onlineMessage: function(msg) {
+		console.log('Message: ' + msg.data);
+		
+		if (msg.data == "Waiting") {
+			ludoObject.gameTypeDiv.innerHTML += "<h2>Waiting for other players ... </h2>";
+		}
+		
+		if (msg.data == "yellow") {
+			ludoObject.toggleGameTypeForm();
+			ludoObject.player = ludoObject.player1;
+			setTimeout(function() {
+				ludoObject.player1.toggleNewPlayerForm();
+			}, 1000);
+		} 
+		else if (msg.data == "red") {
+			ludoObject.toggleGameTypeForm();
+			ludoObject.player = ludoObject.player2;
+			setTimeout(function() {
+				ludoObject.player2.toggleNewPlayerForm();
+			}, 1000);
+		}
+		else if (msg.data == "blue") {
+			ludoObject.toggleGameTypeForm();
+			ludoObject.player = ludoObject.player3;
+			setTimeout(function() {
+				ludoObject.player3.toggleNewPlayerForm();
+			}, 1000);
+		}
+		else if (msg.data == "green") {
+			ludoObject.toggleGameTypeForm();
+			ludoObject.player = ludoObject.player4;
+			setTimeout(function() {
+				ludoObject.player4.toggleNewPlayerForm();
+			}, 1000);
+		}
+	},
+	
+	onlineError: function(err) {
+		console.log('WebSocket Error ' + err.reason);
+		ludoObject.gameTypeDiv.innerHTML = "<h1>Socket: " + err.type + "</h1>";
+	},
+	
+	onlineClose: function(event) {
+		console.log('WebSocket Closed: ' + event.reason);
+		ludoObject.gameTypeDiv.innerHTML = "<h1>Socket Closed: " + event.code + "</h1>";
 	},
 	
 	setPlayerName: function(value) {
@@ -1273,7 +1383,22 @@ document.getElementById('player_name').onkeydown = function(e) {
 }
 
 document.getElementById('new_player_btn').onclick = function() {
-	ludoObject.setPlayerName(document.getElementById('player_name').value);
+	
+	var enteredName = document.getElementById('player_name').value;
+	var nameChop = enteredName.substr(0, 7);
+	
+	if (!ludoObject.isOnlineGame) {
+		ludoObject.setPlayerName(nameChop);
+	}
+	else {
+		console.log("Current player: " + ludoObject.player.color);
+		ludoObject.player.setName(nameChop);
+		ludoObject.connection.send("name:" + nameChop);
+		setTimeout(function() {
+			ludoObject.toggleGameTypeForm();
+		}, 1100);
+	}
+	
 }
 
 document.getElementById('new_computer_btn').onclick = function() {
@@ -1302,17 +1427,20 @@ window.onfocus = function() {
 	if (ludoObject.gameIsRunning) {
 		/* console.log("Focus"); */
 		
-		// if the current player is a computer player
-		if (ludoObject.player.computer) {
-			
-			// we unpause the game and remove the Paused sign
-			ludoObject.paused = false;
-			document.getElementsByTagName('body')[0].removeChild(ludoObject.pausedDiv);
-			
-			// we roll the dice for the computer player after 1 second
-			setTimeout(function() {
-				ludoObject.dice.rollDice();
-			}, 1000);
+		// if the game actually is paused
+		if (ludoObject.paused) {
+			// if the current player is a computer player
+			if (ludoObject.player.computer) {
+				
+				// we unpause the game and remove the Paused sign
+				ludoObject.paused = false;
+				document.getElementsByTagName('body')[0].removeChild(ludoObject.pausedDiv);
+				
+				// we roll the dice for the computer player after 1 second
+				setTimeout(function() {
+					ludoObject.dice.rollDice();
+				}, 1000);
+			}
 		}
 	}
 }
