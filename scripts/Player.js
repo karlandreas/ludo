@@ -21,7 +21,9 @@ var Player = function(color, name) {
 	
 	this.newPlayerDiv = document.getElementById('new_player_div');
 	this.newPlayerFormActive = false;
-
+	
+	// online
+	this.sid			= undefined;
 }
 
 Player.prototype = {
@@ -294,6 +296,8 @@ Player.prototype = {
 		
 		this.checkForAllInHome();
 		
+		this.active = true;
+		
 		if (this.computer) {
 			setTimeout(function() {
 				ludoObject.dice.rollDice();
@@ -301,11 +305,14 @@ Player.prototype = {
 		}
 	},
 	
-	setName: function(value) {
+	onlineSetName: function(value, first) {
 		this.name = value;
 		this.computer = false;
-		this.init();
-		this.toggleNewPlayerForm();
+		this.playerDiv.innerHTML = "<p>" + this.name + "</p>";
+		
+		if (first) {
+			this.toggleNewPlayerForm();
+		}
 	},
 	
 	turn: function() {

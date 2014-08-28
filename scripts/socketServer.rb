@@ -1,129 +1,107 @@
 #!/usr/bin/env ruby
 require 'em-websocket'
+require 'json'
 
 class Game
 	
-	attr_reader :waiting_games_path, :waiting_game_file, :line_num
+	attr_reader :channel, :index
+	attr_accessor :players_arr
 	
-	def initialize
-		@waiting_games_path = "./../server/waiting/"
+	def initialize(channel, index)
+		@channel = channel
+		@players_arr = []
+		@index = index
 	end
 	
-	def search_for_waiting_game(ip)
+	def add_player(player)
+		@players_arr.push(player)
+	end
+	
+	def remove_player(sid)
+		# we loop through the players in this game
+		@players_arr.each do |player|
+			# when we find the player to remove we push the color to the other players
+			if player.sid == sid
+				remove_hash = Hash.new
+				remove_hash['remove'] = true
+				remove_hash['color'] = player.color
+				@channel.push(JSON.generate(remove_hash))
+			end
+		end
+		@channel.unsubscribe(sid)
+	end
+	
+	def write_names_to_players
+		# we create a hash to update Game Clients with player names
+		update_hash = Hash.new 
+		update_hash['update'] = true
 		
-		@result = 0
-		
-		# we get a sorted array of the files in the server directory
-		files_string = %x(ls #{@waiting_games_path})
-		files = files_string.split(" ")
-		
-		# we log out the number of waiting games
-		puts "Number of waiting games: " << files.length.to_s
-		
-		# if there are any waiting game files there
-		if files.length.to_i > 0
-			
-			# we get the full path to the first file
-			@waiting_game_file = @waiting_games_path << files[0].to_s
-			puts "Waiting game file" << files[0].to_s
-			
-			# we get the line count of the file
-			tmp_count = %x(wc -l #{@waiting_game_file})
-			count = tmp_count[0,1]
-			
-			# and log it out
-			puts "Waiting game has " << (count.to_i + 1).to_s << " Players in it"
-			
-			# we return the number of lines (players) in the waiting game file
-			@result = count.to_i
-		# else if there are no waiting games	
-		else 
-			# we create a new waiting game file
-			@waiting_game_file = @waiting_games_path << "1_game.json"
-			puts "New Waiting game file: " << @waiting_game_file
-			File.new(@waiting_game_file, mode='w') 
+		@players_arr.each do |player|
+			update_hash[player.color] = player.name
 		end
 		
-		return @result
+		@channel.push(JSON.generate(update_hash))
 	end
 	
-	def join_game(count, player)
+	def show_rolled_number(dice)
+		# we create a hash to push the dice coords to all players
+		dice_hash = Hash.new
+		dice_hash['dice'] = true
+		dice_hash['number'] = dice['number']
 		
-		@line_num = count.to_i + 1
-		
-		puts "Joining Game with count: " << @line_num.to_s << " and id: " << player.id.to_s
-		
-		# we set the player's color
-		if @line_num == 1
-			player.color = "yellow"
-		elsif @line_num == 2
-			player.color = "red"
-		elsif @line_num == 3
-			player.color = "blue"
-		elsif @line_num == 4
-			player.color = "green"
-		end
-		# and update the player's file
-		player.write_properties_to_file()
-		
-		# we want to add our player to the waiting game file
-		File.open(@waiting_game_file, mode="a") {|file|
-			file.write(@line_num.to_s << " " << player.id.to_s << "\n")
-		}
-		
-		# if the waiting game is full (4 players) we want to create the game
-		if (count.to_i + 1) == 4
-			create_new_game()
-		end
+		@channel.push(JSON.generate(dice_hash))
 	end
 	
-	def leave_waiting_game
-		puts "Leaving waiting game file: " << @line_num.to_s
-		%x(sed -i -e '#{@line_num}d' #{waiting_game_file})
+	def highlight(color, index, diceroll)
+		# we create a hash to push piece color index and move-to position
+		highlight_hash = Hash.new
+		highlight_hash['highlight'] = true
+		highlight_hash['color'] = color
+		highlight_hash['index'] = index
+		highlight_hash['diceroll'] = diceroll
+		
+		@channel.push(JSON.generate(highlight_hash))
 	end
 	
-	def create_new_game
-		# we want to move our game file from the waiting folder into the games folder
-		%x(mv #{@waiting_game_file} ./../server/games)
-		puts "------ Game Created -----"
+	def move_piece(color, index, move_by)
+		# we create a hash to push piece color index and move-to position
+		piece_hash = Hash.new
+		piece_hash['move'] = true
+		piece_hash['color'] = color
+		piece_hash['index'] = index
+		piece_hash['move_by'] = move_by
+		
+		@channel.push(JSON.generate(piece_hash))
+	end
+	
+	def switch_player(color)
+		# we create a hash to push the dice coords to all players
+		switch_hash = Hash.new
+		switch_hash['switch_player'] = true
+		switch_hash['color'] = color
+		
+		@channel.push(JSON.generate(switch_hash))
+	end
+	
+	def start_game
+		start_hash = Hash.new
+		start_hash['start'] = true
+		@channel.push(JSON.generate(start_hash))
 	end
 	
 end # end class
 
 class Player
 	
-	attr_reader :id, :players_path, :file, :connection
-	attr_accessor :name, :color, :active
+	attr_accessor :name, :color, :sid
 		
-	def initialize(ip, ws)
-		@connection = ws
-		@players_path = "./../server/players/"
-		@name = "undefined"
-		@color = nil
-		@active = false
-		@id = ip
-		
-		files_string = %x(ls #{@players_path})
-		files = files_string.split(" ")
-		puts "Number of players: " << (files.length.to_i + 1).to_s
-		
-		@id = ip
-		@file = "#{@players_path}#{(files.length.to_i + 1).to_s}_#{ip}.json"
-		File.new(@file, mode='w') 
+	def initialize(color, sid)
+		@color = color
+		@sid = sid
 	end
 	
-	def write_properties_to_file
-		File.open(@file, 'w') {|file| 
-			file.write("user = {'id'\t: #{@id},\n\t'name'\t: #{@name},\n\t'color' : #{@color},\n\t'active': #{@active},\n\t'file'  : #{@file}}\n")
-		}
-	end
-	
-	def delete_file
-		puts "Deleting file: " << @file
-		File.delete(@file)
-	end
-	
-end
+end # end class
+
 
 
 # Before we start WebSocket's we make sure that there are no players from a previous session
@@ -146,55 +124,127 @@ Dir.foreach("./../server/games/") { | file |
 }
 
 EM.run {
-  EM::WebSocket.run(:host => "0.0.0.0", :port => 5301) do |ws|
+  
+  @games_arr = []
+  @gameObject = nil
+  @count = 0
+
+  EM::WebSocket.start(:host => "0.0.0.0", :port => 5301) do |ws|
     
     ws.onopen { |handshake|
 		# path, query_string, origin, headers
 		puts "------- NEW client #{handshake.headers['User-Agent']} -------"
 		
-		# create an instance of the Ludo object
-		@gameObject = Game.new
+		# on every 4th player we create a new game
+		if @count == 0 && @gameObject == nil
+			# we want to store the game-index in the game object
+			new_game_index = @games_arr.length.to_i
+			@gameObject = Game.new(EM::Channel.new, new_game_index)
+			@games_arr.push(@gameObject)
+		end
 		
-		# Publish message to the client
-		ws.send "Success!"
+		# we create a hash for our JSON response
+		response_hash = Hash.new 
+		
+		# we increment the player color count by one
+		@count += 1
+		# and decrement the game
+		games_length = @games_arr.length.to_i - 1
+		
+		if @count == 1
+			sid = @games_arr[games_length].channel.subscribe { |msg| ws.send msg }
+			@games_arr[games_length].add_player(Player.new("yellow", sid))
+			response_hash['color'] = "yellow"
+		elsif @count == 2
+			sid = @games_arr[games_length].channel.subscribe { |msg| ws.send msg }
+			@games_arr[games_length].add_player(Player.new("red", sid))
+			response_hash['color'] = "red"
+		elsif @count == 3
+			sid = @games_arr[games_length].channel.subscribe { |msg| ws.send msg }
+			@games_arr[games_length].add_player(Player.new("blue", sid))
+			response_hash['color'] = "blue"
+		elsif @count == 4
+			sid = @games_arr[games_length].channel.subscribe { |msg| ws.send msg }
+			@games_arr[games_length].add_player(Player.new("green", sid))
+			response_hash['color'] = "green"
+			# when we have 4 players for our game we reset the gameObject and set count to 0
+			@gameObject = nil
+			@count = 0
+		end
+		
+		# we add the game index and rhe channe sid to the response hash
+		response_hash['game_index'] = games_length
+		response_hash['sid'] = sid
+		# finally we respond with our response hash
+		ws.send JSON.generate(response_hash)
+		# and set our temporary variables to nil
+		response_hash = nil
+		sid = nil
+		games_length = nil
+		new_game_index = nil
 	}
 
-    ws.onclose { 
-    	puts "------- Connection closed -------"
-    	@player.delete_file()
-    	@gameObject.leave_waiting_game()
+    ws.onclose { |close|
+    	
+    	# puts close
+		puts "------- Connection closed -------"
     }
 
     ws.onmessage { |msg|
-                 
-		if msg.match(/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/)
-			# puts "Recieved message: #{msg}"
+       
+		json_obj = JSON.parse(msg)
+		
+		# handle dice roll
+		if json_obj['dice']
+			@games_arr[json_obj['game_index'].to_i].show_rolled_number(json_obj)
+		end
+		
+		# handle position highlight
+		if json_obj['highlight']
+			@games_arr[json_obj['game_index'].to_i].highlight(json_obj['color'], json_obj['piece_index'], json_obj['diceroll'])
+		end
+		
+		# handle piece move
+		if json_obj['move_piece']
+			@games_arr[json_obj['game_index'].to_i].move_piece(json_obj['color'], json_obj['piece_index'], json_obj['move_by'])
+		end
+		
+		# handle swich player
+		if json_obj['switch']
+			@games_arr[json_obj['game_index'].to_i].switch_player(json_obj['color'])
+		end
+		
+		# handle setting player names
+		if json_obj['name']
 			
-			@player = Player.new(msg, ws)			
-			@result = @gameObject.search_for_waiting_game(msg)
-			
-			# if there is waiting game file (> 0) 
-			if @result < 4
-				@gameObject.join_game(@result, @player)
-			elsif @result == 4
-				@gameObject.join_game(@result, @player)
-				@gameObject.create_new_game()
+			if json_obj['color'] == "yellow"
+				@games_arr[json_obj['game_index'].to_i].players_arr[0].name = json_obj['name']
+				# puts "Player name set to: " << @games_arr[json_obj['game_index'].to_i].players_arr[0].name
+			elsif json_obj['color'] == "red"
+				@games_arr[json_obj['game_index'].to_i].players_arr[1].name = json_obj['name']
+				# puts "Player name set to: " << @games_arr[json_obj['game_index'].to_i].players_arr[1].name
+			elsif json_obj['color'] == "blue"
+				@games_arr[json_obj['game_index'].to_i].players_arr[2].name = json_obj['name']
+				# puts "Player name set to: " << @games_arr[json_obj['game_index'].to_i].players_arr[2].name
+			elsif json_obj['color'] == "green"
+				@games_arr[json_obj['game_index'].to_i].players_arr[3].name = json_obj['name']
+				# puts "Player name set to: " << @games_arr[json_obj['game_index'].to_i].players_arr[3].name
 			end
 			
-			ws.send @player.color
+			# we now push the new name to the remainding clients
+			@games_arr[json_obj['game_index'].to_i].write_names_to_players()
 			
-		elsif msg.match(/^name:/)
-			
-			# we first remove the first 5 characters of the message (destructively!)
-			msg.slice!(0, 5)
-			# we then try to set the player name 
-			@player.name = msg
-			@player.write_properties_to_file()
-			ws.send "Waiting"
-		# if we are not passed an IP we send an error message
-		else
-			puts "Could not get IP of client"
-			ws.send "No client ID was sendt"
+			# and finally we check if this game is full
+			if json_obj['color'] == "green"
+				# if it is we start the game
+				@games_arr[json_obj['game_index'].to_i].start_game()
+			end
+		end
+		
+		# handle player close session
+		if json_obj['close']
+			puts "Closing session in game #{json_obj['game_index']} for player with sid #{json_obj['sid']}"
+			@games_arr[json_obj['game_index'].to_i].remove_player(json_obj['sid'].to_i)
 		end
    }
   end

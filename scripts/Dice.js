@@ -19,31 +19,164 @@ Dice.prototype = {
 	displayOne: function() {
 		this.img.style.marginLeft  	= '-32px';
 		this.img.style.marginTop 	= '-23px';
+		
+		if (this.diceIndex == this.numberOfRolls && ludoObject.isOnlineGame) {
+			var data = {"dice" : true, "game_index": ludoObject.onlineGameIndex, "player": this.currentPlayer.color, "number" : 1};
+			ludoObject.connection.send( JSON.stringify(data) );
+		}
 	},
 	
 	displayTwo: function() {
 		this.img.style.marginLeft 	= '-126px';
 		this.img.style.marginTop 	= '-23px';
+		
+		if (this.diceIndex == this.numberOfRolls && ludoObject.isOnlineGame) {
+			var data = {"dice" : true, "game_index": ludoObject.onlineGameIndex, "player": this.currentPlayer.color, "number" : 2};
+			ludoObject.connection.send( JSON.stringify(data) );
+		}
 	},
 	
 	displayThree: function() {
 		this.img.style.marginLeft 	= '-216px';
 		this.img.style.marginTop 	= '-23px';
+		
+		if (this.diceIndex == this.numberOfRolls && ludoObject.isOnlineGame) {
+			var data = {"dice" : true, "game_index": ludoObject.onlineGameIndex, "player": this.currentPlayer.color, "number" : 3};
+			ludoObject.connection.send( JSON.stringify(data) );
+		}
 	},
 	
 	displayFour: function() {
 		this.img.style.marginLeft 	= '-32px';
 		this.img.style.marginTop 	= '-109px';
+		
+		if (this.diceIndex == this.numberOfRolls && ludoObject.isOnlineGame) {
+			var data = {"dice" : true, "game_index": ludoObject.onlineGameIndex, "player": this.currentPlayer.color, "number" : 4};
+			ludoObject.connection.send( JSON.stringify(data) );
+		}
 	},
 	
 	displayFive: function() {
+		
 		this.img.style.marginLeft 	= '-125px';
 		this.img.style.marginTop 	= '-109px';
+		
+		if (this.diceIndex == this.numberOfRolls && ludoObject.isOnlineGame) {
+			var data = {"dice" : true, "game_index": ludoObject.onlineGameIndex, "player": this.currentPlayer.color, "number" : 5};
+			ludoObject.connection.send( JSON.stringify(data) );
+		}
 	},
 	
 	displaySix: function() {
 		this.img.style.marginLeft 	= '-216px';
 		this.img.style.marginTop 	= '-109px';
+		
+		if (this.diceIndex == this.numberOfRolls && ludoObject.isOnlineGame) {
+			var data = {"dice" : true, "game_index": ludoObject.onlineGameIndex, "player": this.currentPlayer.color, "number" : 6};
+			ludoObject.connection.send( JSON.stringify(data) );
+		}
+	},
+	
+	handleSix: function() {
+		
+		// we set turns left to 1
+		this.currentPlayer.turnsLeft = 1;
+		// and disable the dice
+		this.disabled = true;
+		
+		// if this is a computer player
+		if (this.currentPlayer.computer) {
+			
+			// first we try to move out of home
+			if (this.currentPlayer.tryToMoveOutOfHome()) {
+				
+				// if we have moved a piece out of home we roll the dice again
+				setTimeout(function() {
+					ludoObject.dice.rollDice();
+				}, 1000);
+			}
+			// if we have all our pieces in play, we try to highlight the first pieces path
+			else if (this.currentPlayer.tryToMakeReadyToMove()) {
+				
+				// if the piece is made ready to move 
+				setTimeout(function() {
+					
+					// we move it
+					ludoObject.moveSelected(ludoObject.player.readyToMovePiece);
+					// and roll the dice again since we rolled a 6 last time
+					setTimeout(function() {
+						ludoObject.dice.rollDice();
+					}, 1000);
+				}, 1000);
+			}
+		}
+	},
+	
+	handleOtherThanSix: function() {
+		// we set turns left to 0 and disable the dice
+		this.currentPlayer.turnsLeft = 0;
+		this.disabled = true;
+		
+		// if this is the computer 
+		if (this.currentPlayer.computer) {
+			
+			// we try to highlight the first pieces path
+			if (this.currentPlayer.tryToMakeReadyToMove()) {
+				
+				// if the piece is made ready to move 
+				setTimeout(function() {
+					// we move it
+					ludoObject.moveSelected(ludoObject.player.readyToMovePiece);
+				}, 1000);
+			}
+		}
+	},
+	
+	handleAllInHome: function() {
+		
+		if (this.faceNum == 6) {
+			// we set allInHome to false and move the first piece to the safe-field
+			this.currentPlayer.pieces[0].piece.moveToFirstPosition();
+			this.currentPlayer.allInHome = false;
+			this.currentPlayer.diceRoll = undefined;
+			this.currentPlayer.turnsLeft = 1;
+			
+			if (ludoObject.isOnlineGame) {
+				var data = {"move_piece": true, 
+							"game_index": ludoObject.onlineGameIndex, 
+							"color": this.currentPlayer.color, 
+							"piece_index": 0, 
+							"move_by": 0};
+				ludoObject.connection.send( JSON.stringify(data) );
+			}
+			
+			// if this is the computer 
+			if (this.currentPlayer.computer) {
+				// we wait 1 second and then roll the dice again
+				setTimeout(function() {
+					ludoObject.dice.rollDice();
+				}, 1000);
+			}
+		}
+		else if (this.currentPlayer.turnsLeft > 0) {
+			// we reduce turns left by one
+			this.currentPlayer.turnsLeft--;
+			
+			// if there are no turns left we set turns left to 3 and end the turn
+			if (this.currentPlayer.turnsLeft < 1) {
+				
+				this.currentPlayer.turnsLeft = 3;
+				this.endTurn();
+			}
+			// else if there are turns left and this is the computer player 
+			else if (this.currentPlayer.computer) {
+				
+				// we roll the dice again
+				setTimeout(function() {
+					ludoObject.dice.rollDice();
+				}, 1000);
+			}
+		}
 	},
 	
 	animateDice: function() {
@@ -73,15 +206,16 @@ Dice.prototype = {
 				console.log("Error on switch statement");
 		}
 		
-		if (this.diceIndex > this.numberOfRolls) {
+		if (this.diceIndex == this.numberOfRolls) {
 			
 			clearInterval(this.diceAnimHandle);
 			this.diceIndex = 0;
 			this.isAnimating = false;
 			this.handleRolledNumber();
 			
-		} 
-		this.diceIndex++;
+		} else {
+			this.diceIndex++;
+		}
 	},
 	
 	checkForAnyMovablePieces: function() {
@@ -141,53 +275,34 @@ Dice.prototype = {
 		this.currentPlayer.diceRoll = undefined;
 		this.currentPlayer.readyToMove = false;
 		
-		setTimeout(function() {
-			ludoObject.switchPlayer();
-			ludoObject.player.giveControl();
-		}, 1000);
+		if (ludoObject.isOnlineGame) {
+			
+			this.currentPlayer.active = false;
+			
+			var data = {'switch': true, 'game_index': ludoObject.onlineGameIndex, 'color': this.currentPlayer.color}
+			ludoObject.connection.send( JSON.stringify(data) );
+			
+		// if this is not an online game 
+		} else {
+			setTimeout(function() {
+				// we switch player 
+				ludoObject.switchPlayer();
+				// and give control to the next player
+				ludoObject.player.giveControl();
+			}, 1000);
+		}
+		// either way we disable the dice temporarily
+		this.disabled = true;
 	},
 	
 	handleRolledNumber: function() {
 		
-		
 		this.currentPlayer.diceRoll = this.faceNum;
 		
-		// if we roll a six and have all our pieces in the home area
-		if (this.faceNum == 6 && this.currentPlayer.allInHome) {
+		// if we have all our pieces in the home area
+		if (this.currentPlayer.allInHome) {
 			
-			// we set allInHome to false and move the first piece to the safe-field
-			this.currentPlayer.pieces[0].piece.moveToFirstPosition();
-			this.currentPlayer.allInHome = false;
-			this.currentPlayer.diceRoll = undefined;
-			this.currentPlayer.turnsLeft = 1;
-			
-			// if this is the computer 
-			if (this.currentPlayer.computer) {
-				// we wait 1 second and then roll the dice again
-				setTimeout(function() {
-					ludoObject.dice.rollDice();
-				}, 1000);
-			}
-		}
-		// if we have rolled less than 3 times and not got a piece out of home
-		else if (this.currentPlayer.allInHome && this.currentPlayer.turnsLeft > 0) {
-			// we reduce turns left by one
-			this.currentPlayer.turnsLeft--;
-			
-			// if there are no turns left we set turns left to 3 and end the turn
-			if (this.currentPlayer.turnsLeft < 1) {
-				
-				this.currentPlayer.turnsLeft = 3;
-				this.endTurn();
-			}
-			// else if there are turns left and this is the computer player 
-			else if (this.currentPlayer.computer) {
-				
-				// we roll the dice again
-				setTimeout(function() {
-					ludoObject.dice.rollDice();
-				}, 1000);
-			}
+			this.handleAllInHome();
 		}
 		// else if we have pieces in play we check if any one can be moved
 		else if (this.checkForAnyMovablePieces() < 1) {
@@ -199,58 +314,12 @@ Dice.prototype = {
 		// else if we have movable pieces and roll a 6
 		else if (this.faceNum == 6) {
 			
-			// we set turns left to 1
-			this.currentPlayer.turnsLeft = 1;
-			this.disabled = true;
-			
-			// if this is a computer player
-			if (this.currentPlayer.computer) {
-				
-				// first we try to move out of home
-				if (this.currentPlayer.tryToMoveOutOfHome()) {
-					
-					// if we have moved a piece out of home we roll the dice again
-					setTimeout(function() {
-						ludoObject.dice.rollDice();
-					}, 1000);
-				}
-				// if we have all our pieces out of home, we try to highlight the first pieces path
-				else if (this.currentPlayer.tryToMakeReadyToMove()) {
-					
-					// if the piece is made ready to move 
-					setTimeout(function() {
-						
-						// we move it
-						ludoObject.moveSelected(ludoObject.player.readyToMovePiece);
-						// and roll the dice again since we rolled a 6 last time
-						setTimeout(function() {
-							ludoObject.dice.rollDice();
-						}, 1000);
-					}, 1000);
-				}
-			}
+			this.handleSix();
 		}
 		// if we roll a number other than 6 when we have pieces in play
 		else {
-			// we set turns left to 0 and disable the dice
-			this.currentPlayer.turnsLeft = 0;
-			this.disabled = true;
-			
-			// if this is the computer 
-			if (this.currentPlayer.computer) {
-				
-				// we try to highlight the first pieces path
-				if (this.currentPlayer.tryToMakeReadyToMove()) {
-					
-					// if the piece is made ready to move 
-					setTimeout(function() {
-						// we move it
-						ludoObject.moveSelected(ludoObject.player.readyToMovePiece);
-					}, 1000);
-				}
-			}
+			this.handleOtherThanSix();
 		}
-		// end handleRolledNumber()
 	},
 	
 	rollDice: function() {

@@ -187,9 +187,11 @@ var LudoObj = function() {
 	this.context 		= this.canvas.getContext('2d');
 	
 	// online vars
-	this.connection 	= undefined;
-	this.clientIP		= undefined;
-	this.isOnlineGame	= false;
+	this.connection 	 = undefined;
+	this.clientIP		 = undefined;
+	this.isOnlineGame	 = false;
+	this.onlineGameIndex = undefined;
+	this.onlineFirstCall = true;
 	
 	// messages
 	this.msgDiv 		= document.createElement('div');
@@ -417,7 +419,7 @@ LudoObj.prototype = {
 		this.startImg.src	 = 'images/ClickDiceToStart.svg';
 		
 		// set the styles of the message divs
-		// the no moves posiible div
+		// the no moves possible div
 		this.msgDiv.style.position 	= "absolute";
 		this.msgDiv.style.width  	= "100%";
 		this.msgDiv.style.height 	= "100%";
@@ -426,6 +428,7 @@ LudoObj.prototype = {
 		this.msgDiv.style.zIndex 	= "10";
 		this.msgDiv.style.opacity 	= "0.2";
 		this.msgDiv.style.webkitTransition = "opacity 1s ease 0s";
+		this.msgDiv.style.minWidth	= "1024px";
 		// the we have a winner div
 		this.winnerDiv.style.position 	= "absolute";
 		this.winnerDiv.style.width  	= "100%";
@@ -433,6 +436,7 @@ LudoObj.prototype = {
 		this.winnerDiv.style.top 		= "0px";
 		this.winnerDiv.style.left 		= "0px";
 		this.winnerDiv.style.zIndex 	= "10";
+		this.winnerDiv.style.minWidth	= "1024px";
 		// the paused div
 		this.pausedDiv.style.position 	= "absolute";
 		this.pausedDiv.style.width  	= "100%";
@@ -447,26 +451,28 @@ LudoObj.prototype = {
 		this.startDiv.style.top 		= "-50px";
 		this.startDiv.style.left 		= "0px";
 		this.startDiv.style.zIndex 		= "10";
-		
+		this.startDiv.style.minWidth	= "1024px";
+
 		// set the styles for the images
+		// the winner image
 		this.winnerImg.style.position 		= "relative";
 		this.winnerImg.style.marginLeft 	= "auto";
 		this.winnerImg.style.marginLeft 	= "auto";
 		this.winnerImg.style.marginTop	 	= "100px";
 		this.winnerImg.style.display	 	= "block";
-		
+		// the message image
 		this.msgImg.style.position 			= "relative";
 		this.msgImg.style.marginLeft 		= "auto";
 		this.msgImg.style.marginRight 		= "auto";
 		this.msgImg.style.marginTop	 		= "100px";
 		this.msgImg.style.display	 		= "block";
-		
+		// the pause image
 		this.pauseImg.style.position 		= "relative";
 		this.pauseImg.style.marginLeft 		= "auto";
 		this.pauseImg.style.marginRight 	= "auto";
 		this.pauseImg.style.marginTop	 	= "100px";
 		this.pauseImg.style.display	 		= "block";
-		
+		// the start image
 		this.startImg.style.position 		= "relative";
 		this.startImg.style.marginLeft 		= "auto";
 		this.startImg.style.marginRight 	= "auto";
@@ -562,43 +568,261 @@ LudoObj.prototype = {
 	onlineOpen: function(event) {
 		console.log("Connection: " + event.type);
 		ludoObject.gameTypeDiv.innerHTML = "<h1>Connection: " + event.type + "</h1>";
-		ludoObject.connection.send(ludoObject.clientIP);
 	},
 	
 	onlineMessage: function(msg) {
-		console.log('Message: ' + msg.data);
+		msgObject = JSON.parse(msg.data);
 		
-		if (msg.data == "Waiting") {
-			ludoObject.gameTypeDiv.innerHTML += "<h2>Waiting for other players ... </h2>";
+		// if another player has rolled the dice
+		if (msgObject.dice) {
+			if (msgObject.number == 1) {
+				ludoObject.dice.displayOne();
+			}
+			else if (msgObject.number == 2) {
+				ludoObject.dice.displayTwo();
+			}
+			else if (msgObject.number == 3) {
+				ludoObject.dice.displayThree();
+			}
+			else if (msgObject.number == 4) {
+				ludoObject.dice.displayFour();
+			}
+			else if (msgObject.number == 5) {
+				ludoObject.dice.displayFive();
+			}
+			else if (msgObject.number == 6) {
+				ludoObject.dice.displaySix();
+			}
+			return;
 		}
 		
-		if (msg.data == "yellow") {
-			ludoObject.toggleGameTypeForm();
-			ludoObject.player = ludoObject.player1;
-			setTimeout(function() {
-				ludoObject.player1.toggleNewPlayerForm();
-			}, 1000);
-		} 
-		else if (msg.data == "red") {
-			ludoObject.toggleGameTypeForm();
-			ludoObject.player = ludoObject.player2;
-			setTimeout(function() {
-				ludoObject.player2.toggleNewPlayerForm();
-			}, 1000);
+		// if we have a position to highlight
+		if (msgObject.highlight) {
+			
+			ludoObject.player.diceRoll = msgObject.diceroll;
+			
+			if (msgObject.color == "yellow" && ludoObject.player.color != msgObject.color) {
+				ludoObject.highlightFields(ludoObject.player1.pieces[msgObject.index].piece);
+			}
+			else if (msgObject.color == "red" && ludoObject.player.color != msgObject.color) {
+				ludoObject.highlightFields(ludoObject.player2.pieces[msgObject.index].piece);
+			}
+			else if (msgObject.color == "blue" && ludoObject.player.color != msgObject.color) {
+				ludoObject.highlightFields(ludoObject.player3.pieces[msgObject.index].piece);
+			}
+			else if (msgObject.color == "green" && ludoObject.player.color != msgObject.color) {
+				ludoObject.highlightFields(ludoObject.player4.pieces[msgObject.index].piece);
+			}
+			
+			// we only want to reset the diceroll for online players not this player
+			if (ludoObject.player.color != msgObject.color) {
+				setTimeout(function() {
+					ludoObject.player.diceRoll = undefined;
+				}, 1000);
+			}
+			
+			return;
 		}
-		else if (msg.data == "blue") {
-			ludoObject.toggleGameTypeForm();
-			ludoObject.player = ludoObject.player3;
-			setTimeout(function() {
-				ludoObject.player3.toggleNewPlayerForm();
-			}, 1000);
+		
+		// if we have a piece to move
+		if (msgObject.move) {
+			
+			if (msgObject.color == "yellow" && ludoObject.player.color != msgObject.color) {
+				
+				if (msgObject.move_by == 0) {
+					ludoObject.player1.pieces[msgObject.index].piece.moveToFirstPosition()
+				}
+				
+			}
+			else if (msgObject.color == "red" && ludoObject.player.color != msgObject.color) {
+				
+				if (msgObject.move_by == 0) {
+					ludoObject.player2.pieces[msgObject.index].piece.moveToFirstPosition()
+				}
+				
+			}
+			else if (msgObject.color == "blue" && ludoObject.player.color != msgObject.color) {
+				
+				if (msgObject.move_by == 0) {
+					ludoObject.player3.pieces[msgObject.index].piece.moveToFirstPosition()
+				}
+				
+			}
+			else if (msgObject.color == "green" && ludoObject.player.color != msgObject.color) {
+				
+				if (msgObject.move_by == 0) {
+					ludoObject.player4.pieces[msgObject.index].piece.moveToFirstPosition()
+				}
+				
+			}
+			
+			return;
 		}
-		else if (msg.data == "green") {
+		
+		// if we must switch player
+		if (msgObject.switch_player) {
+			
+			ludoObject.dice.disabled = true;
+
+			if (msgObject['color'] == "yellow") {
+				ludoObject.player1.playerDiv.style.backgroundPositionY = "0px";
+				ludoObject.player2.giveControl();
+				ludoObject.dice.currentPlayer = ludoObject.player2;
+				ludoObject.player2.playerDiv.style.backgroundPositionY = "-75px";
+				ludoObject.controlsDiv.style.backgroundColor = "red";
+				
+				if (ludoObject.player.color == "red") {
+					ludoObject.dice.disabled = false;
+				}
+			}
+			else if (msgObject['color'] == "red") {
+				ludoObject.player2.playerDiv.style.backgroundPositionY = "0px";
+				ludoObject.player3.giveControl();
+				ludoObject.dice.currentPlayer = ludoObject.player3;
+				ludoObject.player3.playerDiv.style.backgroundPositionY = "-75px";
+				ludoObject.controlsDiv.style.backgroundColor = "blue";
+				
+				if (ludoObject.player.color == "blue") {
+					ludoObject.dice.disabled = false;
+				}
+			}
+			else if (msgObject['color'] == "blue") {
+				ludoObject.player3.playerDiv.style.backgroundPositionY = "0px";
+				ludoObject.player4.giveControl();
+				ludoObject.dice.currentPlayer = ludoObject.player4;
+				ludoObject.player4.playerDiv.style.backgroundPositionY = "-75px";
+				ludoObject.controlsDiv.style.backgroundColor = "green";
+				
+				if (ludoObject.player.color == "green") {
+					ludoObject.dice.disabled = false;
+				}
+			}
+			else if (msgObject['color'] == "green") {
+				ludoObject.player4.playerDiv.style.backgroundPositionY = "0px";
+				ludoObject.player1.giveControl();
+				ludoObject.dice.currentPlayer = ludoObject.player1;
+				ludoObject.player1.playerDiv.style.backgroundPositionY = "-75px";
+				ludoObject.controlsDiv.style.backgroundColor = "yellow";
+				
+				if (ludoObject.player.color == "yellow") {
+					ludoObject.dice.disabled = false;
+				}
+			}
+			return;
+		}
+		
+		// if this is the opening message setting the player's color
+		if (!isNaN(msgObject.game_index)) {
+			ludoObject.onlineGameIndex = msgObject.game_index;
+			
+			if (msgObject.color == "yellow") {
+				ludoObject.toggleGameTypeForm();
+				ludoObject.player = ludoObject.player1;
+				setTimeout(function() {
+					ludoObject.player1.toggleNewPlayerForm();
+				}, 1000);
+			} 
+			else if (msgObject.color == "red") {
+				ludoObject.toggleGameTypeForm();
+				ludoObject.player = ludoObject.player2;
+				setTimeout(function() {
+					ludoObject.player2.toggleNewPlayerForm();
+				}, 1000);
+			}
+			else if (msgObject.color == "blue") {
+				ludoObject.toggleGameTypeForm();
+				ludoObject.player = ludoObject.player3;
+				setTimeout(function() {
+					ludoObject.player3.toggleNewPlayerForm();
+				}, 1000);
+			}
+			else if (msgObject.color == "green") {
+				ludoObject.toggleGameTypeForm();
+				ludoObject.player = ludoObject.player4;
+				setTimeout(function() {
+					ludoObject.player4.toggleNewPlayerForm();
+				}, 1000);
+			}
+			
+			ludoObject.player.sid = msgObject.sid;
+			return;
+		}
+		
+		// if this a message with a new player joining the game
+		if (msgObject.update) {
+			
+			if (ludoObject.onlineFirstCall) {
+				ludoObject.gameTypeDiv.innerHTML += "<h2>Waiting for other players ... </h2>";
+			}
+			
+			var keys = Object.keys(msgObject);
+			
+			if (keys[1] == "yellow") {
+				ludoObject.player1.onlineSetName(msgObject.yellow, ludoObject.onlineFirstCall);
+			}
+			if (keys[2] == "red") {
+				ludoObject.player2.onlineSetName(msgObject.red, ludoObject.onlineFirstCall);
+			}
+			if (keys[3] == "blue") {
+				ludoObject.player3.onlineSetName(msgObject.blue, ludoObject.onlineFirstCall);
+			}
+			if (keys[4] == "green") {
+				ludoObject.player4.onlineSetName(msgObject.green, ludoObject.onlineFirstCall);
+			}
+			
+			ludoObject.onlineFirstCall = false;
+			
+			return;
+		}
+		
+		// if this is the start game message
+		if (msgObject.start) {
 			ludoObject.toggleGameTypeForm();
-			ludoObject.player = ludoObject.player4;
-			setTimeout(function() {
-				ludoObject.player4.toggleNewPlayerForm();
-			}, 1000);
+			console.log("Start: " + ludoObject.player.color);
+			
+			if (ludoObject.player.color == "yellow") {
+				ludoObject.dice.disabled = false;
+				setTimeout(function() {
+					document.getElementsByTagName('body')[0].appendChild(ludoObject.startDiv);
+				}, 1000);
+				
+				setTimeout(function() {
+					document.getElementsByTagName('body')[0].removeChild(ludoObject.startDiv);
+				}, 3000);
+				
+				ludoObject.player.turn();
+			}
+			
+			ludoObject.gameIsRunning = true;
+			ludoObject.animate();
+			return;
+		}
+		
+		// a player has left the game
+		if (msgObject.remove) {
+			
+			if (msgObject.color == "yellow") {
+				ludoObject.player1.name = "Compu Y";
+				ludoObject.player1.playerDiv.innerHTML = "<p>Compu Y</p>";
+				ludoObject.player1.computer = true;
+			}
+			else if (msgObject.color == "red") {
+				ludoObject.player2.name = "Compu R";
+				ludoObject.player2.playerDiv.innerHTML = "<p>Compu R</p>";
+				ludoObject.player2.computer = true;
+			}
+			else if (msgObject.color == "blue") {
+				ludoObject.player3.name = "Compu B";
+				ludoObject.player3.playerDiv.innerHTML = "<p>Compu B</p>";
+				ludoObject.player3.computer = true;
+			}
+			else if (msgObject.color == "green") {
+				ludoObject.player4.name = "Compu G";
+				ludoObject.player4.playerDiv.innerHTML = "<p>Compu G</p>";
+				ludoObject.player4.computer = true;
+			}
+			console.log("Removing " + msgObject.color + " player");
+			return;
 		}
 	},
 	
@@ -651,7 +875,7 @@ LudoObj.prototype = {
 				this.player4.computer = false;
 				this.player4.init();
 				this.player4.toggleNewPlayerForm();
-				this.activePlayer = 0;
+				this.activePlayer = 1;
 				this.startGame();
 				break;
 			default:
@@ -687,7 +911,7 @@ LudoObj.prototype = {
 				break;
 			case 4: // player4
 				this.player4.toggleNewPlayerForm();
-				this.activePlayer = 0;
+				this.activePlayer = 1;
 				this.startGame();
 				break;
 			default:
@@ -783,12 +1007,15 @@ LudoObj.prototype = {
 				console.log("Error setting active player");
 		}
 		
-		this.player.playerDiv.style.backgroundPositionY = "-75px";
-		this.controlsDiv.style.backgroundColor = this.player.color;
-		
-		if (this.gameIsRunning) {
+		if (!this.player.computer) {
 			this.dice.disabled = false;
 		}
+		else {
+			this.dice.disabled = true;
+		}
+		
+		this.player.playerDiv.style.backgroundPositionY = "-75px";
+		this.controlsDiv.style.backgroundColor = this.player.color;
 	},
 	
 	checkForPieceOnCoord: function(offX, offY, pLeft, pTop) {
@@ -1245,6 +1472,15 @@ ludoObject.canvas.onmouseup = function(e) {
 						
 						// we move it.
 						ludoObject.moveSelected(ludoObject.player.pieces[j].piece);
+						
+						// and if this is an online game we move the piece on the other players screens too
+						/*
+							if (ludoObject.isOnlineGame) {
+							
+							var data = {"move_piece": true, "game_index": ludoObject.onlineGameIndex, "color": ludoObject.player.color, "piece_index": j, "move_to": 0};
+							ludoObject.connection.send( JSON.stringify(data) );
+						}
+						*/
 					}
 					
 				}
@@ -1267,9 +1503,10 @@ ludoObject.canvas.onmouseup = function(e) {
 						ludoObject.player.pieces[i].piece.moveToFirstPosition(ludoObject.player.pieces[i].piece.path[0]);
 					}
 				}
+				// if not 
 				else {
 					
-					// if not we check if click happened on a piece in play
+					// we check if click happened on a piece in play
 					if (ludoObject.checkForPieceOnCoord(e.offsetX, e.offsetY, ludoObject.player.pieces[i].piece.left, ludoObject.player.pieces[i].piece.top)) {
 						
 						ludoObject.player.pieces[i].piece.selected = true;
@@ -1323,6 +1560,18 @@ ludoObject.canvas.onmouseup = function(e) {
 								// we highlight it's path and set player ready to move
 								ludoObject.highlightFields(ludoObject.player.pieces[i].piece);
 								ludoObject.player.readyToMove = true;
+								
+								// and if it's an online game we highlight the path on the other player's boards as well
+								if (ludoObject.isOnlineGame) {
+							
+									var data = {"highlight": true, 
+												"game_index": ludoObject.onlineGameIndex, 
+												"color": ludoObject.player.color, 
+												"piece_index": i, 
+												"diceroll": ludoObject.player.diceRoll};
+									ludoObject.connection.send( JSON.stringify(data) );
+								}
+								
 							}
 							else {
 								
@@ -1387,18 +1636,19 @@ document.getElementById('new_player_btn').onclick = function() {
 	var enteredName = document.getElementById('player_name').value;
 	var nameChop = enteredName.substr(0, 7);
 	
+	// if this is a local game
 	if (!ludoObject.isOnlineGame) {
 		ludoObject.setPlayerName(nameChop);
 	}
+	// if this is an online game
 	else {
-		console.log("Current player: " + ludoObject.player.color);
-		ludoObject.player.setName(nameChop);
-		ludoObject.connection.send("name:" + nameChop);
+		// we send a JASON object with the color, name and gameIndex
+		var data={"color" : ludoObject.player.color, "name" : nameChop, "game_index": ludoObject.onlineGameIndex};
+		ludoObject.connection.send( JSON.stringify(data) );
 		setTimeout(function() {
 			ludoObject.toggleGameTypeForm();
 		}, 1100);
 	}
-	
 }
 
 document.getElementById('new_computer_btn').onclick = function() {
@@ -1444,4 +1694,27 @@ window.onfocus = function() {
 		}
 	}
 }
+
+document.onkeydown = function(e) {
+	
+	var keycode = window.event.keyCode
+	
+	if ((e.ctrlKey && keycode == 82) || e.metaKey) {
+        if (!confirm("Do You Really Want to leave this session?")) {
+            e.preventDefault();
+            console.log("Browser Reload prevented");
+        }
+        else {
+	        location.reload();
+        }
+	}
+};
+
+window.onbeforeunload = function(e) {
+	
+	if (ludoObject.connection) {
+		var data={"close" : true, "game_index": ludoObject.onlineGameIndex, "sid": ludoObject.player.sid};
+		ludoObject.connection.send( JSON.stringify(data) );
+	}
+};
 
