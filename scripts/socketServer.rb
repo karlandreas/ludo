@@ -56,22 +56,61 @@ class Game
 		# we create a hash to push piece color index and move-to position
 		highlight_hash = Hash.new
 		highlight_hash['highlight'] = true
-		highlight_hash['color'] = color
-		highlight_hash['index'] = index
-		highlight_hash['diceroll'] = diceroll
+		highlight_hash['color'] 	= color
+		highlight_hash['index'] 	= index
+		highlight_hash['diceroll'] 	= diceroll
 		
 		@channel.push(JSON.generate(highlight_hash))
 	end
 	
-	def move_piece(color, index, move_by)
+	def move_piece(color, index, diceroll)
 		# we create a hash to push piece color index and move-to position
 		piece_hash = Hash.new
-		piece_hash['move'] = true
-		piece_hash['color'] = color
-		piece_hash['index'] = index
-		piece_hash['move_by'] = move_by
+		piece_hash['move_piece'] = true
+		piece_hash['color'] 	 = color
+		piece_hash['index'] 	 = index
+		piece_hash['diceroll'] 	 = diceroll
 		
 		@channel.push(JSON.generate(piece_hash))
+	end
+	
+	def greyout(color, index, block)
+		# we create a hash to push piece and block 
+		grey_hash = Hash.new
+		grey_hash['greyout'] = true
+		grey_hash['color'] = color
+		grey_hash['index'] = index
+		grey_hash['block'] = block
+		
+		@channel.push(JSON.generate(grey_hash))
+	end
+	
+	def clear_fields()
+		# we create a hash to push piece and block 
+		clear_hash = Hash.new
+		clear_hash['clear_fields'] = true
+		
+		@channel.push(JSON.generate(clear_hash))
+	end
+	
+	def no_movable(color)
+		# we create a hash to push piece and block 
+		no_movable_hash = Hash.new
+		no_movable_hash['no_movable'] = true
+		no_movable_hash['color'] = color
+		
+		@channel.push(JSON.generate(no_movable_hash))
+	end
+	
+	def move_to_goal(color, index, num_in_goal)
+		# we create a hash to push piece
+		to_goal_hash = Hash.new
+		to_goal_hash['to_goal'] = true
+		to_goal_hash['color'] = color
+		to_goal_hash['index'] = index
+		to_goal_hash['num_in_goal'] = index
+		
+		@channel.push(JSON.generate(to_goal_hash))
 	end
 	
 	def switch_player(color)
@@ -197,23 +236,51 @@ EM.run {
 		# handle dice roll
 		if json_obj['dice']
 			@games_arr[json_obj['game_index'].to_i].show_rolled_number(json_obj)
+			
 		end
 		
 		# handle position highlight
 		if json_obj['highlight']
 			@games_arr[json_obj['game_index'].to_i].highlight(json_obj['color'], json_obj['piece_index'], json_obj['diceroll'])
+			
 		end
 		
 		# handle piece move
 		if json_obj['move_piece']
-			@games_arr[json_obj['game_index'].to_i].move_piece(json_obj['color'], json_obj['piece_index'], json_obj['move_by'])
+			@games_arr[json_obj['game_index'].to_i].move_piece(json_obj['color'], json_obj['piece_index'], json_obj['diceroll'])
+			
 		end
 		
 		# handle swich player
-		if json_obj['switch']
+		if json_obj['switch_player']
 			@games_arr[json_obj['game_index'].to_i].switch_player(json_obj['color'])
+			
 		end
 		
+		# handle no movable pieces
+		if json_obj['no_movable']
+			@games_arr[json_obj['game_index'].to_i].no_movable(json_obj['color'])
+			
+		end
+		
+		# handle greyout fields
+		if json_obj['greyout']
+			@games_arr[json_obj['game_index'].to_i].greyout(json_obj['color'], json_obj['piece_index'], json_obj['block_index'])
+			
+		end
+		
+		# handle clear fields
+		if json_obj['clear_fields']
+			@games_arr[json_obj['game_index'].to_i].clear_fields()
+			
+		end
+		
+		# handle move to goal
+		if json_obj['to_goal']
+			@games_arr[json_obj['game_index'].to_i].move_to_goal(json_obj['color'], json_obj['piece_index'], json_obj['num_in_goal'])
+			
+		end
+				
 		# handle setting player names
 		if json_obj['name']
 			
@@ -239,6 +306,7 @@ EM.run {
 				# if it is we start the game
 				@games_arr[json_obj['game_index'].to_i].start_game()
 			end
+			
 		end
 		
 		# handle player close session

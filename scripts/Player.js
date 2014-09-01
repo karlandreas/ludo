@@ -57,11 +57,7 @@ Player.prototype = {
 			}
 		}
 		
-		if (allInHome) {
-			/* 	console.log(this.name + ": has all pieces in home"); */
-			this.allInHome = true;
-			this.turnsLeft = 3;
-		}
+		return allInHome;
 	},
 	
 	displayNoMovablePieces: function() {
@@ -111,7 +107,9 @@ Player.prototype = {
 		else {
 			this.newPlayerDiv.style.display = "block";
 			this.newPlayerDiv.style.marginTop = "0px";
-			this.newPlayerFormActive = true;	
+			this.newPlayerFormActive = true;
+			document.getElementById('player_name').focus();
+			document.getElementById('new_computer_btn').setAttribute('disabled', true);
 		}
 	},
 	
@@ -294,7 +292,16 @@ Player.prototype = {
 	
 	giveControl: function() {
 		
-		this.checkForAllInHome();
+		// if this player has all pieces in home
+		if (this.checkForAllInHome()) {
+			// we set all in home to true and turns left to 3
+			this.allInHome = true;
+			this.turnsLeft = 3;
+		} else {
+			// else we set all in home to false and turns left to 1
+			this.allInHome = false;
+			this.turnsLeft = 1;
+		}
 		
 		this.active = true;
 		

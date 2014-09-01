@@ -88,6 +88,22 @@ Piece.prototype = {
 					
 					// and if it is. Is the piece safe ( -the same color as the field)
 					if (pieceOnPath.color == ludoObject.getSafeFieldColor(id)) {
+					
+						// for online purposes we need to get this player number
+						var player = undefined;
+						
+						if (this.color == "yellow") {
+							player = ludoObject.player1;
+						}
+						else if (this.color == "red") {
+							player = ludoObject.player2;
+						}
+						else if (this.color == "blue") {
+							player = ludoObject.player3;
+						}
+						else if (this.color == "green") {
+							player = ludoObject.player4;
+						}
 						
 						// if we are moving on to a safe-field with a piece, we set an offset for our piece
 						this.setSafeFieldOffset(id);
@@ -95,7 +111,7 @@ Piece.prototype = {
 						// we also have to check if we have a piece there already
 						for (var i = 0; i < 4; i++) {
 							
-							if (ludoObject.player.pieces[i].piece.pathID == id) {
+							if (player.pieces[i].piece.pathID == id) {
 								
 								// if we do we increase the count of the safe-field by 1
 								tmpCount = new Number(tmpCount) + 1;
@@ -139,10 +155,6 @@ Piece.prototype = {
 			this.start_top 		= this.top;
 			this.selected 		= false;
 			this.pathID			= this.path[this.pathIndex].id;
-			
-			if (ludoObject.player.turnsLeft < 1) {
-				ludoObject.dice.endTurn();
-			}
 		}
 	},
 	
@@ -179,17 +191,20 @@ Piece.prototype = {
 			console.log("Play winner animation");
 			ludoObject.player.displayWinnerGraphic();
 		}
+		else if (ludoObject.dice.faceNum != 6) {
+			ludoObject.dice.endTurn();
+		}
 	},
 	
-	updateAllPlayerMultiplePieces: function(sheet_left, sheet_top) {
+	updateAllPlayerMultiplePieces: function(player, sheet_left, sheet_top) {
 		
 		// we loop through all of this players pieces
 		for (var i = 0; i < 4; i++) {
 			
 			// if we find a piece on the destination field we set it's spritsheet coords to the same as this piece
-			if (ludoObject.player.pieces[i].piece.pathIndex == this.pathIndex) {
-				ludoObject.player.pieces[i].piece.sheet_left = sheet_left;
-				ludoObject.player.pieces[i].piece.sheet_top = sheet_top;
+			if (player.pieces[i].piece.pathIndex == this.pathIndex) {
+				player.pieces[i].piece.sheet_left = sheet_left;
+				player.pieces[i].piece.sheet_top = sheet_top;
 			}
 		}
 	},
@@ -202,22 +217,22 @@ Piece.prototype = {
 				this.sheet_left = ludoObject.YS_SINGLE.x;
 				this.sheet_top  = ludoObject.YS_SINGLE.y;
 				
-				this.updateAllPlayerMultiplePieces(ludoObject.YS_SINGLE.x, ludoObject.YS_SINGLE.y);
+				this.updateAllPlayerMultiplePieces(ludoObject.player1, ludoObject.YS_SINGLE.x, ludoObject.YS_SINGLE.y);
 			}
 			else if (this.color == "red") {
 				this.sheet_left = ludoObject.RS_SINGLE.x;
 				this.sheet_top  = ludoObject.RS_SINGLE.y;
-				this.updateAllPlayerMultiplePieces(ludoObject.RS_SINGLE.x, ludoObject.RS_SINGLE.y);
+				this.updateAllPlayerMultiplePieces(ludoObject.player2, ludoObject.RS_SINGLE.x, ludoObject.RS_SINGLE.y);
 			}
 			else if (this.color == "blue") {
 				this.sheet_left = ludoObject.BS_SINGLE.x;
 				this.sheet_top  = ludoObject.BS_SINGLE.y;
-				this.updateAllPlayerMultiplePieces(ludoObject.BS_SINGLE.x, ludoObject.BS_SINGLE.y);
+				this.updateAllPlayerMultiplePieces(ludoObject.player3, ludoObject.BS_SINGLE.x, ludoObject.BS_SINGLE.y);
 			}
 			else if (this.color == "green") {
 				this.sheet_left = ludoObject.GS_SINGLE.x;
 				this.sheet_top  = ludoObject.GS_SINGLE.y;
-				this.updateAllPlayerMultiplePieces(ludoObject.GS_SINGLE.x, ludoObject.GS_SINGLE.y);
+				this.updateAllPlayerMultiplePieces(ludoObject.player4, ludoObject.GS_SINGLE.x, ludoObject.GS_SINGLE.y);
 			}
 		}
 		else if (new Number(count) == 2) {
@@ -225,22 +240,22 @@ Piece.prototype = {
 			if (this.color == "yellow") {
 				this.sheet_left = ludoObject.YS_DOUBLE.x;
 				this.sheet_top  = ludoObject.YS_DOUBLE.y;
-				this.updateAllPlayerMultiplePieces(ludoObject.YS_DOUBLE.x, ludoObject.YS_DOUBLE.y);
+				this.updateAllPlayerMultiplePieces(ludoObject.player1, ludoObject.YS_DOUBLE.x, ludoObject.YS_DOUBLE.y);
 			}
 			else if (this.color == "red") {
 				this.sheet_left = ludoObject.RS_DOUBLE.x;
 				this.sheet_top  = ludoObject.RS_DOUBLE.y;
-				this.updateAllPlayerMultiplePieces(ludoObject.RS_DOUBLE.x, ludoObject.RS_DOUBLE.y);
+				this.updateAllPlayerMultiplePieces(ludoObject.player2, ludoObject.RS_DOUBLE.x, ludoObject.RS_DOUBLE.y);
 			}
 			else if (this.color == "blue") {
 				this.sheet_left = ludoObject.BS_DOUBLE.x;
 				this.sheet_top  = ludoObject.BS_DOUBLE.y;
-				this.updateAllPlayerMultiplePieces(ludoObject.BS_DOUBLE.x, ludoObject.BS_DOUBLE.y);
+				this.updateAllPlayerMultiplePieces(ludoObject.player3, ludoObject.BS_DOUBLE.x, ludoObject.BS_DOUBLE.y);
 			}
 			else if (this.color == "green") {
 				this.sheet_left = ludoObject.GS_DOUBLE.x;
 				this.sheet_top  = ludoObject.GS_DOUBLE.y;
-				this.updateAllPlayerMultiplePieces(ludoObject.GS_DOUBLE.x, ludoObject.GS_DOUBLE.y);
+				this.updateAllPlayerMultiplePieces(ludoObject.player4, ludoObject.GS_DOUBLE.x, ludoObject.GS_DOUBLE.y);
 			}
 		}
 		else if (new Number(count) == 3) {
@@ -248,44 +263,44 @@ Piece.prototype = {
 			if (this.color == "yellow") {
 				this.sheet_left = ludoObject.YS_TRIPLE.x;
 				this.sheet_top  = ludoObject.YS_TRIPLE.y;
-				this.updateAllPlayerMultiplePieces(ludoObject.YS_TRIPLE.x, ludoObject.YS_TRIPLE.y);
+				this.updateAllPlayerMultiplePieces(ludoObject.player1, ludoObject.YS_TRIPLE.x, ludoObject.YS_TRIPLE.y);
 			}
 			else if (this.color == "red") {
 				this.sheet_left = ludoObject.RS_TRIPLE.x;
 				this.sheet_top  = ludoObject.RS_TRIPLE.y;
-				this.updateAllPlayerMultiplePieces(ludoObject.RS_TRIPLE.x, ludoObject.RS_TRIPLE.y);
+				this.updateAllPlayerMultiplePieces(ludoObject.player2, ludoObject.RS_TRIPLE.x, ludoObject.RS_TRIPLE.y);
 			}
 			else if (this.color == "blue") {
 				this.sheet_left = ludoObject.BS_TRIPLE.x;
 				this.sheet_top  = ludoObject.BS_TRIPLE.y;
-				this.updateAllPlayerMultiplePieces(ludoObject.BS_TRIPLE.x, ludoObject.BS_TRIPLE.y);
+				this.updateAllPlayerMultiplePieces(ludoObject.player3, ludoObject.BS_TRIPLE.x, ludoObject.BS_TRIPLE.y);
 			}
 			else if (this.color == "green") {
 				this.sheet_left = ludoObject.GS_TRIPLE.x;
 				this.sheet_top  = ludoObject.GS_TRIPLE.y;
-				this.updateAllPlayerMultiplePieces(ludoObject.GS_TRIPLE.x, ludoObject.GS_TRIPLE.y);
+				this.updateAllPlayerMultiplePieces(ludoObject.player4, ludoObject.GS_TRIPLE.x, ludoObject.GS_TRIPLE.y);
 			}
 		}
 		else if (new Number(count) == 4) {
 			if (this.color == "yellow") {
 				this.sheet_left = ludoObject.YS_QUATRUPLE.x;
 				this.sheet_top  = ludoObject.YS_QUATRUPLE.y;
-				this.updateAllPlayerMultiplePieces(ludoObject.YS_QUATRUPLE.x, ludoObject.YS_QUATRUPLE.y);
+				this.updateAllPlayerMultiplePieces(ludoObject.player1, ludoObject.YS_QUATRUPLE.x, ludoObject.YS_QUATRUPLE.y);
 			}
 			else if (this.color == "red") {
 				this.sheet_left = ludoObject.RS_QUATRUPLE.x;
 				this.sheet_top  = ludoObject.RS_QUATRUPLE.y;
-				this.updateAllPlayerMultiplePieces(ludoObject.RS_QUATRUPLE.x, ludoObject.RS_QUATRUPLE.y);
+				this.updateAllPlayerMultiplePieces(ludoObject.player2, ludoObject.RS_QUATRUPLE.x, ludoObject.RS_QUATRUPLE.y);
 			}
 			else if (this.color == "blue") {
 				this.sheet_left = ludoObject.BS_QUATRUPLE.x;
 				this.sheet_top  = ludoObject.BS_QUATRUPLE.y;
-				this.updateAllPlayerMultiplePieces(ludoObject.BS_QUATRUPLE.x, ludoObject.BS_QUATRUPLE.y);
+				this.updateAllPlayerMultiplePieces(ludoObject.player3, ludoObject.BS_QUATRUPLE.x, ludoObject.BS_QUATRUPLE.y);
 			}
 			else if (this.color == "green") {
 				this.sheet_left = ludoObject.GS_QUATRUPLE.x;
 				this.sheet_top  = ludoObject.GS_QUATRUPLE.y;
-				this.updateAllPlayerMultiplePieces(ludoObject.GS_QUATRUPLE.x, ludoObject.GS_QUATRUPLE.y);
+				this.updateAllPlayerMultiplePieces(ludoObject.player4, ludoObject.GS_QUATRUPLE.x, ludoObject.GS_QUATRUPLE.y);
 			}
 		}
 		
