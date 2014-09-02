@@ -126,6 +126,7 @@ Dice.prototype = {
 				setTimeout(function() {
 					// we move it
 					ludoObject.moveSelected(ludoObject.player.readyToMovePiece, ludoObject.player);
+					ludoObject.dice.endTurn();
 				}, 1000);
 			}
 		}

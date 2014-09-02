@@ -109,7 +109,10 @@ Player.prototype = {
 			this.newPlayerDiv.style.marginTop = "0px";
 			this.newPlayerFormActive = true;
 			document.getElementById('player_name').focus();
-			document.getElementById('new_computer_btn').setAttribute('disabled', true);
+			
+			if (ludoObject.isOnlineGame) {
+				document.getElementById('new_computer_btn').setAttribute('disabled', true);
+			}
 		}
 	},
 	
@@ -195,12 +198,15 @@ Player.prototype = {
 	},
 	
 	tryToMoveOutOfHome: function() {
-		
+		// result of trying to move piece out of home
 		var result = false;
-		
+		// we loop through the players pieces
 		for (var i = 0; i < 4; i++) {
+			// if we find a piece in the home-position
 			if (this.pieces[i].piece.inHome) {
+				// we move it to the first position
 				this.pieces[i].piece.moveToFirstPosition();
+				// we set result to true
 				result = true;
 				break;
 			}
@@ -210,7 +216,7 @@ Player.prototype = {
 	},
 	
 	tryToMoveMostAdvancedPiece: function() {
-		
+		// we register the result of this operation
 		var result = false;
 		
 		var h1_i = this.pieces[0].piece.pathIndex ? this.pieces[0].piece.pathIndex : -1;
@@ -218,13 +224,16 @@ Player.prototype = {
 		var h3_i = this.pieces[2].piece.pathIndex ? this.pieces[2].piece.pathIndex : -1;
 		var h4_i = this.pieces[3].piece.pathIndex ? this.pieces[3].piece.pathIndex : -1;
 		
+		// we get the index of the piece that has moved furthest on the board
 		var mostAdvancedIndex = Math.max(h1_i, h2_i, h3_i, h4_i);
 		
+		// if the most advanced piece is not on the home-stretch
 		if (mostAdvancedIndex != -1 && mostAdvancedIndex < ludoObject.PATH_LENGTH - 5) {
 			
 			// we loop through our pieces skipping the first piece
 			for (var i = 1; i < 4; i++) {
 				
+				// we find the most advanced piece
 				if (this.pieces[i].piece.pathIndex == mostAdvancedIndex) {
 					
 					// we then check for a block on this piece's path
@@ -233,12 +242,13 @@ Player.prototype = {
 					// if block returns 0
 					if (block == 0) {
 						// we highlight it's path and set player ready to move
-						console.log(this.name + "'s piece: " + this.pieces[i].name + " is the most advanced");
-						result = true;
-						ludoObject.highlightFields(this.pieces[i].piece);
 						this.readyToMove = true;
 						this.readyToMovePiece = this.pieces[i].piece;
 						this.pieces[i].piece.selected = true;
+						
+						ludoObject.highlightFields(this.pieces[i].piece);
+						
+						result = true;
 						break;
 					}
 				}
@@ -305,8 +315,11 @@ Player.prototype = {
 		
 		this.active = true;
 		
+		// if this is a computer player
 		if (this.computer) {
+		
 			setTimeout(function() {
+				// we roll the dice automatically
 				ludoObject.dice.rollDice();
 			}, 500);
 		}
