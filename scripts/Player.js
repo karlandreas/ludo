@@ -1,5 +1,3 @@
-
-
 var Player = function(color, name) {
 	
 	this.name 		 = name;
@@ -159,15 +157,17 @@ Player.prototype = {
 			// we only check pieces in play, that is not trying to enter the Goal area
 			if (!this.pieces[i].piece.inHome && !this.pieces[i].piece.inGoal && destinationIndex < ludoObject.PATH_LENGTH - 5) {
 				
+				// we look for a competitor on the destination field of our piece's path
 				if (this.checkForCompetitorOnField(this.pieces[i].piece.path[destinationIndex].id)) {
 					
+					// if we find one we initiate safeFieldStrike to true
 					var safeFieldStrike = true;
 					
 					// we want to know if the competitor is on a safe-field
 					if (ludoObject.checkForSafeField(this.pieces[i].piece.path[destinationIndex].id)) {
 							
 							var colorOnSafe = ludoObject.getSafeFieldColor();
-							var pieceOnSafe = ludoObject.getPieceOnID(this.pieces[i].piece.path[destinationIndex].id);
+							var pieceOnSafe = ludoObject.getCompetitorPieceOnID(this.pieces[i].piece.path[destinationIndex].id, this.color);
 							
 							// and if it is is it it's own safe-field
 							if (colorOnSafe == pieceOnSafe.color) {
@@ -185,7 +185,7 @@ Player.prototype = {
 						console.log(this.name + "'s piece: " + this.pieces[i].name + " will strike on ID: " + this.pieces[i].piece.path[destinationIndex].id);
 						// we highlight it's path and set player ready to move
 						canStrikeOut = true;
-						ludoObject.highlightFields(this.pieces[i].piece);
+						ludoObject.highlightFields(this.pieces[i].piece, this.diceRoll);
 						this.readyToMove = true;
 						this.readyToMovePiece = this.pieces[i].piece;
 						this.pieces[i].piece.selected = true;
@@ -246,7 +246,7 @@ Player.prototype = {
 						this.readyToMovePiece = this.pieces[i].piece;
 						this.pieces[i].piece.selected = true;
 						
-						ludoObject.highlightFields(this.pieces[i].piece);
+						ludoObject.highlightFields(this.pieces[i].piece, this.diceRoll);
 						
 						result = true;
 						break;
@@ -283,12 +283,16 @@ Player.prototype = {
 					if (block == 0) {
 						
 						// we highlight it's path and set player ready to move
-						console.log(this.name + "'s piece: " + this.pieces[i].name + " is Ready to move on a " + this.diceRoll);
-						ludoObject.highlightFields(this.pieces[i].piece);
+						ludoObject.highlightFields(this.pieces[i].piece, this.diceRoll);
 						this.readyToMove = true;
 						this.readyToMovePiece = this.pieces[i].piece;
 						this.pieces[i].piece.selected = true;
 						break;
+					}
+					// else if we have a block before the goal-area
+					else if (block < ludoObject.PATH_LENGTH - 1){
+						// we grey out the fields
+						ludoObject.greyOutFields(this.pieces[i].piece, block);
 					}
 				}
 				// else if the piece was moved in to the Goal area, we break.
@@ -298,6 +302,29 @@ Player.prototype = {
 			}
 		}
 		return this.readyToMove;
+	},
+	
+	onlineSendCreateComputerRoll: function() {
+		// this data will be the same every time we want the server to roll for
+		// for an online player that has left the game and is now a computer player
+		var data = {'computer_roll' : true,
+					'game_index'	: ludoObject.onlineGameIndex, 
+					'computer_color': this.color}
+		ludoObject.connection.send( JSON.stringify(data) );
+	},
+	
+	onlineTryToGetOutOfHome: function() {
+		var data = {'all_in_home'	: true,
+					'game_index'	: ludoObject.onlineGameIndex, 
+					'computer_color': this.color}
+		ludoObject.connection.send( JSON.stringify(data) );
+	},
+	
+	onlineSwitchPlayer: function() {
+		var data = {'switch_player'	: true, 
+					'game_index'	: ludoObject.onlineGameIndex, 
+					'color'			: this.color}
+		ludoObject.connection.send( JSON.stringify(data) );
 	},
 	
 	giveControl: function() {
@@ -316,7 +343,7 @@ Player.prototype = {
 		this.active = true;
 		
 		// if this is a computer player
-		if (this.computer) {
+		if (this.computer && !ludoObject.isOnlineGame) {
 		
 			setTimeout(function() {
 				// we roll the dice automatically
@@ -339,5 +366,3 @@ Player.prototype = {
 		this.active = true;
 	}
 }
-
-

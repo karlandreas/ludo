@@ -465,11 +465,9 @@
 		</div>
 	</body>
 	<script src='scripts/requestNextAnimationframe.js' type='text/javascript'></script>
-	<!--
-<script src='scripts/Piece.js' type='text/javascript'></script>
+	<script src='scripts/Piece.js' type='text/javascript'></script>
 	<script src='scripts/Dice.js' type='text/javascript'></script>
 	<script src='scripts/Player.js' type='text/javascript'></script>
 	<script src='scripts/LudoObj.js' type='text/javascript'></script>
--->
-	<script src='scripts/Ludo.js' type='text/javascript'></script>
+<!-- 	<script src='scripts/Ludo.js' type='text/javascript'></script> -->
 </html>

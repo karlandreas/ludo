@@ -581,6 +581,7 @@ Ludo.prototype = {
 	},
 	
 	onlineMessage: function(msg) {
+		
 		msgObject = JSON.parse(msg.data);
 		
 		// if another player has rolled the dice
@@ -640,6 +641,7 @@ Ludo.prototype = {
 			if (msgObject.color == "yellow" && ludoObject.player.color != msgObject.color) {
 				
 				if (msgObject.diceroll == -1) {
+					ludoObject.player1.diceRoll = msgObject.diceroll;
 					ludoObject.player1.pieces[msgObject.index].piece.moveToFirstPosition()
 				} 
 				else {
@@ -686,6 +688,56 @@ Ludo.prototype = {
 				setTimeout(function() {
 					ludoObject.player.diceRoll = undefined;
 				}, 1000);
+			}
+			
+			return;
+		}
+		
+		// if we have an online computer player roll
+		if (msgObject.computer_roll) {
+			
+			var player = undefined;
+			
+			if (msgObject.color == "yellow") {
+				player = ludoObject.player1;
+			} else if (msgObject.color == "red") {
+				player = ludoObject.player2;
+			} else if (msgObject.color == "blue") {
+				player = ludoObject.player3;
+			} else if (msgObject.color == "green") {
+				player = ludoObject.player4;
+			}
+			
+			player.diceRoll = msgObject.dice_roll;
+				
+			if (msgObject.dice_roll == 6) {
+				// we try to move a piece out of home
+				if (player.tryToMoveOutOfHome()) {
+					// we need to roll again..
+					console.log("Computer has one throw left..");
+				}
+				// else if all pieces are in play, we try to make a move
+				else if (player.tryToMakeReadyToMove()) {
+					
+					setTimeout(function() {
+						// we move it
+						ludoObject.moveSelected(player.readyToMovePiece, player);
+						
+						// we need to roll again..
+						console.log("Computer has one throw left..");
+					}, 1000);
+				}
+			}
+			else {
+				
+				if (player.tryToMakeReadyToMove()) {
+					// if the piece is made ready to move 
+					setTimeout(function() {
+						// we move it
+						ludoObject.moveSelected(player.readyToMovePiece, player);
+/* 						ludoObject.dice.endTurn(); */
+					}, 1000);
+				}
 			}
 			
 			return;
@@ -1866,7 +1918,7 @@ Player.prototype = {
 		this.active = true;
 		
 		// if this is a computer player
-		if (this.computer) {
+		if (this.computer && !ludoObject.isOnlineGame) {
 		
 			setTimeout(function() {
 				// we roll the dice automatically
@@ -2314,7 +2366,9 @@ Dice.prototype = {
 		this.img.style.marginTop 	= '-23px';
 		
 		if (this.diceIndex == this.numberOfRolls && ludoObject.isOnlineGame) {
-			var data = {"dice" : true, "game_index": ludoObject.onlineGameIndex, "player": ludoObject.player.color, "number" : 1};
+			var data = {"dice" 		 : true, 
+						"game_index" : ludoObject.onlineGameIndex, 
+						"number" 	 : 1};
 			ludoObject.connection.send( JSON.stringify(data) );
 		}
 	},
@@ -2324,7 +2378,9 @@ Dice.prototype = {
 		this.img.style.marginTop 	= '-23px';
 		
 		if (this.diceIndex == this.numberOfRolls && ludoObject.isOnlineGame) {
-			var data = {"dice" : true, "game_index": ludoObject.onlineGameIndex, "player": ludoObject.player.color, "number" : 2};
+			var data = {"dice" : true, 
+						"game_index": ludoObject.onlineGameIndex, 
+						"number" : 2};
 			ludoObject.connection.send( JSON.stringify(data) );
 		}
 	},
@@ -2334,7 +2390,9 @@ Dice.prototype = {
 		this.img.style.marginTop 	= '-23px';
 		
 		if (this.diceIndex == this.numberOfRolls && ludoObject.isOnlineGame) {
-			var data = {"dice" : true, "game_index": ludoObject.onlineGameIndex, "player": ludoObject.player.color, "number" : 3};
+			var data = {"dice" : true, 
+						"game_index": ludoObject.onlineGameIndex, 
+						"number" : 3};
 			ludoObject.connection.send( JSON.stringify(data) );
 		}
 	},
@@ -2344,7 +2402,9 @@ Dice.prototype = {
 		this.img.style.marginTop 	= '-109px';
 		
 		if (this.diceIndex == this.numberOfRolls && ludoObject.isOnlineGame) {
-			var data = {"dice" : true, "game_index": ludoObject.onlineGameIndex, "player": ludoObject.player.color, "number" : 4};
+			var data = {"dice" : true, 
+						"game_index": ludoObject.onlineGameIndex, 
+						"number" : 4};
 			ludoObject.connection.send( JSON.stringify(data) );
 		}
 	},
@@ -2355,7 +2415,9 @@ Dice.prototype = {
 		this.img.style.marginTop 	= '-109px';
 		
 		if (this.diceIndex == this.numberOfRolls && ludoObject.isOnlineGame) {
-			var data = {"dice" : true, "game_index": ludoObject.onlineGameIndex, "player": ludoObject.player.color, "number" : 5};
+			var data = {"dice" : true, 
+						"game_index": ludoObject.onlineGameIndex, 
+						"number" : 5};
 			ludoObject.connection.send( JSON.stringify(data) );
 		}
 	},
@@ -2365,7 +2427,9 @@ Dice.prototype = {
 		this.img.style.marginTop 	= '-109px';
 		
 		if (this.diceIndex == this.numberOfRolls && ludoObject.isOnlineGame) {
-			var data = {"dice" : true, "game_index": ludoObject.onlineGameIndex, "player": ludoObject.player.color, "number" : 6};
+			var data = {"dice" : true, 
+						"game_index": ludoObject.onlineGameIndex, 
+						"number" : 6};
 			ludoObject.connection.send( JSON.stringify(data) );
 		}
 	},
@@ -2595,10 +2659,42 @@ Dice.prototype = {
 		
 		if (ludoObject.isOnlineGame) {
 			
+			
+			// we need to find out if the next player has left the game
+			var player = undefined;
+			var color = undefined;
+			
+			// and is now a computer player
+			if (ludoObject.player.color == "yellow") {
+				player = ludoObject.player2;
+				color = "red";
+			} else if (ludoObject.player.color == "red") {
+				player = ludoObject.player3;
+				color = "blue";
+			} else if (ludoObject.player.color == "blue") {
+				player = ludoObject.player4;
+				color = "green";
+			} else if (ludoObject.player.color == "green") {
+				player = ludoObject.player1;
+				color = "yellow";
+			}
+			
 			ludoObject.player.active = false;
 			
-			var data = {'switch_player': true, 'game_index': ludoObject.onlineGameIndex, 'color': ludoObject.player.color}
+			var data = {'switch_player'	: true, 
+						'game_index'	: ludoObject.onlineGameIndex, 
+						'color'			: ludoObject.player.color}
 			ludoObject.connection.send( JSON.stringify(data) );
+			
+			if (player.computer) {
+				var data2 = {'computer_roll' : true,
+							 'game_index'	 : ludoObject.onlineGameIndex, 
+							 'computer_color': color,
+							 'all_in_home'	 : player.allInHome}
+				setTimeout(function() {
+					ludoObject.connection.send( JSON.stringify(data2) );
+				}, 250);
+			}
 			
 		// if this is not an online game 
 		} else {

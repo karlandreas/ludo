@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 require 'em-websocket'
 require 'json'
+# require 'actiontimer'
 
 class Game
 	
@@ -43,11 +44,11 @@ class Game
 		@channel.push(JSON.generate(update_hash))
 	end
 	
-	def show_rolled_number(dice)
+	def show_rolled_number(number)
 		# we create a hash to push the dice coords to all players
 		dice_hash = Hash.new
 		dice_hash['dice'] = true
-		dice_hash['number'] = dice['number']
+		dice_hash['number'] = number
 		
 		@channel.push(JSON.generate(dice_hash))
 	end
@@ -72,6 +73,16 @@ class Game
 		piece_hash['diceroll'] 	 = diceroll
 		
 		@channel.push(JSON.generate(piece_hash))
+	end
+	
+	def handle_computer_roll(color, dice_roll)
+		# we create a hash to push piece color index and move-to position
+		computer_roll_hash = Hash.new
+		computer_roll_hash['computer_roll'] = true
+		computer_roll_hash['color'] = color
+		computer_roll_hash['dice_roll'] = dice_roll
+		
+		@channel.push(JSON.generate(computer_roll_hash))
 	end
 	
 	def greyout(color, index, block)
@@ -132,11 +143,19 @@ end # end class
 
 class Player
 	
-	attr_accessor :name, :color, :sid
+	attr_accessor :name, :color, :computer, :allInHome, :diceRoll, :sid
 		
 	def initialize(color, sid)
 		@color = color
 		@sid = sid
+	end
+	
+	def roll_dice
+		random = Random.new
+		
+		@diceRoll = random.rand(6) + 1
+		
+		return @diceRoll
 	end
 	
 end # end class
@@ -235,8 +254,8 @@ EM.run {
 		
 		# handle dice roll
 		if json_obj['dice']
-			@games_arr[json_obj['game_index'].to_i].show_rolled_number(json_obj)
-			
+			num = json_obj['number']
+			@games_arr[json_obj['game_index'].to_i].show_rolled_number(num)
 		end
 		
 		# handle position highlight
@@ -254,7 +273,76 @@ EM.run {
 		# handle swich player
 		if json_obj['switch_player']
 			@games_arr[json_obj['game_index'].to_i].switch_player(json_obj['color'])
+		end
+		
+		# handle computer roll
+		if json_obj['computer_roll']
+
+			game = @games_arr[json_obj['game_index'].to_i]
+			# timer = ActionTimer::Timer.new
+				
+			game.players_arr.each do |player|
+				
+				# we get the computer player
+				if player.color == json_obj['computer_color']
+					
+					player.allInHome = false
+					
+					puts "----- Rolling to move a piece -----"
+					player.roll_dice()
+					
+					puts "Rolled: #{player.diceRoll}"
+					game.show_rolled_number(player.diceRoll)
+					game.handle_computer_roll(player.color, player.diceRoll)
+					
+					# puts "Switching player"
+					# game.switch_player(player.color)
+					
+					puts "----- End "
+					player.diceRoll = nil
+					
+				end
+			end
+		end
+		
+		# handle computer has all in home
+		if json_obj['all_in_home']
 			
+			game = @games_arr[json_obj['game_index'].to_i]
+			
+			game.players_arr.each do |player|
+				
+				# we get the computer player
+				if player.color == json_obj['computer_color']
+					player.allInHome = true
+					
+					puts "----- Rolling to get out of Home -----"
+					
+					# we roll the dice 3 times
+					3.times do |count|
+						break if player.diceRoll == 6
+						# sleep(1)
+						
+						player.roll_dice()
+					
+						game.show_rolled_number(player.diceRoll)
+						
+						puts "Rolled: #{player.diceRoll}"
+						
+						# if the player got a six we move the first piece
+						if player.diceRoll == 6
+							game.move_piece(player.color, 0, -1)
+							puts "Moving on a six"
+							puts "----- End "
+						end
+						
+						if count == 2 && player.diceRoll != 6
+							game.switch_player(player.color)
+							puts "----- End "
+						end
+					end
+				end
+			end			
 		end
 		
 		# handle no movable pieces

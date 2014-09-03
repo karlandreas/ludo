@@ -1,25 +1,24 @@
-
 var LudoObj = function() {
 	
 	// !  ---------------------- GAMEBOARD cells-------------------------------
 	
 	// goal cell
-	this.goal = document.getElementById('goal_cell');
+	this.goal = new Field('goal_cell');
 	
-	// ! GREEN path cells ------------------------------
-	this.g01 = document.getElementById('x6y7');
-	this.g02 = document.getElementById('x5y7');
-	this.g03 = document.getElementById('x4y7');
-	this.g04 = document.getElementById('x3y7');
-	this.g05 = document.getElementById('x2y7');
-	this.g06 = document.getElementById('x1y7');
-	this.g07 = document.getElementById('x1y8');
-	this.g08 = document.getElementById('x1y9');
-	this.g09 = document.getElementById('x2y9');
-	this.g10 = document.getElementById('x3y9');
-	this.g11 = document.getElementById('x4y9');
-	this.g12 = document.getElementById('x5y9');
-	this.g13 = document.getElementById('x6y9');
+	// GREEN path cells ------------------------------
+	this.g01 = new Field('x6y7');
+	this.g02 = new Field('x5y7');
+	this.g03 = new Field('x4y7');
+	this.g04 = new Field('x3y7');
+	this.g05 = new Field('x2y7');
+	this.g06 = new Field('x1y7');
+	this.g07 = new Field('x1y8');
+	this.g08 = new Field('x1y9');
+	this.g09 = new Field('x2y9');
+	this.g10 = new Field('x3y9');
+	this.g11 = new Field('x4y9');
+	this.g12 = new Field('x5y9');
+	this.g13 = new Field('x6y9');
 	
 	// green path array
 	this.g_path_cells = new Array(this.g01, 
@@ -37,11 +36,11 @@ var LudoObj = function() {
 								  this.g13);
 								  
 	// green home stretch cells
-	this.g14 = document.getElementById('x2y8');
-	this.g15 = document.getElementById('x3y8');
-	this.g16 = document.getElementById('x4y8');
-	this.g17 = document.getElementById('x5y8');
-	this.g18 = document.getElementById('x6y8');
+	this.g14 = new Field('x2y8');
+	this.g15 = new Field('x3y8');
+	this.g16 = new Field('x4y8');
+	this.g17 = new Field('x5y8');
+	this.g18 = new Field('x6y8');
 	
 	// green homestretch array
 	this.g_homestretch_cells = new Array(this.g14, 
@@ -51,20 +50,21 @@ var LudoObj = function() {
 										 this.g18,
 										 this.goal);
 	
-	// ! BLUE path cells ------------------------------
-	this.b01 = document.getElementById('x7y10');
-	this.b02 = document.getElementById('x7y11');
-	this.b03 = document.getElementById('x7y12');
-	this.b04 = document.getElementById('x7y13');
-	this.b05 = document.getElementById('x7y14');
-	this.b06 = document.getElementById('x7y15');
-	this.b07 = document.getElementById('x8y15');
-	this.b08 = document.getElementById('x9y15');
-	this.b09 = document.getElementById('x9y14');
-	this.b10 = document.getElementById('x9y13');
-	this.b11 = document.getElementById('x9y12');
-	this.b12 = document.getElementById('x9y11');
-	this.b13 = document.getElementById('x9y10');
+	// BLUE path cells ------------------------------
+	this.b01 = new Field('x7y10');
+	this.b02 = new Field('x7y11');
+	this.b03 = new Field('x7y12');
+	this.b04 = new Field('x7y13');
+	this.b05 = new Field('x7y14');
+	this.b06 = new Field('x7y15');
+	this.b07 = new Field('x8y15');
+	this.b08 = new Field('x9y15');
+	this.b09 = new Field('x9y14');
+	this.b10 = new Field('x9y13');
+	this.b11 = new Field('x9y12');
+	this.b12 = new Field('x9y11');
+	this.b13 = new Field('x9y10');
+	
 	// blue path array
 	this.b_path_cells = new Array(this.b01, 
 								  this.b02, 
@@ -79,12 +79,14 @@ var LudoObj = function() {
 								  this.b11, 
 								  this.b12, 
 								  this.b13);
+	
 	// blue home stretch cells
-	this.b14 = document.getElementById('x8y14');
-	this.b15 = document.getElementById('x8y13');
-	this.b16 = document.getElementById('x8y12');
-	this.b17 = document.getElementById('x8y11');
-	this.b18 = document.getElementById('x8y10');
+	this.b14 = new Field('x8y14');
+	this.b15 = new Field('x8y13');
+	this.b16 = new Field('x8y12');
+	this.b17 = new Field('x8y11');
+	this.b18 = new Field('x8y10');
+	
 	// blue homestretch array
 	this.b_homestretch_cells = new Array(this.b14, 
 										this.b15, 
@@ -93,20 +95,21 @@ var LudoObj = function() {
 										this.b18,
 										this.goal);
 	
-	// ! RED path cells -------------------------------
-	this.r01 = document.getElementById('x10y9');
-	this.r02 = document.getElementById('x11y9');
-	this.r03 = document.getElementById('x12y9');
-	this.r04 = document.getElementById('x13y9');
-	this.r05 = document.getElementById('x14y9');
-	this.r06 = document.getElementById('x15y9');
-	this.r07 = document.getElementById('x15y8');
-	this.r08 = document.getElementById('x15y7');
-	this.r09 = document.getElementById('x14y7');
-	this.r10 = document.getElementById('x13y7');
-	this.r11 = document.getElementById('x12y7');
-	this.r12 = document.getElementById('x11y7');
-	this.r13 = document.getElementById('x10y7');
+	// RED path cells -------------------------------
+	this.r01 = new Field('x10y9');
+	this.r02 = new Field('x11y9');
+	this.r03 = new Field('x12y9');
+	this.r04 = new Field('x13y9');
+	this.r05 = new Field('x14y9');
+	this.r06 = new Field('x15y9');
+	this.r07 = new Field('x15y8');
+	this.r08 = new Field('x15y7');
+	this.r09 = new Field('x14y7');
+	this.r10 = new Field('x13y7');
+	this.r11 = new Field('x12y7');
+	this.r12 = new Field('x11y7');
+	this.r13 = new Field('x10y7');
+	
 	// red path array
 	this.r_path_cells = new Array(this.r01, 
 								  this.r02, 
@@ -121,12 +124,14 @@ var LudoObj = function() {
 								  this.r11, 
 								  this.r12, 
 								  this.r13);
+	
 	// red home stretch cells
-	this.r14 = document.getElementById('x14y8');
-	this.r15 = document.getElementById('x13y8');
-	this.r16 = document.getElementById('x12y8');
-	this.r17 = document.getElementById('x11y8');
-	this.r18 = document.getElementById('x10y8');
+	this.r14 = new Field('x14y8');
+	this.r15 = new Field('x13y8');
+	this.r16 = new Field('x12y8');
+	this.r17 = new Field('x11y8');
+	this.r18 = new Field('x10y8');
+	
 	// red homestretch array
 	this.r_homestretch_cells = new Array(this.r14, 
 										 this.r15, 
@@ -135,20 +140,21 @@ var LudoObj = function() {
 										 this.r18,
 										 this.goal);
 					
-	// ! YELLOW path cells ----------------------------
-	this.y01 = document.getElementById('x9y6');
-	this.y02 = document.getElementById('x9y5');
-	this.y03 = document.getElementById('x9y4');
-	this.y04 = document.getElementById('x9y3');
-	this.y05 = document.getElementById('x9y2');
-	this.y06 = document.getElementById('x9y1');
-	this.y07 = document.getElementById('x8y1');
-	this.y08 = document.getElementById('x7y1');
-	this.y09 = document.getElementById('x7y2');
-	this.y10 = document.getElementById('x7y3');
-	this.y11 = document.getElementById('x7y4');
-	this.y12 = document.getElementById('x7y5');
-	this.y13 = document.getElementById('x7y6');
+	// YELLOW path cells ----------------------------
+	this.y01 = new Field('x9y6');
+	this.y02 = new Field('x9y5');
+	this.y03 = new Field('x9y4');
+	this.y04 = new Field('x9y3');
+	this.y05 = new Field('x9y2');
+	this.y06 = new Field('x9y1');
+	this.y07 = new Field('x8y1');
+	this.y08 = new Field('x7y1');
+	this.y09 = new Field('x7y2');
+	this.y10 = new Field('x7y3');
+	this.y11 = new Field('x7y4');
+	this.y12 = new Field('x7y5');
+	this.y13 = new Field('x7y6');
+	
 	// yellow path array
 	this.y_path_cells = new Array(this.y01, 
 								  this.y02, 
@@ -163,12 +169,14 @@ var LudoObj = function() {
 								  this.y11, 
 								  this.y12, 
 								  this.y13);
+	
 	// yellow home stretch cells
-	this.y14 = document.getElementById('x8y2');
-	this.y15 = document.getElementById('x8y3');
-	this.y16 = document.getElementById('x8y4');
-	this.y17 = document.getElementById('x8y5');
-	this.y18 = document.getElementById('x8y6');
+	this.y14 = new Field('x8y2');
+	this.y15 = new Field('x8y3');
+	this.y16 = new Field('x8y4');
+	this.y17 = new Field('x8y5');
+	this.y18 = new Field('x8y6');
+	
 	// yellow homestretch array
 	this.y_homestretch_cells = new Array(this.y14, 
 										 this.y15, 
@@ -182,7 +190,7 @@ var LudoObj = function() {
 	
 	// ! ---------------------------- VARIABLES ----------------------------------
 	
-	this.spritesheet 	= new Image();
+	// html
 	this.canvas 		= document.getElementById('game_canvas');
 	this.context 		= this.canvas.getContext('2d');
 	
@@ -199,6 +207,7 @@ var LudoObj = function() {
 	this.pausedDiv		= document.createElement('div');
 	this.startDiv		= document.createElement('div');
 	// images
+	this.spritesheet 	= new Image();
 	this.msgImg			= new Image();
 	this.winnerImg		= new Image();
 	this.pauseImg		= new Image();
@@ -250,6 +259,7 @@ var LudoObj = function() {
 	this.y_H2 = undefined;
 	this.y_H3 = undefined;
 	this.y_H4 = undefined;
+	
 	// array of all pieces
 	this.gamePiecesArray = undefined;
 	
@@ -490,25 +500,21 @@ LudoObj.prototype = {
 		
 		this.player1 = new Player("yellow", "Compu Y");
 		this.player1.init();
-/* 		this.player1.computer = false;  */
 		this.player1.pieces = this.gamePiecesArray[0];
 		this.players.push(this.player1); // push player into the players array
 		
 		this.player2 = new Player("red", "Compu R");
 		this.player2.init();
-/* 		this.player2.computer = false;  */
 		this.player2.pieces = this.gamePiecesArray[1];
 		this.players.push(this.player2); // push player into the players array
 		
 		this.player3 = new Player("blue", "Compu B");
 		this.player3.init();
-/* 		this.player3.computer = false;  */
 		this.player3.pieces = this.gamePiecesArray[2];
 		this.players.push(this.player3); // push player into the players array
 		
 		this.player4 = new Player("green", "Compu G");
 		this.player4.init();
-/* 		this.player4.computer = false;  */
 		this.player4.pieces = this.gamePiecesArray[3];
 		this.players.push(this.player4); // push player into the players array
 		
@@ -574,27 +580,34 @@ LudoObj.prototype = {
 	},
 	
 	onlineMessage: function(msg) {
+		
 		msgObject = JSON.parse(msg.data);
 		
 		// if another player has rolled the dice
 		if (msgObject.dice) {
 			if (msgObject.number == 1) {
-				ludoObject.dice.displayOne();
+				ludoObject.dice.img.style.marginLeft  	= '-32px';
+				ludoObject.dice.img.style.marginTop 	= '-23px';
 			}
 			else if (msgObject.number == 2) {
-				ludoObject.dice.displayTwo();
+				ludoObject.dice.img.style.marginLeft 	= '-126px';
+				ludoObject.dice.img.style.marginTop 	= '-23px';
 			}
 			else if (msgObject.number == 3) {
-				ludoObject.dice.displayThree();
+				ludoObject.dice.img.style.marginLeft 	= '-216px';
+				ludoObject.dice.img.style.marginTop 	= '-23px';
 			}
 			else if (msgObject.number == 4) {
-				ludoObject.dice.displayFour();
+				ludoObject.dice.img.style.marginLeft 	= '-32px';
+				ludoObject.dice.img.style.marginTop 	= '-109px';
 			}
 			else if (msgObject.number == 5) {
-				ludoObject.dice.displayFive();
+				ludoObject.dice.img.style.marginLeft 	= '-125px';
+				ludoObject.dice.img.style.marginTop 	= '-109px';
 			}
 			else if (msgObject.number == 6) {
-				ludoObject.dice.displaySix();
+				ludoObject.dice.img.style.marginLeft 	= '-216px';
+				ludoObject.dice.img.style.marginTop 	= '-109px';
 			}
 			return;
 		}
@@ -602,19 +615,10 @@ LudoObj.prototype = {
 		// if we have a position to highlight
 		if (msgObject.highlight) {
 			
-			ludoObject.player.diceRoll = msgObject.diceroll;
+			var player = ludoObject.getPlayerForColor(msgObject.color);
 			
-			if (msgObject.color == "yellow" && ludoObject.player.color != msgObject.color) {
-				ludoObject.highlightFields(ludoObject.player1.pieces[msgObject.index].piece);
-			}
-			else if (msgObject.color == "red" && ludoObject.player.color != msgObject.color) {
-				ludoObject.highlightFields(ludoObject.player2.pieces[msgObject.index].piece);
-			}
-			else if (msgObject.color == "blue" && ludoObject.player.color != msgObject.color) {
-				ludoObject.highlightFields(ludoObject.player3.pieces[msgObject.index].piece);
-			}
-			else if (msgObject.color == "green" && ludoObject.player.color != msgObject.color) {
-				ludoObject.highlightFields(ludoObject.player4.pieces[msgObject.index].piece);
+			if (ludoObject.player.color != msgObject.color) {
+				ludoObject.highlightFields(player.pieces[msgObject.index].piece, msgObject.diceroll);
 			}
 			
 			// we only want to reset the diceroll for online players not this player
@@ -630,47 +634,30 @@ LudoObj.prototype = {
 		// if we have a piece to move
 		if (msgObject.move_piece) {
 			
-			if (msgObject.color == "yellow" && ludoObject.player.color != msgObject.color) {
+			var player = ludoObject.getPlayerForColor(msgObject.color);
+			var nextNonComputerPlayer = ludoObject.getNextNonComputerPlayer(player.color);
+			
+			if (ludoObject.player.color != msgObject.color) {
 				
+				// if the diceRoll = -1 we a piece move out of home
 				if (msgObject.diceroll == -1) {
-					ludoObject.player1.pieces[msgObject.index].piece.moveToFirstPosition()
-				} 
-				else {
-					ludoObject.player1.diceRoll = msgObject.diceroll;
-					ludoObject.moveSelected(ludoObject.player1.pieces[msgObject.index].piece, ludoObject.player1);
-				}
-				
-			}
-			else if (msgObject.color == "red" && ludoObject.player.color != msgObject.color) {
-				
-				if (msgObject.diceroll == -1) {
-					ludoObject.player2.pieces[msgObject.index].piece.moveToFirstPosition()
-				}
-				else {
-					ludoObject.player2.diceRoll = msgObject.diceroll;
-					ludoObject.moveSelected(ludoObject.player2.pieces[msgObject.index].piece, ludoObject.player2);
-				}
-				
-			}
-			else if (msgObject.color == "blue" && ludoObject.player.color != msgObject.color) {
-				
-				if (msgObject.diceroll == -1) {
-					ludoObject.player3.pieces[msgObject.index].piece.moveToFirstPosition()
+					player.diceRoll = msgObject.diceroll;
+					player.allInHome = false;
+					player.pieces[msgObject.index].piece.moveToFirstPosition();
+					
+					// if the player is an online computer player
+					if (player.computer) {
+						
+						if (nextNonComputerPlayer.color == ludoObject.player.color) {
+							setTimeout(function() {
+								player.onlineSendCreateComputerRoll();
+							}, 1000);
+						}
+					}
 				}
 				else {
-					ludoObject.player3.diceRoll = msgObject.diceroll;
-					ludoObject.moveSelected(ludoObject.player3.pieces[msgObject.index].piece, ludoObject.player3);
-				}
-				
-			}
-			else if (msgObject.color == "green" && ludoObject.player.color != msgObject.color) {
-				
-				if (msgObject.diceroll == -1) {
-					ludoObject.player4.pieces[msgObject.index].piece.moveToFirstPosition()
-				}
-				else {
-					ludoObject.player4.diceRoll = msgObject.diceroll;
-					ludoObject.moveSelected(ludoObject.player4.pieces[msgObject.index].piece, ludoObject.player4);
+					player.diceRoll = msgObject.diceroll;
+					ludoObject.moveSelected(player.pieces[msgObject.index].piece, player);
 				}
 			}
 			
@@ -679,6 +666,64 @@ LudoObj.prototype = {
 				setTimeout(function() {
 					ludoObject.player.diceRoll = undefined;
 				}, 1000);
+			}
+			
+			return;
+		}
+		
+		// if we have an online computer player roll
+		if (msgObject.computer_roll) {
+			
+			var player = ludoObject.getPlayerForColor(msgObject.color);
+			var nextNonComputerPlayer = ludoObject.getNextNonComputerPlayer(player.color);
+			
+			player.diceRoll = msgObject.dice_roll;
+				
+			if (msgObject.dice_roll == 6) {
+				// we try to move a piece out of home
+				if (player.tryToMoveOutOfHome()) {
+					// we need to roll again..
+					console.log("Computer has one throw left..");
+					if (nextNonComputerPlayer.color == ludoObject.player.color) {
+						setTimeout(function() {
+							player.onlineSendCreateComputerRoll();
+						}, 1000);
+					}
+				}
+				// else if all pieces are in play, we try to make a move
+				else if (player.tryToMakeReadyToMove()) {
+					
+					setTimeout(function() {
+						// we move it
+						ludoObject.moveSelected(player.readyToMovePiece, player);
+						
+						// we need to roll again..
+						console.log("Computer has one throw left..");
+						
+						if (nextNonComputerPlayer.color == ludoObject.player.color) {
+							setTimeout(function() {
+								player.onlineSendCreateComputerRoll();
+							}, 1000);
+						}
+					}, 1000);
+				}
+			}
+			else {
+				
+				if (player.tryToMakeReadyToMove()) {
+					// if the piece is made ready to move 
+					setTimeout(function() {
+						// we move it
+						ludoObject.moveSelected(player.readyToMovePiece, player);
+						
+						// we now switch to the next player
+						if (nextNonComputerPlayer.color == ludoObject.player.color) {
+							setTimeout(function() {
+								player.onlineSwitchPlayer();
+							}, 1000);
+						}
+					}, 1000);
+				}
 			}
 			
 			return;
@@ -804,38 +849,21 @@ LudoObj.prototype = {
 		
 		// if this is the opening message setting the player's color
 		if (!isNaN(msgObject.game_index)) {
+			
+			// we set the received online game-index
 			ludoObject.onlineGameIndex = msgObject.game_index;
-			
-			if (msgObject.color == "yellow") {
-				ludoObject.toggleGameTypeForm();
-				ludoObject.player = ludoObject.player1;
-				setTimeout(function() {
-					ludoObject.player1.toggleNewPlayerForm();
-				}, 1000);
-			} 
-			else if (msgObject.color == "red") {
-				ludoObject.toggleGameTypeForm();
-				ludoObject.player = ludoObject.player2;
-				setTimeout(function() {
-					ludoObject.player2.toggleNewPlayerForm();
-				}, 1000);
-			}
-			else if (msgObject.color == "blue") {
-				ludoObject.toggleGameTypeForm();
-				ludoObject.player = ludoObject.player3;
-				setTimeout(function() {
-					ludoObject.player3.toggleNewPlayerForm();
-				}, 1000);
-			}
-			else if (msgObject.color == "green") {
-				ludoObject.toggleGameTypeForm();
-				ludoObject.player = ludoObject.player4;
-				setTimeout(function() {
-					ludoObject.player4.toggleNewPlayerForm();
-				}, 1000);
-			}
-			
+			// and remove the game-type-form
+			ludoObject.toggleGameTypeForm();
+			// we get the player for the color that was passed to us from the server
+			ludoObject.player = ludoObject.getPlayerForColor(msgObject.color);
+			// and set its connection sid
 			ludoObject.player.sid = msgObject.sid;
+			//after 1 second
+			setTimeout(function() {
+				// we display the player name form for the received color (player)
+				ludoObject.player.toggleNewPlayerForm();
+			}, 1000);
+				
 			return;
 		}
 		
@@ -1168,19 +1196,21 @@ LudoObj.prototype = {
 		return result;
 	},
 	
-	checkForBlockOnField: function(id) {
+	checkForBlockOnField: function(field) {
 		
 		var blockOnField = false;
-		var field = document.getElementById(id);
 		
 		// if there is more than one piece on this field
-		if (new Number(field.getAttribute('count')) > 1) {
+		if (field.count > 1) {
+		
+			// we log out the block
+			console.log("BLOCK! " + field.id + " has " + field.count + " pieces on it");
 			
 			// we loop through our own pieces
 			for (var i = 0; i < 4; i++) {
 				
 				// if our piece's id does not match the id on the field, there is a block
-				if (this.player.pieces[i].piece.pathID != id) {
+				if (this.player.pieces[i].piece.pathID != field.id) {
 					
 					// then there is a block on the pieces path
 					blockOnField = true;
@@ -1214,7 +1244,7 @@ LudoObj.prototype = {
 				break;
 			}
 			
-			if (this.checkForBlockOnField(piece.path[i].id)) {
+			if (this.checkForBlockOnField(piece.path[i])) {
 				blockOnIndex = i;
 				breakFieldChecks = true;
 			}
@@ -1239,7 +1269,6 @@ LudoObj.prototype = {
 					
 					// if we find a competitor on our safe-field id
 					if (this.players[i].pieces[j].piece.pathID == id) {
-						
 						result = true;
 					}
 				}
@@ -1279,28 +1308,84 @@ LudoObj.prototype = {
 		return color;
 	},
 	
-	getPieceOnID: function(id) {
+	getCompetitorPieceOnID: function(id, color) {
 		
 		var piece = undefined;
 		var breakOuter  = false;
 		
+		// we loop through the players
 		for (var i = 0; i < 4; i++) {
 			
 			if (breakOuter) {
 				break;
 			}
 			
-			for (var j = 0; j < 4; j++) {
+			// excluding ourself
+			if (this.players[i].color != color) {
 				
-				if (ludoObject.players[i].pieces[j].piece.pathID == id) {
-					piece = ludoObject.players[i].pieces[j].piece;
-					breakOuter = true;
-					break;
+				// we loop through the competitors pieces
+				for (var j = 0; j < 4; j++) {
+					
+					// if we find one on the specified id
+					if (ludoObject.players[i].pieces[j].piece.pathID == id) {
+						
+						// we set it to be returned
+						piece = ludoObject.players[i].pieces[j].piece;
+						breakOuter = true;
+						break;
+					}
 				}
+			
 			}
 		}
 		
 		return piece;
+	},
+	
+	getNextPlayer: function(color) {
+		if (color == "yellow") {
+			return this.player2;
+		}
+		else if (color == "red") {
+			return this.player3;
+		}
+		else if (color == "blue") {
+			return this.player4;
+		}
+		else if (color == "green") {
+			return this.player1;
+		}
+	},
+	
+	getNextNonComputerPlayer: function(color) {
+		
+		if (color == "yellow" && !this.player2.computer) {
+			return this.player2;
+		}
+		else if (color == "red" && !this.player3.computer) {
+			return this.player3;
+		}
+		else if (color == "blue" && !this.player4.computer) {
+			return this.player4;
+		}
+		else if (color == "green" && !this.player1.computer) {
+			return this.player1;
+		}
+	},
+	
+	getPlayerForColor: function(color) {
+		if (color == "yellow") {
+			return this.player1;
+		}
+		else if (color == "red") {
+			return this.player2;
+		}
+		else if (color == "blue") {
+			return this.player3;
+		}
+		else if (color == "green") {
+			return this.player4;
+		}
 	},
 	
 	checkIfCanMoveToGoal: function(piece) {
@@ -1308,10 +1393,12 @@ LudoObj.prototype = {
 		var result = false;
 		var piece_index = undefined;
 		
+		// if this is an online game 
 		if (this.isOnlineGame) {
-			// if this is an online game we need the index of the piece to move
+			
 			for (var i = 0; i < 4; i++) {
 				
+				// we need the index of the piece to move
 				if (this.player.pieces[i].piece.pathID == piece.pathID) {
 					piece_index = i;
 				}
@@ -1338,15 +1425,11 @@ LudoObj.prototype = {
 		// or if he hits the goal cell
 		else if (piece.pathIndex + this.player.diceRoll + 1 == piece.path.length) {
 						
-			var pathIndex = piece.pathIndex;
-			var tmpCount = piece.path[pathIndex].getAttribute('count');
-
 			this.player.readyToMove = false;
 			this.player.piecesInGoal++;
+			piece.path[piece.pathIndex].count = new Number( piece.path[ piece.pathIndex ].count ) - 1;
 			
 			piece.moveToGoal(this.player.piecesInGoal);
-			
-			piece.path[pathIndex].setAttribute('count', new Number(tmpCount) - 1);
 			
 			// and if it's an online game we send move to goal
 			if (this.isOnlineGame) {
@@ -1370,21 +1453,21 @@ LudoObj.prototype = {
 	greyOutFields: function(piece, blockIndex) {
 					
 		for (var i = piece.pathIndex; i <= blockIndex; i++) {
-			piece.path[i].style.backgroundColor = "grey";
+			piece.path[i].cell.style.backgroundColor = "grey";
 		}
 		
 		setTimeout(function() {
 			ludoObject.clearHighlightedFields();
-		}, 2000);
+		}, 1500);
 		
 	},
 	
-	highlightFields: function(piece) {
+	highlightFields: function(piece, diceRoll) {
 		
 		// we highlight our current field
-		piece.path[piece.pathIndex].style.backgroundColor = 'aquamarine';
+		piece.path[piece.pathIndex].cell.style.backgroundColor = 'aquamarine';
 		// and the position to move to
-		piece.highlightMoveToPos(this.player.diceRoll);
+		piece.highlightMoveToPos(diceRoll);
 			
 	},
 	
@@ -1392,54 +1475,54 @@ LudoObj.prototype = {
 		
 		for (var i = 0; i < this.g_path_cells.length; i++) {
 			if(i == 8) {
-				this.g_path_cells[i].style.backgroundColor = 'lime';
+				this.g_path_cells[i].cell.style.backgroundColor = 'lime';
 			}
 			else {
-				this.g_path_cells[i].style.backgroundColor = 'white';
+				this.g_path_cells[i].cell.style.backgroundColor = 'white';
 			}
 		}
 		
 		for (var i = 0; i < this.g_homestretch_cells.length; i++) {
-			this.g_homestretch_cells[i].style.backgroundColor = 'lime';
+			this.g_homestretch_cells[i].cell.style.backgroundColor = 'lime';
 		}
 		
 		for (var i = 0; i < this.b_path_cells.length; i++) {
 			if(i == 8) {
-				this.b_path_cells[i].style.backgroundColor = 'aqua';
+				this.b_path_cells[i].cell.style.backgroundColor = 'aqua';
 			}
 			else {
-				this.b_path_cells[i].style.backgroundColor = 'white';
+				this.b_path_cells[i].cell.style.backgroundColor = 'white';
 			}
 		}
 		
 		for (var i = 0; i < this.b_homestretch_cells.length; i++) {
-			this.b_homestretch_cells[i].style.backgroundColor = 'aqua';
+			this.b_homestretch_cells[i].cell.style.backgroundColor = 'aqua';
 		}
 		
 		for (var i = 0; i < this.r_path_cells.length; i++) {
 			if(i == 8) {
-				this.r_path_cells[i].style.backgroundColor = 'red';
+				this.r_path_cells[i].cell.style.backgroundColor = 'red';
 			}
 			else {
-				this.r_path_cells[i].style.backgroundColor = 'white';
+				this.r_path_cells[i].cell.style.backgroundColor = 'white';
 			}
 		}
 		
 		for (var i = 0; i < this.r_homestretch_cells.length; i++) {
-			this.r_homestretch_cells[i].style.backgroundColor = 'red';
+			this.r_homestretch_cells[i].cell.style.backgroundColor = 'red';
 		}
 		
 		for (var i = 0; i < this.y_path_cells.length; i++) {
 			if (i == 8) {
-				this.y_path_cells[i].style.backgroundColor = 'yellow';
+				this.y_path_cells[i].cell.style.backgroundColor = 'yellow';
 			}
 			else {
-				this.y_path_cells[i].style.backgroundColor = 'white';
+				this.y_path_cells[i].cell.style.backgroundColor = 'white';
 			}
 		}
 		
 		for (var i = 0; i < this.y_homestretch_cells.length; i++) {
-			this.y_homestretch_cells[i].style.backgroundColor = 'yellow';
+			this.y_homestretch_cells[i].cell.style.backgroundColor = 'yellow';
 		}
 	},
 	
@@ -1447,13 +1530,15 @@ LudoObj.prototype = {
 		
 		// first we get the indexPath, count of the field we are on, id and we set a movingPieceFromSafe to false
 		var indexPath = piece.pathIndex;
-		var tmpCount  = piece.path[indexPath].getAttribute('count');
+		var tmpCount  = piece.path[indexPath].count;
 		var id 		  = piece.path[indexPath].id;
 		var movingPieceFromSafe = false;
 		
-		// this will only have an affect if there is more than one piece one the field
-		// when we move away from a multiple-position field we draw the underlying piece from count - 1
-		piece.setSpritesheetCoordsTo(new Number(tmpCount) - 1);
+		// when a piece moves away from a multiple piece position
+		// we want to show the moving piece as one piece from the spritesheet
+		if (tmpCount > 1) {
+			piece.setSpritesheetCoordsTo(new Number(tmpCount) - 1);
+		}
 		
 		// if we are moving away from our safe-field
 		// we don't want to reduce the count if we have a mixed-color double position on the field
@@ -1466,31 +1551,33 @@ LudoObj.prototype = {
 				if (!this.checkForDoublePosOnSafeField(player, id)) {
 					
 					// if there is no competitor double-position we can reduse the field count by 1
-					piece.path[indexPath].setAttribute('count', new Number(tmpCount) - 1);
+					piece.path[indexPath].count = tmpCount - 1;
 				} 
 		}
 		// if we are not moving away from a safe field we reduce the count by 1 no mather what.
 		else if (id != "x7y2" && id != "x14y7" && id != "x9y14" && id != "x2y9") {
 			
-			piece.path[indexPath].setAttribute('count', new Number(tmpCount) - 1);
+			piece.path[indexPath].count = new Number(tmpCount) - 1;
 		}
 		// if the color moving away from a safe-field is not the same as the safe-field color 
 		else if (tmpCount >= 1) { // and tmpCount is higher than or equal to 1
 			
+			
 			// and if there is no double-position we reduce the count by 1
 			if (!this.checkForDoublePosOnSafeField(player, id)) {
-				piece.path[indexPath].setAttribute('count', new Number(tmpCount) - 1);
+				piece.path[indexPath].count = new Number(tmpCount) - 1;
 			}
 			else if (tmpCount > 3) {
-				piece.path[indexPath].setAttribute('count', new Number(tmpCount) - 1);
+				piece.path[indexPath].count = new Number(tmpCount) - 1;
 			}
 			else if (tmpCount > 1) {
-				piece.path[indexPath].setAttribute('count', 1);
+				piece.path[indexPath].count = 1;
 			}
 		}
 		
 		// we set the destination pathIndex on the piece
 		piece.pathIndex = player.diceRoll + indexPath;
+		// console.log(player.color + " is moving from " + indexPath + " to " + (player.diceRoll + indexPath));
 		
 		// while moving this piece will show as one piece
 		piece.setSpritesheetCoordsTo(1);
@@ -1522,12 +1609,19 @@ LudoObj.prototype = {
 	}
 }
 
+// !  ---------------------- Field object-------------------------------
+var Field = function(id) {
+	
+	this.id		= id;
+	this.cell 	= document.getElementById(id);
+	this.count 	= 0;
+}
+
+// ! init's
 var ludoObject = new LudoObj();
 ludoObject.setupGame();
 ludoObject.setupImages();
 ludoObject.initializePlayers();
-/* ludoObject.startGame(); */
-
 
 // ! ---------------------------- EVENT HANDLERS ----------------------------
 
@@ -1654,7 +1748,7 @@ ludoObject.canvas.onmouseup = function(e) {
 							
 							if (block == 0) {
 								// we highlight it's path and set player ready to move
-								ludoObject.highlightFields(ludoObject.player.pieces[i].piece);
+								ludoObject.highlightFields(ludoObject.player.pieces[i].piece, ludoObject.player.diceRoll);
 								ludoObject.player.readyToMove = true;
 								
 								// and if it's an online game we highlight the path on the other player's boards as well
@@ -1722,7 +1816,7 @@ ludoObject.canvas.onmouseup = function(e) {
 							// if there is no block on the path
 							if (block == 0) {
 								// we highlight it's path and set player ready to move
-								ludoObject.highlightFields(ludoObject.player.pieces[i].piece);
+								ludoObject.highlightFields(ludoObject.player.pieces[i].piece, ludoObject.player.diceRoll);
 								ludoObject.player.readyToMove = true;
 								
 								// and if it's an online game we highlight the path on the other player's boards as well
@@ -1739,13 +1833,16 @@ ludoObject.canvas.onmouseup = function(e) {
 							}
 							// else if there is a block on the path
 							else {
-								
-								// if this player can't move aby other piece
+								// if this player can't move any other piece
 								if (ludoObject.dice.checkForAnyMovablePieces() < 1) {
+									
+									// else we grey out the path cells up to the block
+									ludoObject.greyOutFields(ludoObject.player.pieces[i].piece, block);
 									
 									// we end this players turn, giving control to the next player
 									ludoObject.dice.endTurn();
 								}
+								// else if player has movable pieces
 								else {
 									
 									// else we grey out the path cells up to the block
@@ -1760,7 +1857,8 @@ ludoObject.canvas.onmouseup = function(e) {
 										ludoObject.connection.send( JSON.stringify(data) );
 										
 									} // end if online
-								} // end if any movable pieces
+									
+								} 
 							} // end if no block on path
 						} // end check for any movable pieces
 					} // end check for piece on coord

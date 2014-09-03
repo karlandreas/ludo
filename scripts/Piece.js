@@ -1,5 +1,3 @@
-
-
 var Piece = function(color, X, Y, sheet_left, sheet_top) {
 	
 	this.color = color;
@@ -45,67 +43,46 @@ Piece.prototype = {
 	
 	calculatePiecePos: function(i) {
 		
-		// debug
-		if (this.path[i] == undefined) {
-			console.log("Error: i = " + i);
-			console.log("Path Index: " + this.pathIndex);
-			console.log("In Home: " + this.inHome);
-			console.log(arguments.callee.caller.toString());
-		}
-		
-		var destinationX = this.path[i].offsetLeft;
-		var destinationY = this.path[i].offsetTop;
-		
 		// for every step we update the pieces position
 		if (this.step < this.stepLimit) {
-			this.left = (((destinationX - this.start_left) / this.stepLimit) * this.step) + this.start_left;
-			this.top = (((destinationY - this.start_top) / this.stepLimit) * this.step) + this.start_top;
+			this.left = (((this.path[i].cell.offsetLeft - this.start_left) / this.stepLimit) * this.step) + this.start_left;
+			this.top = (((this.path[i].cell.offsetTop - this.start_top) / this.stepLimit) * this.step) + this.start_top;
 			this.step++;
 		}
 		// on the second to last step we do aditional checks
 		else if (this.step == this.stepLimit) {
 			
 			// get the destination field count and id
-			var tmpCount 	= this.path[this.pathIndex].getAttribute('count');
+			var sprite_num	= undefined;
 			var id 		 	= this.path[this.pathIndex].id;
 			var pieceOnPath = undefined;
 			
-			// if there is not a competitor piece on the field we increase the fields count by 1
+			// if there is not a competitor piece on the field 
 			if (!this.checkForCompetitorPieceOnPos(id)) {
 				
-				// we need to check if there
-				tmpCount = new Number(tmpCount) + 1;
-				this.path[this.pathIndex].setAttribute('count',tmpCount);
+				// we set our spritesheet to the field count + 1
+				sprite_num = this.path[this.pathIndex].count + 1;
+				
+				// and set the field count to the same number
+				this.path[this.pathIndex].count = sprite_num;
 				
 			}
 			// if there is a competitor on the field 
 			else {
 				// we get the piece
-				pieceOnPath = ludoObject.getPieceOnID(id);
+				pieceOnPath = ludoObject.getCompetitorPieceOnID(id, this.color);
 				
-				// we check if it's on it's safe field
+				// for online purposes we need to get this player number
+				var player = ludoObject.getPlayerForColor(this.color);
+				
+				// we check if it's on a safe-field
 				if (ludoObject.checkForSafeField(id)) {
 					
 					// and if it is. Is the piece safe ( -the same color as the field)
 					if (pieceOnPath.color == ludoObject.getSafeFieldColor(id)) {
 					
-						// for online purposes we need to get this player number
-						var player = undefined;
-						
-						if (this.color == "yellow") {
-							player = ludoObject.player1;
-						}
-						else if (this.color == "red") {
-							player = ludoObject.player2;
-						}
-						else if (this.color == "blue") {
-							player = ludoObject.player3;
-						}
-						else if (this.color == "green") {
-							player = ludoObject.player4;
-						}
-						
-						// if we are moving on to a safe-field with a piece, we set an offset for our piece
+						// if we are moving on to a safe-field with one piece, (can not be a block because we have already checked this)
+						// we set an offset for our piece
 						this.setSafeFieldOffset(id);
 						
 						// we also have to check if we have a piece there already
@@ -113,38 +90,58 @@ Piece.prototype = {
 							
 							if (player.pieces[i].piece.pathID == id) {
 								
-								// if we do we increase the count of the safe-field by 1
-								tmpCount = new Number(tmpCount) + 1;
-								this.path[this.pathIndex].setAttribute('count',tmpCount);
+								// if we do we set our spritesheet to the field count + 1
+								sprite_num = this.path[this.pathIndex].count + 1;
+								
+								// and set the field count to the same number
+								this.path[this.pathIndex].count = sprite_num;
 								break;
 							}
 						}
+						
+						console.log(player.color + " is moving on to safe-field " + id + " Setting count to: " + this.path[this.pathIndex].count);
 					}
-					// else if we are moving on to a field with a color that is not safe
+					// else if we are moving on to a safe-field with a color that is not safe
 					else {
 						
-						// we check to see if it's a block
-						if (ludoObject.checkForBlockOnField(id)) {
+						// we check to see if it's a block, 
+						// we only do this if the piece comming in is moving on to it's own safe-field
+						if (this.path[this.pathIndex].count > 1) {
 							
-							// if it's a block we offset our piece on the safe field
-							tmpCount = 1; // and set it's spritesheet coords to the single piece, !THIS COULD BE 2 IN RARE EVENTS..
+							// if it's a block we set our spritesheet to the count of own pieces on own safe-field
+							var tmpCount = 1;
+							for (var i = 0; i < 4; i++) {
+								if (player.pieces[i].piece.pathID == id) {
+									tmpCount++;
+								}
+							}
+							sprite_num = tmpCount;
+							
+							// and leave the field-count to the count of the existing block
+							
+							// finally we offset our single piece beside the block
 							this.setSafeFieldOffset(id);
 						}
 						else {
-							// if it's not a block, we hit it home
+							// if it's not a block, we set the sprite sheet to display a single piece
+							sprite_num = 1;
+							// and hit the competitor piece home
 							pieceOnPath.moveToHomePosition();
 						}
+
 					}
 				}
-				// if this is not a safe-field 
+				// if the competitor piece is not on a safe-field 
 				else {
-					// we hit the piece home
+					// we set the sprite sheet to display a single piece
+					sprite_num = 1;
+					// and hit the competitor piece home
 					pieceOnPath.moveToHomePosition();
 				}
 			}
 			
 			
-			this.setSpritesheetCoordsTo(tmpCount);
+			this.setSpritesheetCoordsTo(sprite_num);
 			this.step++;
 		}
 		// when we have reached our destination we stop and give up control
@@ -155,6 +152,7 @@ Piece.prototype = {
 			this.start_top 		= this.top;
 			this.selected 		= false;
 			this.pathID			= this.path[this.pathIndex].id;
+			console.log(this.color + " reached destination: " + this.pathID);
 		}
 	},
 	
@@ -372,13 +370,13 @@ Piece.prototype = {
 		this.setSelected();
 		
 		var moveToPos = this.pathIndex + diceRoll;
-		this.path[moveToPos].style.backgroundColor = 'bisque';
+		this.path[moveToPos].cell.style.backgroundColor = 'bisque';
 		
 		this.canMoveTo = {
-						x1: this.path[moveToPos].offsetLeft, 
-						y1: this.path[moveToPos].offsetTop,
-						x2: this.path[moveToPos].offsetLeft + 32,
-						y2: this.path[moveToPos].offsetTop + 32
+						x1: this.path[moveToPos].cell.offsetLeft, 
+						y1: this.path[moveToPos].cell.offsetTop,
+						x2: this.path[moveToPos].cell.offsetLeft + 32,
+						y2: this.path[moveToPos].cell.offsetTop + 32
 						};
 	},
 	

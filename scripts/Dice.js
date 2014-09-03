@@ -1,4 +1,3 @@
-
 var Dice = function() {
 	
 	this.img 			= document.getElementById('dice_img');
@@ -20,7 +19,9 @@ Dice.prototype = {
 		this.img.style.marginTop 	= '-23px';
 		
 		if (this.diceIndex == this.numberOfRolls && ludoObject.isOnlineGame) {
-			var data = {"dice" : true, "game_index": ludoObject.onlineGameIndex, "player": ludoObject.player.color, "number" : 1};
+			var data = {"dice" 		 : true, 
+						"game_index" : ludoObject.onlineGameIndex, 
+						"number" 	 : 1};
 			ludoObject.connection.send( JSON.stringify(data) );
 		}
 	},
@@ -30,7 +31,9 @@ Dice.prototype = {
 		this.img.style.marginTop 	= '-23px';
 		
 		if (this.diceIndex == this.numberOfRolls && ludoObject.isOnlineGame) {
-			var data = {"dice" : true, "game_index": ludoObject.onlineGameIndex, "player": ludoObject.player.color, "number" : 2};
+			var data = {"dice" : true, 
+						"game_index": ludoObject.onlineGameIndex, 
+						"number" : 2};
 			ludoObject.connection.send( JSON.stringify(data) );
 		}
 	},
@@ -40,7 +43,9 @@ Dice.prototype = {
 		this.img.style.marginTop 	= '-23px';
 		
 		if (this.diceIndex == this.numberOfRolls && ludoObject.isOnlineGame) {
-			var data = {"dice" : true, "game_index": ludoObject.onlineGameIndex, "player": ludoObject.player.color, "number" : 3};
+			var data = {"dice" : true, 
+						"game_index": ludoObject.onlineGameIndex, 
+						"number" : 3};
 			ludoObject.connection.send( JSON.stringify(data) );
 		}
 	},
@@ -50,7 +55,9 @@ Dice.prototype = {
 		this.img.style.marginTop 	= '-109px';
 		
 		if (this.diceIndex == this.numberOfRolls && ludoObject.isOnlineGame) {
-			var data = {"dice" : true, "game_index": ludoObject.onlineGameIndex, "player": ludoObject.player.color, "number" : 4};
+			var data = {"dice" : true, 
+						"game_index": ludoObject.onlineGameIndex, 
+						"number" : 4};
 			ludoObject.connection.send( JSON.stringify(data) );
 		}
 	},
@@ -61,7 +68,9 @@ Dice.prototype = {
 		this.img.style.marginTop 	= '-109px';
 		
 		if (this.diceIndex == this.numberOfRolls && ludoObject.isOnlineGame) {
-			var data = {"dice" : true, "game_index": ludoObject.onlineGameIndex, "player": ludoObject.player.color, "number" : 5};
+			var data = {"dice" : true, 
+						"game_index": ludoObject.onlineGameIndex, 
+						"number" : 5};
 			ludoObject.connection.send( JSON.stringify(data) );
 		}
 	},
@@ -71,7 +80,9 @@ Dice.prototype = {
 		this.img.style.marginTop 	= '-109px';
 		
 		if (this.diceIndex == this.numberOfRolls && ludoObject.isOnlineGame) {
-			var data = {"dice" : true, "game_index": ludoObject.onlineGameIndex, "player": ludoObject.player.color, "number" : 6};
+			var data = {"dice" : true, 
+						"game_index": ludoObject.onlineGameIndex, 
+						"number" : 6};
 			ludoObject.connection.send( JSON.stringify(data) );
 		}
 	},
@@ -127,7 +138,7 @@ Dice.prototype = {
 					// we move it
 					ludoObject.moveSelected(ludoObject.player.readyToMovePiece, ludoObject.player);
 					ludoObject.dice.endTurn();
-				}, 1000);
+				}, 500);
 			}
 		}
 	},
@@ -274,7 +285,7 @@ Dice.prototype = {
 					// we don't want to check for a block on the Goal field
 					if (j < 57) {
 						// if we find a block in this pieces path, it's not movable and we break the loop and continue with the next piece
-						if (ludoObject.checkForBlockOnField(ludoObject.player.pieces[i].piece.path[j].id)) {
+						if (ludoObject.checkForBlockOnField(ludoObject.player.pieces[i].piece.path[j])) {
 						
 							blockOnPath = true;
 							break;
@@ -301,10 +312,26 @@ Dice.prototype = {
 		
 		if (ludoObject.isOnlineGame) {
 			
+			
+			// we need to find out if the next player has left the game
+			var player = ludoObject.getNextPlayer(ludoObject.player.color);
+			
 			ludoObject.player.active = false;
 			
-			var data = {'switch_player': true, 'game_index': ludoObject.onlineGameIndex, 'color': ludoObject.player.color}
-			ludoObject.connection.send( JSON.stringify(data) );
+			ludoObject.player.onlineSwitchPlayer();
+			
+			if (player.computer) {
+				// we set a short timeout before sending create computer roll to the server
+				setTimeout(function() {
+					if (player.allInHome) {
+						player.onlineTryToGetOutOfHome();
+					}
+					else {
+						player.onlineSendCreateComputerRoll();
+					}
+					
+				}, 250);
+			}
 			
 		// if this is not an online game 
 		} else {
@@ -365,6 +392,3 @@ Dice.prototype = {
 	}
 	
 }
-
-
-
