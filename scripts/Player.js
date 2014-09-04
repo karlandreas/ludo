@@ -22,6 +22,7 @@ var Player = function(color, name) {
 	
 	// online
 	this.sid			= undefined;
+	this.firstThrow 	= true;
 }
 
 Player.prototype = {
@@ -88,6 +89,22 @@ Player.prototype = {
 		}, 15000);
 	},
 	
+	displayStartGraphic: function() {
+		
+		if (this.firstThrow) {
+			
+			setTimeout(function() {
+				document.getElementsByTagName('body')[0].appendChild(ludoObject.startDiv);
+			}, 1000);
+			
+			setTimeout(function() {
+				document.getElementsByTagName('body')[0].removeChild(ludoObject.startDiv);
+			}, 3000);
+			
+			this.firstThrow = false;
+		}
+	},
+	
 	toggleNewPlayerForm: function() {
 		
 		this.newPlayerDiv.style.backgroundColor = this.color;
@@ -114,19 +131,18 @@ Player.prototype = {
 		}
 	},
 	
-	checkForCompetitorOnField: function(id) {
+	checkForCompetitorOnField: function(field) {
 		
 		var competitorOnField = false;
-		var field = document.getElementById(id);
 		
 		// if there is one and only one piece on the field
-		if (new Number(field.getAttribute('count')) == 1) {
+		if (field.count == 1) {
 			
 			// we loop through our own pieces
 			for (var i = 0; i < 4; i++) {
 				
 				// if none of our pieces has this field's id
-				if (this.pieces[i].piece.pathID != id) {
+				if (this.pieces[i].piece.pathID != field.id) {
 					
 					// then there is a competitor on this field
 					competitorOnField = true;
@@ -158,7 +174,7 @@ Player.prototype = {
 			if (!this.pieces[i].piece.inHome && !this.pieces[i].piece.inGoal && destinationIndex < ludoObject.PATH_LENGTH - 5) {
 				
 				// we look for a competitor on the destination field of our piece's path
-				if (this.checkForCompetitorOnField(this.pieces[i].piece.path[destinationIndex].id)) {
+				if (this.checkForCompetitorOnField(this.pieces[i].piece.path[destinationIndex])) {
 					
 					// if we find one we initiate safeFieldStrike to true
 					var safeFieldStrike = true;
@@ -177,7 +193,7 @@ Player.prototype = {
 					}
 					
 					// we then check for a block on this piece's path
-					var block = ludoObject.checkForBlockOnPath(this.pieces[i].piece);
+					var block = ludoObject.checkForBlockOnPath(this, this.pieces[i].piece, this.diceRoll);
 					
 					// if block returns 0
 					if (block == 0 && !safeFieldStrike) {
@@ -237,7 +253,7 @@ Player.prototype = {
 				if (this.pieces[i].piece.pathIndex == mostAdvancedIndex) {
 					
 					// we then check for a block on this piece's path
-					var block = ludoObject.checkForBlockOnPath(this.pieces[i].piece);
+					var block = ludoObject.checkForBlockOnPath(this, this.pieces[i].piece, this.diceRoll);
 					
 					// if block returns 0
 					if (block == 0) {
@@ -277,7 +293,7 @@ Player.prototype = {
 				if (!ludoObject.checkIfCanMoveToGoal(this.pieces[i].piece)) {
 					
 					// we check for a block on this piece's path
-					var block = ludoObject.checkForBlockOnPath(this.pieces[i].piece);
+					var block = ludoObject.checkForBlockOnPath(this, this.pieces[i].piece, this.diceRoll);
 					
 					// if block returns 0
 					if (block == 0) {
@@ -327,6 +343,23 @@ Player.prototype = {
 		ludoObject.connection.send( JSON.stringify(data) );
 	},
 	
+	onlineSendNoMovablePieces: function() {
+		var data = {"no_movable": true, 
+					"game_index": ludoObject.onlineGameIndex, 
+					"color": this.color};
+		ludoObject.connection.send( JSON.stringify(data) );
+	},
+	
+	onlineSetName: function(value, first) {
+		this.name = value;
+		this.computer = false;
+		this.playerDiv.innerHTML = "<p>" + this.name + "</p>";
+		
+		if (first) {
+			this.toggleNewPlayerForm();
+		}
+	},
+	
 	giveControl: function() {
 		
 		// if this player has all pieces in home
@@ -350,19 +383,7 @@ Player.prototype = {
 				ludoObject.dice.rollDice();
 			}, 500);
 		}
-	},
-	
-	onlineSetName: function(value, first) {
-		this.name = value;
-		this.computer = false;
-		this.playerDiv.innerHTML = "<p>" + this.name + "</p>";
-		
-		if (first) {
-			this.toggleNewPlayerForm();
-		}
-	},
-	
-	turn: function() {
-		this.active = true;
 	}
+	
 }
+

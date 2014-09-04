@@ -1,3 +1,7 @@
+// ! ---- INCLUDE TAGS ---
+
+@import "mixinCSS3.scss";
+
 body {
 	position: absolute;
 	margin: 0px;
@@ -180,19 +184,50 @@ linear-gradient(-45deg, yellow 25%, transparent 25%, transparent 75%, cyan 75%, 
 	h1 {
 		text-align: center;
 		color: white;
+		margin-top: -2px;
 	}
 }
 
 .game_type_btn {
 	position: relative;
 	width: 150px;
-	height:150px;
+	height:125px;
 	border: 5px solid black;
 	margin-left: 55px;
 	display: inline-block;
+	cursor: pointer;
+	
+	@include colorTransitions($seconds:0.5s);
 	
 	h2 {
 		margin-left: 10px;
+	}
+	
+	&:hover {
+		border: 5px solid white;
+		color: silver;
+	}
+}
+
+#simulate_btn {
+	position: relative;
+	width: 373px;
+	height: 70px;
+	border: 5px solid black;
+	margin-left: 55px;
+	margin-top: 15px;
+	display: block;
+	cursor: pointer;
+	
+	@include colorTransitions($seconds:0.5s);
+	
+	h2 {
+		margin-left: 35px;
+	}
+	
+	&:hover {
+		border: 5px solid white;
+		color: silver;
 	}
 }
 
@@ -201,8 +236,10 @@ linear-gradient(-45deg, yellow 25%, transparent 25%, transparent 75%, cyan 75%, 
 }
 
 #game_type_div {
-	display: none;
+	display: block;
 	background-color: fuchsia;
+	
+	@include noTextSelect();
 }
 
 #player1_div {

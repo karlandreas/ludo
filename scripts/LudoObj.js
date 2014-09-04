@@ -1,3 +1,4 @@
+// !  ---------------------- LudoObj object-------------------------------
 var LudoObj = function() {
 	
 	// !  ---------------------- GAMEBOARD cells-------------------------------
@@ -214,6 +215,7 @@ var LudoObj = function() {
 	this.startImg		= new Image();
 	// game type chooser
 	this.gameTypeDiv	= document.getElementById('game_type_div');
+	this.isSimulation 	= false;
 	
 	// game pause variable
 	this.paused			= false;
@@ -574,6 +576,18 @@ LudoObj.prototype = {
 		
 	},
 	
+	simulateGame: function() {
+		this.toggleGameTypeForm();
+		
+		for (var i = 0; i < 4; i++) {
+			this.players[i].computer = true;
+		}
+		
+		this.isSimulation = true;
+		
+		this.startGame();
+	},
+	
 	onlineOpen: function(event) {
 		console.log("Connection: " + event.type);
 		ludoObject.gameTypeDiv.innerHTML = "<h1>Connection: " + event.type + "</h1>";
@@ -675,16 +689,20 @@ LudoObj.prototype = {
 		if (msgObject.computer_roll) {
 			
 			var player = ludoObject.getPlayerForColor(msgObject.color);
+			var nextPlayer = ludoObject.getNextPlayer(msgObject.color);
 			var nextNonComputerPlayer = ludoObject.getNextNonComputerPlayer(player.color);
-			
 			player.diceRoll = msgObject.dice_roll;
-				
+			
+			// if the computer rolled a 6
 			if (msgObject.dice_roll == 6) {
+				
 				// we try to move a piece out of home
 				if (player.tryToMoveOutOfHome()) {
+					
 					// we need to roll again..
-					console.log("Computer has one throw left..");
 					if (nextNonComputerPlayer.color == ludoObject.player.color) {
+						console.log("Computer throwing again for " + player.color);
+						
 						setTimeout(function() {
 							player.onlineSendCreateComputerRoll();
 						}, 1000);
@@ -698,9 +716,9 @@ LudoObj.prototype = {
 						ludoObject.moveSelected(player.readyToMovePiece, player);
 						
 						// we need to roll again..
-						console.log("Computer has one throw left..");
-						
 						if (nextNonComputerPlayer.color == ludoObject.player.color) {
+							console.log("Computer throwing again for " + player.color);
+							
 							setTimeout(function() {
 								player.onlineSendCreateComputerRoll();
 							}, 1000);
@@ -708,6 +726,7 @@ LudoObj.prototype = {
 					}, 1000);
 				}
 			}
+			// if the computer rolled something other than 6
 			else {
 				
 				if (player.tryToMakeReadyToMove()) {
@@ -720,9 +739,24 @@ LudoObj.prototype = {
 						if (nextNonComputerPlayer.color == ludoObject.player.color) {
 							setTimeout(function() {
 								player.onlineSwitchPlayer();
+								
+								if (msgObject.compu_next) {
+									setTimeout(function() {
+										if (nextPlayer.allInHome) {
+											nextPlayer.onlineTryToGetOutOfHome();
+										}
+										else {
+											nextPlayer.onlineSendCreateComputerRoll();
+										}
+									}, 1000);
+								}
 							}, 1000);
 						}
 					}, 1000);
+				}
+				else {
+					console.log("Computer Try to make ready to move failed");
+					ludoObject.dice.handleNoMovablePieces(player);
 				}
 			}
 			
@@ -731,18 +765,11 @@ LudoObj.prototype = {
 		
 		// if we have a fields to grey out
 		if (msgObject.greyout) {
+		
+			var player = ludoObject.getPlayerForColor(msgObject.color);
 			
-			if (msgObject.color == "yellow" && ludoObject.player.color != msgObject.color) {
-				ludoObject.greyOutFields(ludoObject.player1.pieces[msgObject.index].piece, msgObject.block);
-			}
-			else if (msgObject.color == "red" && ludoObject.player.color != msgObject.color) {
-				ludoObject.greyOutFields(ludoObject.player2.pieces[msgObject.index].piece, msgObject.block);
-			}
-			else if (msgObject.color == "blue" && ludoObject.player.color != msgObject.color) {
-				ludoObject.greyOutFields(ludoObject.player3.pieces[msgObject.index].piece, msgObject.block);
-			}
-			else if (msgObject.color == "green" && ludoObject.player.color != msgObject.color) {
-				ludoObject.greyOutFields(ludoObject.player4.pieces[msgObject.index].piece, msgObject.block);
+			if (ludoObject.player.color != msgObject.color) {
+				ludoObject.greyOutFields(player.pieces[msgObject.index].piece, msgObject.block);
 			}
 			
 			return;
@@ -760,17 +787,10 @@ LudoObj.prototype = {
 		// if a player have no movable pieces
 		if (msgObject.no_movable) {
 			
-			if (msgObject.color == "yellow" && ludoObject.player.color != msgObject.color) {
-				ludoObject.player1.displayNoMovablePieces();
-			}
-			else if (msgObject.color == "red" && ludoObject.player.color != msgObject.color) {
-				ludoObject.player2.displayNoMovablePieces();
-			}
-			else if (msgObject.color == "blue" && ludoObject.player.color != msgObject.color) {
-				ludoObject.player3.displayNoMovablePieces();
-			}
-			else if (msgObject.color == "green" && ludoObject.player.color != msgObject.color) {
-				ludoObject.player4.displayNoMovablePieces();
+			var player = ludoObject.getPlayerForColor(msgObject.color);
+			
+			if (player.color != msgObject.color) {
+				player.displayNoMovablePieces();
 			}
 			
 			return;
@@ -779,17 +799,10 @@ LudoObj.prototype = {
 		// if we have a piece to move to goal
 		if (msgObject.to_goal) {
 			
-			if (msgObject.color == "yellow" && ludoObject.player.color != msgObject.color) {
-				ludoObject.player1.pieces[msgObject.index].piece.moveToGoal(msgObject.num_in_goal);
-			}
-			else if (msgObject.color == "red" && ludoObject.player.color != msgObject.color) {
-				ludoObject.player2.pieces[msgObject.index].piece.moveToGoal(msgObject.num_in_goal);
-			}
-			else if (msgObject.color == "blue" && ludoObject.player.color != msgObject.color) {
-				ludoObject.player3.pieces[msgObject.index].piece.moveToGoal(msgObject.num_in_goal);
-			}
-			else if (msgObject.color == "green" && ludoObject.player.color != msgObject.color) {
-				ludoObject.player4.pieces[msgObject.index].piece.moveToGoal(msgObject.num_in_goal);
+			var player = ludoObject.getPlayerForColor(msgObject.color);
+			
+			if (player.color != msgObject.color) {
+				player.pieces[msgObject.index].piece.moveToGoal(msgObject.num_in_goal);
 			}
 			
 			return;
@@ -799,51 +812,22 @@ LudoObj.prototype = {
 		if (msgObject.switch_player) {
 			
 			ludoObject.dice.disabled = true;
-
-			if (msgObject['color'] == "yellow") {
-				ludoObject.player1.playerDiv.style.backgroundPositionY = "0px";
-				ludoObject.player1.active = false;
-				ludoObject.player2.giveControl();
-				ludoObject.player2.playerDiv.style.backgroundPositionY = "-75px";
-				ludoObject.controlsDiv.style.backgroundColor = "red";
-				
-				if (ludoObject.player.color == "red") {
-					ludoObject.dice.disabled = false;
-				}
+			var player = ludoObject.getPlayerForColor(msgObject['color']);
+			var nextPlayer = ludoObject.getNextPlayer(msgObject['color']);
+			
+			player.playerDiv.style.backgroundPositionY = "0px";
+			player.active = false;
+			
+			nextPlayer.giveControl();
+			nextPlayer.playerDiv.style.backgroundPositionY = "-75px";
+			ludoObject.controlsDiv.style.backgroundColor = nextPlayer.color;
+			
+			
+			if (ludoObject.player.color == nextPlayer.color) {
+				ludoObject.dice.disabled = false;
+				ludoObject.player.displayStartGraphic();
 			}
-			else if (msgObject['color'] == "red") {
-				ludoObject.player2.playerDiv.style.backgroundPositionY = "0px";
-				ludoObject.player2.active = false;
-				ludoObject.player3.giveControl();
-				ludoObject.player3.playerDiv.style.backgroundPositionY = "-75px";
-				ludoObject.controlsDiv.style.backgroundColor = "blue";
-				
-				if (ludoObject.player.color == "blue") {
-					ludoObject.dice.disabled = false;
-				}
-			}
-			else if (msgObject['color'] == "blue") {
-				ludoObject.player3.playerDiv.style.backgroundPositionY = "0px";
-				ludoObject.player3.active = false;
-				ludoObject.player4.giveControl();
-				ludoObject.player4.playerDiv.style.backgroundPositionY = "-75px";
-				ludoObject.controlsDiv.style.backgroundColor = "green";
-				
-				if (ludoObject.player.color == "green") {
-					ludoObject.dice.disabled = false;
-				}
-			}
-			else if (msgObject['color'] == "green") {
-				ludoObject.player4.playerDiv.style.backgroundPositionY = "0px";
-				ludoObject.player4.active = false;
-				ludoObject.player1.giveControl();
-				ludoObject.player1.playerDiv.style.backgroundPositionY = "-75px";
-				ludoObject.controlsDiv.style.backgroundColor = "yellow";
-				
-				if (ludoObject.player.color == "yellow") {
-					ludoObject.dice.disabled = false;
-				}
-			}
+			
 			return;
 		}
 		
@@ -896,20 +880,15 @@ LudoObj.prototype = {
 		
 		// if this is the start game message
 		if (msgObject.start) {
+			
 			ludoObject.toggleGameTypeForm();
-			console.log("Start: " + ludoObject.player.color);
+			console.log("Online Start: " + ludoObject.player.color);
 			
 			if (ludoObject.player.color == "yellow") {
+
 				ludoObject.dice.disabled = false;
-				setTimeout(function() {
-					document.getElementsByTagName('body')[0].appendChild(ludoObject.startDiv);
-				}, 1000);
-				
-				setTimeout(function() {
-					document.getElementsByTagName('body')[0].removeChild(ludoObject.startDiv);
-				}, 3000);
-				
-				ludoObject.player.turn();
+				ludoObject.player.displayStartGraphic();
+				ludoObject.player.giveControl();
 			}
 			
 			ludoObject.gameIsRunning = true;
@@ -1196,7 +1175,7 @@ LudoObj.prototype = {
 		return result;
 	},
 	
-	checkForBlockOnField: function(field) {
+	checkForBlockOnField: function(player, field) {
 		
 		var blockOnField = false;
 		
@@ -1210,7 +1189,7 @@ LudoObj.prototype = {
 			for (var i = 0; i < 4; i++) {
 				
 				// if our piece's id does not match the id on the field, there is a block
-				if (this.player.pieces[i].piece.pathID != field.id) {
+				if (player.pieces[i].piece.pathID != field.id) {
 					
 					// then there is a block on the pieces path
 					blockOnField = true;
@@ -1226,13 +1205,13 @@ LudoObj.prototype = {
 		return blockOnField;
 	},
 	
-	checkForBlockOnPath: function(piece) {
+	checkForBlockOnPath: function(player, piece, diceRoll) {
 		
 		var id = undefined;
 		var blockOnIndex = 0;
 		var breakFieldChecks = false;
 		
-		for (var i = piece.pathIndex + 1; i <= piece.pathIndex + this.player.diceRoll; i++) {
+		for (var i = piece.pathIndex + 1; i <= piece.pathIndex + diceRoll; i++) {
 			
 			// we break if we have foun a block
 			if (breakFieldChecks) {
@@ -1244,7 +1223,7 @@ LudoObj.prototype = {
 				break;
 			}
 			
-			if (this.checkForBlockOnField(piece.path[i])) {
+			if (this.checkForBlockOnField(player, piece.path[i])) {
 				blockOnIndex = i;
 				breakFieldChecks = true;
 			}
@@ -1370,6 +1349,32 @@ LudoObj.prototype = {
 		}
 		else if (color == "green" && !this.player1.computer) {
 			return this.player1;
+		} 
+		else if (color == "yellow" && !this.player3.computer) {
+			return this.player3;
+		}
+		else if (color == "red" && !this.player4.computer) {
+			return this.player4;
+		}
+		else if (color == "blue" && !this.player1.computer) {
+			return this.player1;
+		}
+		else if (color == "green" && !this.player2.computer) {
+			return this.player2;
+		}
+		else if (color == "yellow" && !this.player4.computer) {
+			return this.player4;
+		}
+		else if (color == "red" && !this.player1.computer) {
+			return this.player1;
+		}
+		else if (color == "blue" && !this.player2.computer) {
+			return this.player2;
+		}
+		else if (color == "green" && !this.player3.computer) {
+			return this.player3;
+		} else {
+			return this.player;
 		}
 	},
 	
@@ -1595,15 +1600,11 @@ LudoObj.prototype = {
 		
 		this.gameIsRunning = true;
 		
-		setTimeout(function() {
-			document.getElementsByTagName('body')[0].appendChild(ludoObject.startDiv);
-		}, 1000);
+		if (!this.isSimulation) {
+			this.player.displayStartGraphic();
+		}
 		
-		setTimeout(function() {
-			document.getElementsByTagName('body')[0].removeChild(ludoObject.startDiv);
-		}, 3000);
-		
-		this.player.turn();
+		this.player.giveControl();
 		
 		this.animate();
 	}
@@ -1744,7 +1745,7 @@ ludoObject.canvas.onmouseup = function(e) {
 						// if the player cannot move this piece into the Goal area
 						if (!ludoObject.checkIfCanMoveToGoal(ludoObject.player.pieces[i].piece)) {
 							
-							var block = ludoObject.checkForBlockOnPath(ludoObject.player.pieces[i].piece);
+							var block = ludoObject.checkForBlockOnPath(ludoObject.player, ludoObject.player.pieces[i].piece, ludoObject.player.diceRoll);
 							
 							if (block == 0) {
 								// we highlight it's path and set player ready to move
@@ -1811,7 +1812,7 @@ ludoObject.canvas.onmouseup = function(e) {
 						if (!ludoObject.checkIfCanMoveToGoal(ludoObject.player.pieces[i].piece)) {
 							
 							// we check if the piece has a block in it's path
-							var block = ludoObject.checkForBlockOnPath(ludoObject.player.pieces[i].piece);
+							var block = ludoObject.checkForBlockOnPath(ludoObject.player, ludoObject.player.pieces[i].piece, ludoObject.player.diceRoll);
 							
 							// if there is no block on the path
 							if (block == 0) {
@@ -1914,11 +1915,21 @@ document.getElementById('new_player_btn').onclick = function() {
 	// if this is an online game
 	else {
 		// we send a JASON object with the color, name and gameIndex
-		var data={"color" : ludoObject.player.color, "name" : nameChop, "game_index": ludoObject.onlineGameIndex};
+		var data={"color" : ludoObject.player.color, 
+				  "name" : nameChop, 
+				  "game_index": ludoObject.onlineGameIndex};
+		
 		ludoObject.connection.send( JSON.stringify(data) );
-		setTimeout(function() {
+		
+		if (ludoObject.player.color != "green") {
+			setTimeout(function() {
+				ludoObject.toggleGameTypeForm();
+			}, 1100);
+		}
+		else {
 			ludoObject.toggleGameTypeForm();
-		}, 1100);
+		}
+		
 	}
 }
 

@@ -461,6 +461,9 @@
 			<div class="game_type_btn" onclick="javascript:ludoObject.playOnline(ip);">
 				<h2>Play Online</h2>
 			</div>
+			<div id="simulate_btn" onclick="javascript:ludoObject.simulateGame();">
+				<h2>Simulate a Game</h2>
+			</div>
 			
 		</div>
 	</body>

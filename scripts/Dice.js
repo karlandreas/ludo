@@ -194,20 +194,19 @@ Dice.prototype = {
 		}
 	},
 	
-	handleNoMovablePieces: function() {
+	handleNoMovablePieces: function(player) {
 		
-		// display NoMovablePieces on this screens
-		ludoObject.player.displayNoMovablePieces();
 		// set turns left to 0
-		ludoObject.player.turnsLeft = 0;
+		player.turnsLeft = 0;
 		
-		// and if it's an online game we display NoMovablePieces on all screens
+		// if it's an online game we display NoMovablePieces on all screens
 		if (ludoObject.isOnlineGame) {
 	
-			var data = {"no_movable": true, 
-						"game_index": ludoObject.onlineGameIndex, 
-						"color": ludoObject.player.color};
-			ludoObject.connection.send( JSON.stringify(data) );
+			player.onlineSendNoMovablePieces();
+		}
+		else {
+			// if not we display NoMovablePieces on this screens
+			ludoObject.player.displayNoMovablePieces();
 		}
 		
 		// finally we end the turn
@@ -285,7 +284,7 @@ Dice.prototype = {
 					// we don't want to check for a block on the Goal field
 					if (j < 57) {
 						// if we find a block in this pieces path, it's not movable and we break the loop and continue with the next piece
-						if (ludoObject.checkForBlockOnField(ludoObject.player.pieces[i].piece.path[j])) {
+						if (ludoObject.checkForBlockOnField(ludoObject.player, ludoObject.player.pieces[i].piece.path[j])) {
 						
 							blockOnPath = true;
 							break;
@@ -312,7 +311,6 @@ Dice.prototype = {
 		
 		if (ludoObject.isOnlineGame) {
 			
-			
 			// we need to find out if the next player has left the game
 			var player = ludoObject.getNextPlayer(ludoObject.player.color);
 			
@@ -330,7 +328,7 @@ Dice.prototype = {
 						player.onlineSendCreateComputerRoll();
 					}
 					
-				}, 250);
+				}, 500);
 			}
 			
 		// if this is not an online game 
@@ -358,7 +356,7 @@ Dice.prototype = {
 		// else if we have pieces in play we check if any one can be moved
 		else if (this.checkForAnyMovablePieces() < 1) {
 			
-			this.handleNoMovablePieces();
+			this.handleNoMovablePieces(ludoObject.player);
 		}
 		// else if we have movable pieces and roll a 6
 		else if (this.faceNum == 6) {

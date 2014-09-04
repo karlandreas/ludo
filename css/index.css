@@ -149,24 +149,57 @@ table {
   box-shadow: -5px 10px 15px 1px rgba(43, 32, 32, 0.5); }
   .startup_form h1 {
     text-align: center;
-    color: white; }
+    color: white;
+    margin-top: -2px; }
 
 .game_type_btn {
   position: relative;
   width: 150px;
-  height: 150px;
+  height: 125px;
   border: 5px solid black;
   margin-left: 55px;
-  display: inline-block; }
+  display: inline-block;
+  cursor: pointer;
+  -webkit-transition: color 0.5s ease 0s;
+  -moz-transition: color 0.5s ease 0s;
+  -ms-transition: color 0.5s ease 0s;
+  transition: color 0.5s ease 0s; }
   .game_type_btn h2 {
     margin-left: 10px; }
+  .game_type_btn:hover {
+    border: 5px solid white;
+    color: silver; }
+
+#simulate_btn {
+  position: relative;
+  width: 373px;
+  height: 70px;
+  border: 5px solid black;
+  margin-left: 55px;
+  margin-top: 15px;
+  display: block;
+  cursor: pointer;
+  -webkit-transition: color 0.5s ease 0s;
+  -moz-transition: color 0.5s ease 0s;
+  -ms-transition: color 0.5s ease 0s;
+  transition: color 0.5s ease 0s; }
+  #simulate_btn h2 {
+    margin-left: 35px; }
+  #simulate_btn:hover {
+    border: 5px solid white;
+    color: silver; }
 
 #new_player_div {
   display: none; }
 
 #game_type_div {
-  display: none;
-  background-color: fuchsia; }
+  display: block;
+  background-color: fuchsia;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: moz-none;
+  -ms-user-select: none;
+  user-select: none; }
 
 #player1_div {
   background-position-x: 0px; }
