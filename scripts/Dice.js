@@ -10,6 +10,7 @@ var Dice = function() {
 	this.numberOfRolls 	= undefined;
 	this.diceAnimHandle = undefined;
 	
+	this.shakeSound		= document.getElementById('shakeDice_sound');
 }
 
 Dice.prototype = {
@@ -374,6 +375,8 @@ Dice.prototype = {
 		if (ludoObject.player.computer && ludoObject.paused) {
 			return;
 		}
+		
+		ludoObject.playSound(this.shakeSound);
 		
 		// we get a random number to display as the dice is rolling
 		this.numberOfRolls = Math.round(Math.random() * (16 - 4) + 4);

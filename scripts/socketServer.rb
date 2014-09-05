@@ -238,23 +238,23 @@ end # end class
 
 
 # Before we start WebSocket's we make sure that there are no players from a previous session
-Dir.foreach("./../server/players/") { | file | 
-	if !file.match(/^\.{1,2}$/)
-		File.delete("./../server/players/" << file)
-	end
-}
+# Dir.foreach("./../server/players/") { | file | 
+# 	if !file.match(/^\.{1,2}$/)
+# 		File.delete("./../server/players/" << file)
+# 	end
+# }
 # and all waiting games
-Dir.foreach("./../server/waiting/") { | file | 
-	if !file.match(/^\.{1,2}$/)
-		File.delete("./../server/waiting/" << file)
-	end
-}
+# Dir.foreach("./../server/waiting/") { | file | 
+# 	if !file.match(/^\.{1,2}$/)
+# 		File.delete("./../server/waiting/" << file)
+# 	end
+# }
 # and all games
-Dir.foreach("./../server/games/") { | file | 
-	if !file.match(/^\.{1,2}$/)
-		File.delete("./../server/games/" << file)
-	end
-}
+# Dir.foreach("./../server/games/") { | file | 
+# 	if !file.match(/^\.{1,2}$/)
+# 		File.delete("./../server/games/" << file)
+# 	end
+# }
 
 EM.run {
   

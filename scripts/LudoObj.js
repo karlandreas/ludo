@@ -222,8 +222,9 @@ var LudoObj = function() {
 	this.gameIsRunning	= false;
 	
 	// site divs
-	this.controlsDiv			= document.getElementById('controls_div');
-	this.gameTypeFormActive		= false;
+	this.controlsDiv		= document.getElementById('controls_div');
+	this.gameTypeFormActive	= false;
+	this.soundControl		= document.getElementById('sounds_box');
 	
 	// players (this.player1 = undefined)
 	this.player1 = undefined;
@@ -231,9 +232,9 @@ var LudoObj = function() {
 	this.player3 = undefined;
 	this.player4 = undefined;
 	// current active player
-	this.player = undefined;
+	this.player 	  = undefined;
 	// player array
-	this.players = new Array();
+	this.players 	  = new Array();
 	// start active player as 0 (no player)
 	this.activePlayer = 0;
 	
@@ -265,6 +266,9 @@ var LudoObj = function() {
 	// array of all pieces
 	this.gamePiecesArray = undefined;
 	
+	// sound 
+	this.soundOn	= true;
+	this.backgroundSound = document.getElementById('background_sound');
 	
 	// ! ---------------------------- CONSTANTS ----------------------------------
 	// spritesheet coordinates
@@ -345,6 +349,13 @@ LudoObj.prototype = {
 	// ! ---------------------------- FUNCTIONS ----------------------------------
 	
 	setupGame: function() {
+		
+		// set sound control to on
+		this.soundControl.checked = true;
+		// set backgorund sound to loop
+		this.backgroundSound.loop = true;
+		// start background sound
+		this.playSound(this.backgroundSound);
 		
 		// setup game pieces
 		// green
@@ -932,6 +943,23 @@ LudoObj.prototype = {
 	onlineClose: function(event) {
 		console.log('WebSocket Closed: ' + event.reason);
 		ludoObject.gameTypeDiv.innerHTML = "<h1>Socket Closed: " + event.code + "</h1>";
+	},
+	
+	playSound: function (sound) {
+		var track, index;
+		
+		if (this.soundOn) {
+			if (!this.soundIsPlaying(sound)) {
+				sound.play();
+			} else {
+				sound.load();
+				sound.play();
+			}
+		}
+	},
+	
+	soundIsPlaying: function (sound) {
+		return !sound.ended && sound.currentTime > 0;
 	},
 	
 	setPlayerName: function(value) {
@@ -1587,6 +1615,8 @@ LudoObj.prototype = {
 		// while moving this piece will show as one piece
 		piece.setSpritesheetCoordsTo(1);
 		
+		this.playSound(player.moveSound);
+		
 		piece.isAnimating = true;
 		
 		this.clearHighlightedFields();
@@ -1596,6 +1626,7 @@ LudoObj.prototype = {
 	
 	startGame: function() {
 		
+		this.backgroundSound.volume = 0.4;
 		this.dice.disabled = false;
 		
 		this.gameIsRunning = true;
@@ -1617,6 +1648,7 @@ var Field = function(id) {
 	this.cell 	= document.getElementById(id);
 	this.count 	= 0;
 }
+
 
 // ! init's
 var ludoObject = new LudoObj();
@@ -1935,6 +1967,17 @@ document.getElementById('new_player_btn').onclick = function() {
 
 document.getElementById('new_computer_btn').onclick = function() {
 	ludoObject.setPlayerToCompu();
+}
+
+document.getElementById('sounds_box').onclick =function () {
+	
+	ludoObject.soundOn = this.checked;
+	
+	if (this.checked) {
+		ludoObject.backgroundSound.play();
+	} else {
+		ludoObject.backgroundSound.pause();
+	}
 }
 
 /*

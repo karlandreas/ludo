@@ -10,6 +10,46 @@
 	</script>
 	</head>
 	<body>
+		
+		<div id="sounds_container">
+		
+			<audio id="background_sound">
+				<source src="sounds/nature.mp3" type="audio/mp3">
+			</audio>
+			
+			<audio id="shakeDice_sound">
+			<source src="sounds/shakeDice.mp3" type="audio/mp3">
+			</audio>
+			
+			<audio id="rooster_sound">
+				<source src="sounds/rooster.mp3" type="audio/mp3">
+			</audio>
+			
+			<audio id="cow_sound">
+				<source src="sounds/cow.mp3" type="audio/mp3">
+			</audio>
+			
+			<audio id="merlin_sound">
+				<source src="sounds/merlin.mp3" type="audio/mp3">
+			</audio>
+			
+			<audio id="duck_sound">
+				<source src="sounds/duck.mp3" type="audio/mp3">
+			</audio>
+			
+			<audio id="cuckoo_sound">
+				<source src="sounds/cuckooClock.mp3" type="audio/mp3">
+			</audio>
+			
+			<audio id="cheering_sound">
+				<source src="sounds/cheering.mp3" type="audio/mp3">
+			</audio>
+			
+			<audio id="woff_sound">
+				<source src="sounds/woff.mp3" type="audio/mp3">
+			</audio>
+		</div>
+      
 		<div id="site">
 		
 		<table id="playertable" cellpadding="7">
@@ -413,6 +453,7 @@
 				<option value="1">Roll a One</option>
 			</select>
 			<button id="roll_num_btn">Roll</button>
+			<input id="sounds_box" type="checkbox">Sounds</div>
 		</div>
 		
 		</div>

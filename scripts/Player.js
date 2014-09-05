@@ -1,24 +1,27 @@
 var Player = function(color, name) {
 	
-	this.name 		 = name;
-	this.color 		 = color;
-	this.computer	 = true;
+	this.name 		 	= name;
+	this.color 		 	= color;
+	this.computer	 	= true;
 					 
-	this.pieces		 = undefined;
+	this.pieces		 	= undefined;
 	this.readyToMovePiece = undefined;
-	this.allInHome   = true;
+	this.allInHome  	 = true;
 					 
-	this.diceRoll 	 = undefined;
-	this.turnsLeft	 = 3;
+	this.diceRoll 	 	= undefined;
+	this.turnsLeft	 	= 3;
 					 
-	this.playerDiv   = undefined;
-	this.active		 = false;
-	this.readyToMove = false;
+	this.playerDiv  	 = undefined;
+	this.active			 = false;
+	this.readyToMove	 = false;
 
-	this.piecesInGoal = 0;
+	this.piecesInGoal 	= 0;
 	
-	this.newPlayerDiv = document.getElementById('new_player_div');
+	this.newPlayerDiv 	= document.getElementById('new_player_div');
 	this.newPlayerFormActive = false;
+	
+	this.moveSound	  	= undefined;
+	this.noMovableSound	= document.getElementById('cuckoo_sound');
 	
 	// online
 	this.sid			= undefined;
@@ -31,16 +34,22 @@ Player.prototype = {
 		
 		if (this.color == "yellow") {
 			this.playerDiv = document.getElementById('player1_div');
+			this.moveSound = document.getElementById('rooster_sound');
 		}
 		else if(this.color == "red") {
 			this.playerDiv = document.getElementById('player2_div');
+			this.moveSound = document.getElementById('duck_sound');
 		}
 		else if(this.color == "blue") {
 			this.playerDiv = document.getElementById('player3_div');
+			this.moveSound = document.getElementById('cow_sound');
 		}
 		else if(this.color == "green") {
 			this.playerDiv = document.getElementById('player4_div');
+			this.moveSound = document.getElementById('merlin_sound');
 		}
+		
+		this.moveSound.volume = 0.8;
 		
 		this.playerDiv.innerHTML = "<p>" + this.name + "</p>";
 	},
@@ -60,6 +69,8 @@ Player.prototype = {
 	},
 	
 	displayNoMovablePieces: function() {
+		
+		ludoObject.playSound(this.noMovableSound);
 		
 		setTimeout(function() {
 			ludoObject.msgDiv.style.opacity = "1";

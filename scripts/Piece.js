@@ -30,6 +30,9 @@ var Piece = function(color, X, Y, sheet_left, sheet_top) {
 	
 	this.canMoveTo	= undefined; // this is coordinate based, not field id
 	this.isAnimating = false;
+	
+	this.woffSound		= document.getElementById('woff_sound');
+	this.cheeringSound 	= document.getElementById('cheering_sound');
 }
 
 Piece.prototype = {
@@ -39,6 +42,8 @@ Piece.prototype = {
 		
 		this.goal_left  = gLeft;
 		this.goal_top   = gTop;
+		
+		this.cheeringSound.volume = 0.8;
 	},
 	
 	calculatePiecePos: function(i) {
@@ -161,6 +166,8 @@ Piece.prototype = {
 		this.pathIndex 		= 0;
 		this.isAnimating 	= true;
 		this.inHome 		= false;
+		
+		ludoObject.playSound(this.cheeringSound);
 	},
 	
 	moveToHomePosition: function() {
@@ -172,6 +179,8 @@ Piece.prototype = {
 		this.start_left		= this.home_left;
 		this.start_top		= this.home_top;
 		this.inHome		 	= true;
+		
+		ludoObject.playSound(this.woffSound);
 	},
 	
 	moveToGoal: function(numInGoal) {
