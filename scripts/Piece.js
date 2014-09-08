@@ -43,7 +43,8 @@ Piece.prototype = {
 		this.goal_left  = gLeft;
 		this.goal_top   = gTop;
 		
-		this.cheeringSound.volume = 0.8;
+		this.cheeringSound.volume = 0.25;
+		this.woffSound.volume = 0.5;
 	},
 	
 	calculatePiecePos: function(i) {

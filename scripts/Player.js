@@ -49,7 +49,7 @@ Player.prototype = {
 			this.moveSound = document.getElementById('merlin_sound');
 		}
 		
-		this.moveSound.volume = 0.8;
+		this.moveSound.volume = 0.7;
 		
 		this.playerDiv.innerHTML = "<p>" + this.name + "</p>";
 	},

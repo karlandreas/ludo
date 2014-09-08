@@ -8,6 +8,11 @@ body {
 	padding: 0px;
 	width: 100%;
 	font-family: helvetica, sans-serif;
+	background-image: url('../images/farmland.svg');
+	background-size: 2000px 1035px;
+	background-position: center top;
+	background-repeat: no-repeat;
+	background-color: black;
 }
 
 #site {
@@ -21,6 +26,10 @@ table {
 	font-family: helvetica, sans-serif;
 	position: relative;
 	margin: 0px auto;
+}
+
+#gametable {
+	background-color: white;
 }
 
 .yellow {
