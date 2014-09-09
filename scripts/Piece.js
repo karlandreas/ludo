@@ -30,6 +30,7 @@ var Piece = function(color, X, Y, sheet_left, sheet_top) {
 	
 	this.canMoveTo	= undefined; // this is coordinate based, not field id
 	this.isAnimating = false;
+	this.showAnimal = true;
 	
 	this.woffSound		= document.getElementById('woff_sound');
 	this.cheeringSound 	= document.getElementById('cheering_sound');
@@ -51,11 +52,33 @@ Piece.prototype = {
 		
 		// for every step we update the pieces position
 		if (this.step < this.stepLimit) {
-			this.left = (((this.path[i].cell.offsetLeft - this.start_left) / this.stepLimit) * this.step) + this.start_left;
-			this.top = (((this.path[i].cell.offsetTop - this.start_top) / this.stepLimit) * this.step) + this.start_top;
+			// we compensate offsetLeft and Top for pieces being a bit larger than the cells
+			var offL = this.path[i].cell.offsetLeft - 4;
+			var offT = this.path[i].cell.offsetTop - 3;
+			// and set the left and top margins accordingly
+			this.left = (((offL - this.start_left) / this.stepLimit) * this.step) + this.start_left;
+			this.top = (((offT - this.start_top) / this.stepLimit) * this.step) + this.start_top;
+			this.step++;
+		} else {
+			// we don't want to set left and top on the last step in case
+			// we have landed on a safe-field and have set a offset for left and top
 			this.step++;
 		}
-		// on the second to last step we do aditional checks
+		
+		// on step 10 we set spritsheet coords to 5 and showAnimal to true
+		if (this.step == this.stepLimit - 40) {
+			this.setSpritesheetCoordsTo(5);
+			this.showAnimal = true;
+		}
+		// on step 39 we set show Animal to false
+		else if (this.step == this.stepLimit - 11) {
+			this.showAnimal = false;
+		}
+		// on step 40 we set spritsheet coords to 1
+		else if (this.step == this.stepLimit - 10) {
+			this.setSpritesheetCoordsTo(1);
+		}
+		// on the last step we do aditional checks
 		else if (this.step == this.stepLimit) {
 			
 			// get the destination field count and id
@@ -105,7 +128,7 @@ Piece.prototype = {
 							}
 						}
 						
-						console.log(player.color + " is moving on to safe-field " + id + " Setting count to: " + this.path[this.pathIndex].count);
+						console.log(player.color + " is moving on to safe-field " + id + " Setting top to: " + this.top);
 					}
 					// else if we are moving on to a safe-field with a color that is not safe
 					else {
@@ -148,22 +171,21 @@ Piece.prototype = {
 			
 			
 			this.setSpritesheetCoordsTo(sprite_num);
-			this.step++;
 		}
 		// when we have reached our destination we stop and give up control
-		else {
+		else if (this.step > this.stepLimit){
 			this.isAnimating 	= false;
+			this.showAnimal		= false;
 			this.step 			= 0;
 			this.start_left 	= this.left;
 			this.start_top 		= this.top;
 			this.selected 		= false;
 			this.pathID			= this.path[this.pathIndex].id;
-			console.log(this.color + " reached destination: " + this.pathID);
 		}
 	},
 	
 	moveToFirstPosition: function() {
-				
+		
 		this.pathIndex 		= 0;
 		this.isAnimating 	= true;
 		this.inHome 		= false;
@@ -180,6 +202,7 @@ Piece.prototype = {
 		this.start_left		= this.home_left;
 		this.start_top		= this.home_top;
 		this.inHome		 	= true;
+		this.setSpritesheetCoordsTo(5);
 		
 		ludoObject.playSound(this.woffSound);
 	},
@@ -309,6 +332,24 @@ Piece.prototype = {
 				this.sheet_left = ludoObject.GS_QUATRUPLE.x;
 				this.sheet_top  = ludoObject.GS_QUATRUPLE.y;
 				this.updateAllPlayerMultiplePieces(ludoObject.player4, ludoObject.GS_QUATRUPLE.x, ludoObject.GS_QUATRUPLE.y);
+			}
+		}
+		else if(new Number(count) == 5) {
+			if (this.color == "yellow") {
+				this.sheet_left = ludoObject.YS_MOVE.x;
+				this.sheet_top  = ludoObject.YS_MOVE.y;
+			}
+			else if (this.color == "red") {
+				this.sheet_left = ludoObject.RS_MOVE.x;
+				this.sheet_top  = ludoObject.RS_MOVE.y;
+			}
+			else if (this.color == "blue") {
+				this.sheet_left = ludoObject.BS_MOVE.x;
+				this.sheet_top  = ludoObject.BS_MOVE.y;
+			}
+			else if (this.color == "green") {
+				this.sheet_left = ludoObject.GS_MOVE.x;
+				this.sheet_top  = ludoObject.GS_MOVE.y;
 			}
 		}
 		

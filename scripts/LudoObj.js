@@ -225,6 +225,7 @@ var LudoObj = function() {
 	this.controlsDiv		= document.getElementById('controls_div');
 	this.gameTypeFormActive	= false;
 	this.soundControl		= document.getElementById('sounds_box');
+	this.fxControl			= document.getElementById('fx_box');
 	
 	// players (this.player1 = undefined)
 	this.player1 = undefined;
@@ -268,29 +269,35 @@ var LudoObj = function() {
 	
 	// sound 
 	this.soundOn	= true;
+	this.fxOn		= true;
 	this.backgroundSound = document.getElementById('background_sound');
 	
 	// ! ---------------------------- CONSTANTS ----------------------------------
 	// spritesheet coordinates
-	this.GS_SINGLE    = {x: 140, y:  13};
-	this.BS_SINGLE    = {x: 100, y:  13};
-	this.RS_SINGLE    = {x:  58, y:  13};
-	this.YS_SINGLE    = {x:  18, y:  13};
+	this.GS_SINGLE    = {x: 156, y:   5};
+	this.BS_SINGLE    = {x: 108, y:   5};
+	this.RS_SINGLE    = {x:  61, y:   5};
+	this.YS_SINGLE    = {x:  13, y:   5};
 				      				 
-	this.GS_DOUBLE    = {x: 139, y:  56};
-	this.BS_DOUBLE    = {x:  99, y:  56};
-	this.RS_DOUBLE    = {x:  58, y:  56};
-	this.YS_DOUBLE    = {x:  18, y:  56};
+	this.GS_DOUBLE    = {x: 156, y:  48};
+	this.BS_DOUBLE    = {x: 108, y:  48};
+	this.RS_DOUBLE    = {x:  61, y:  48};
+	this.YS_DOUBLE    = {x:  12, y:  48};
 				      				 
-	this.GS_TRIPLE    = {x: 139, y:  97};
-	this.BS_TRIPLE    = {x:  99, y:  97};
-	this.RS_TRIPLE    = {x:  59, y:  97};
-	this.YS_TRIPLE    = {x:  18, y:  97};
+	this.GS_TRIPLE    = {x: 156, y:  91};
+	this.BS_TRIPLE    = {x: 108, y:  91};
+	this.RS_TRIPLE    = {x:  61, y:  91};
+	this.YS_TRIPLE    = {x:  12, y:  91};
 	
-	this.YS_QUATRUPLE = {x:  19, y: 138};
-	this.RS_QUATRUPLE = {x:  59, y: 138};
-	this.BS_QUATRUPLE = {x:  99, y: 138};
-	this.GS_QUATRUPLE = {x: 139, y: 138};
+	this.GS_QUATRUPLE = {x: 156, y: 132};
+	this.BS_QUATRUPLE = {x: 108, y: 132};
+	this.RS_QUATRUPLE = {x:  61, y: 132};
+	this.YS_QUATRUPLE = {x:  12, y: 132};
+	
+	this.GS_MOVE 	  = {x: 155, y: 177};
+	this.BS_MOVE 	  = {x: 100, y: 177};
+	this.RS_MOVE 	  = {x:  50, y: 177};
+	this.YS_MOVE 	  = {x:   1, y: 177};
 	
 	// pieces goal coordinates
 	this.G_GOAL = {gLeft: 194, gTop: 224};
@@ -306,25 +313,25 @@ var LudoObj = function() {
 	
 	// ! Home Cells
 	// Green Home Cells
-	this.GH1 = {name: 'g_H1', x:  53, y: 108};
-	this.GH2 = {name: 'g_H2', x:  53, y:  53};
-	this.GH3 = {name: 'g_H3', x: 108, y: 108};
-	this.GH4 = {name: 'g_H4', x: 108, y:  53};
+	this.GH1 = {name: 'g_H1', x:  48, y: 103};
+	this.GH2 = {name: 'g_H2', x:  48, y:  48};
+	this.GH3 = {name: 'g_H3', x: 103, y: 103};
+	this.GH4 = {name: 'g_H4', x: 103, y:  48};
 	// Blue Home Cells
-	this.BH1 = {name: 'b_H1', x: 340, y:  54};
-	this.BH2 = {name: 'b_H1', x: 396, y:  54};
-	this.BH3 = {name: 'b_H1', x: 340, y: 109};
-	this.BH4 = {name: 'b_H1', x: 396, y: 109};
+	this.BH1 = {name: 'b_H1', x: 335, y:  47};
+	this.BH2 = {name: 'b_H1', x: 391, y:  47};
+	this.BH3 = {name: 'b_H1', x: 335, y: 102};
+	this.BH4 = {name: 'b_H1', x: 391, y: 102};
 	// Red Home Cells
-	this.RH1 = {name: 'r_H1', x: 395, y: 342};
-	this.RH2 = {name: 'r_H2', x: 395, y: 396};
-	this.RH3 = {name: 'r_H3', x: 339, y: 342};
-	this.RH4 = {name: 'r_H4', x: 339, y: 396};
+	this.RH1 = {name: 'r_H1', x: 388, y: 337};
+	this.RH2 = {name: 'r_H2', x: 388, y: 391};
+	this.RH3 = {name: 'r_H3', x: 332, y: 337};
+	this.RH4 = {name: 'r_H4', x: 332, y: 391};
 	// Yellow Home Cells
-	this.YH1 = {name: 'y_H1', x: 109, y: 397};
-	this.YH2 = {name: 'y_H2', x:  54, y: 397};
-	this.YH3 = {name: 'y_H3', x: 109, y: 342};
-	this.YH4 = {name: 'y_H4', x:  54, y: 342};
+	this.YH1 = {name: 'y_H1', x: 101, y: 392};
+	this.YH2 = {name: 'y_H2', x:  46, y: 392};
+	this.YH3 = {name: 'y_H3', x: 101, y: 337};
+	this.YH4 = {name: 'y_H4', x:  46, y: 337};
 	// All Home Cell Array
 	this.HOME_CELLS_ARRAY = new Array(
 									new Array(
@@ -350,8 +357,9 @@ LudoObj.prototype = {
 	
 	setupGame: function() {
 		
-		// set sound control to on
+		// set sound and fx control to on
 		this.soundControl.checked = true;
+		this.fxControl.checked = true;
 		// set backgorund sound to loop
 		this.backgroundSound.loop = true;
 		// start background sound
@@ -359,10 +367,10 @@ LudoObj.prototype = {
 		
 		// setup game pieces
 		// green
-		this.g_H1 = new Piece("green", this.GH1.x,  this.GH1.y, this.GS_SINGLE.x, this.GS_SINGLE.y);
-		this.g_H2 = new Piece("green", this.GH2.x,  this.GH2.y, this.GS_SINGLE.x, this.GS_SINGLE.y);
-		this.g_H3 = new Piece("green", this.GH3.x,  this.GH3.y, this.GS_SINGLE.x, this.GS_SINGLE.y);
-		this.g_H4 = new Piece("green", this.GH4.x,  this.GH4.y, this.GS_SINGLE.x, this.GS_SINGLE.y);
+		this.g_H1 = new Piece("green", this.GH1.x,  this.GH1.y, this.GS_MOVE.x, this.GS_MOVE.y);
+		this.g_H2 = new Piece("green", this.GH2.x,  this.GH2.y, this.GS_MOVE.x, this.GS_MOVE.y);
+		this.g_H3 = new Piece("green", this.GH3.x,  this.GH3.y, this.GS_MOVE.x, this.GS_MOVE.y);
+		this.g_H4 = new Piece("green", this.GH4.x,  this.GH4.y, this.GS_MOVE.x, this.GS_MOVE.y);
 
 		this.g_H1.init(this.G_PATH, this.G_GOAL.gLeft, this.G_GOAL.gTop);
 		this.g_H2.init(this.G_PATH, this.G_GOAL.gLeft, this.G_GOAL.gTop);
@@ -370,10 +378,10 @@ LudoObj.prototype = {
 		this.g_H4.init(this.G_PATH, this.G_GOAL.gLeft, this.G_GOAL.gTop);
 
 		// blue
-		this.b_H1 = new Piece("blue", this.BH1.x,  this.BH1.y, this.BS_SINGLE.x, this.BS_SINGLE.y);
-		this.b_H2 = new Piece("blue", this.BH2.x,  this.BH2.y, this.BS_SINGLE.x, this.BS_SINGLE.y);
-		this.b_H3 = new Piece("blue", this.BH3.x,  this.BH3.y, this.BS_SINGLE.x, this.BS_SINGLE.y);
-		this.b_H4 = new Piece("blue", this.BH4.x,  this.BH4.y, this.BS_SINGLE.x, this.BS_SINGLE.y);
+		this.b_H1 = new Piece("blue", this.BH1.x,  this.BH1.y, this.BS_MOVE.x, this.BS_MOVE.y);
+		this.b_H2 = new Piece("blue", this.BH2.x,  this.BH2.y, this.BS_MOVE.x, this.BS_MOVE.y);
+		this.b_H3 = new Piece("blue", this.BH3.x,  this.BH3.y, this.BS_MOVE.x, this.BS_MOVE.y);
+		this.b_H4 = new Piece("blue", this.BH4.x,  this.BH4.y, this.BS_MOVE.x, this.BS_MOVE.y);
 
 		this.b_H1.init(this.B_PATH, this.B_GOAL.gLeft, this.B_GOAL.gTop);
 		this.b_H2.init(this.B_PATH, this.B_GOAL.gLeft, this.B_GOAL.gTop);
@@ -381,10 +389,10 @@ LudoObj.prototype = {
 		this.b_H4.init(this.B_PATH, this.B_GOAL.gLeft, this.B_GOAL.gTop);
 
 		// red
-		this.r_H1 = new Piece("red", this.RH1.x,  this.RH1.y,  this.RS_SINGLE.x, this.RS_SINGLE.y);
-		this.r_H2 = new Piece("red", this.RH2.x,  this.RH2.y,  this.RS_SINGLE.x, this.RS_SINGLE.y);
-		this.r_H3 = new Piece("red", this.RH3.x,  this.RH3.y,  this.RS_SINGLE.x, this.RS_SINGLE.y);
-		this.r_H4 = new Piece("red", this.RH4.x,  this.RH4.y,  this.RS_SINGLE.x, this.RS_SINGLE.y);
+		this.r_H1 = new Piece("red", this.RH1.x,  this.RH1.y,  this.RS_MOVE.x, this.RS_MOVE.y);
+		this.r_H2 = new Piece("red", this.RH2.x,  this.RH2.y,  this.RS_MOVE.x, this.RS_MOVE.y);
+		this.r_H3 = new Piece("red", this.RH3.x,  this.RH3.y,  this.RS_MOVE.x, this.RS_MOVE.y);
+		this.r_H4 = new Piece("red", this.RH4.x,  this.RH4.y,  this.RS_MOVE.x, this.RS_MOVE.y);
 
 		this.r_H1.init(this.R_PATH, this.R_GOAL.gLeft, this.R_GOAL.gTop);
 		this.r_H2.init(this.R_PATH, this.R_GOAL.gLeft, this.R_GOAL.gTop);
@@ -392,10 +400,10 @@ LudoObj.prototype = {
 		this.r_H4.init(this.R_PATH, this.R_GOAL.gLeft, this.R_GOAL.gTop);
 
 		// yellow
-		this.y_H1 = new Piece("yellow", this.YH1.x,  this.YH1.y, this.YS_SINGLE.x, this.YS_SINGLE.y);
-		this.y_H2 = new Piece("yellow", this.YH2.x,  this.YH2.y, this.YS_SINGLE.x, this.YS_SINGLE.y);
-		this.y_H3 = new Piece("yellow", this.YH3.x,  this.YH3.y, this.YS_SINGLE.x, this.YS_SINGLE.y);
-		this.y_H4 = new Piece("yellow", this.YH4.x,  this.YH4.y, this.YS_SINGLE.x, this.YS_SINGLE.y);
+		this.y_H1 = new Piece("yellow", this.YH1.x,  this.YH1.y, this.YS_MOVE.x, this.YS_MOVE.y);
+		this.y_H2 = new Piece("yellow", this.YH2.x,  this.YH2.y, this.YS_MOVE.x, this.YS_MOVE.y);
+		this.y_H3 = new Piece("yellow", this.YH3.x,  this.YH3.y, this.YS_MOVE.x, this.YS_MOVE.y);
+		this.y_H4 = new Piece("yellow", this.YH4.x,  this.YH4.y, this.YS_MOVE.x, this.YS_MOVE.y);
 
 		this.y_H1.init(this.Y_PATH, this.Y_GOAL.gLeft, this.Y_GOAL.gTop);
 		this.y_H2.init(this.Y_PATH, this.Y_GOAL.gLeft, this.Y_GOAL.gTop);
@@ -435,7 +443,7 @@ LudoObj.prototype = {
 	setupImages: function() {
 		
 		// set the spritesheet and images source
-		this.spritesheet.src = 'images/spritesheet.png';
+		this.spritesheet.src = 'images/spritesheet2.png';
 		this.winnerImg.src	 = 'images/WeHaveaWinner.svg';
 		this.msgImg.src	 	 = 'images/NoMovesPossible.svg';
 		this.pauseImg.src	 = 'images/Paused.svg';
@@ -948,7 +956,7 @@ LudoObj.prototype = {
 	playSound: function (sound) {
 		var track, index;
 		
-		if (this.soundOn) {
+		if (this.fxOn) {
 			if (!this.soundIsPlaying(sound)) {
 				sound.play();
 			} else {
@@ -1055,28 +1063,41 @@ LudoObj.prototype = {
 			
 			for (var j = 0; j < this.gamePiecesArray[i].length; j++) {
 				
+				// if the piece is in it's home position
 				if (this.gamePiecesArray[i][j].piece.inHome) {
 					this.context.drawImage(this.spritesheet,
 							  this.gamePiecesArray[i][j].piece.sheet_left, 
 							  this.gamePiecesArray[i][j].piece.sheet_top,
-							  32, 32,
-							  this.gamePiecesArray[i][j].piece.start_left, 
-							  this.gamePiecesArray[i][j].piece.start_top,
-							  32, 32);
+							  42, 50,
+							  this.gamePiecesArray[i][j].piece.home_left, 
+							  this.gamePiecesArray[i][j].piece.home_top,
+							  42, 50);
 				}
-				else {
+				// if the piece is animating (moving) and the showAnimal flag is true
+				else if (this.gamePiecesArray[i][j].piece.isAnimating && this.gamePiecesArray[i][j].piece.showAnimal) {
 					// animate currently moving pieces
-					if (this.gamePiecesArray[i][j].piece.isAnimating) {
-						this.gamePiecesArray[i][j].piece.move();
-					}
-					
+					this.gamePiecesArray[i][j].piece.move();
 					this.context.drawImage(this.spritesheet,
 							  this.gamePiecesArray[i][j].piece.sheet_left, 
 							  this.gamePiecesArray[i][j].piece.sheet_top,
-							  32, 32,
+							  42, 50,
 							  this.gamePiecesArray[i][j].piece.left, 
 							  this.gamePiecesArray[i][j].piece.top,
-							  32, 32);
+							  42, 50);
+				}
+				// else 
+				else {
+					// if the piece is animating (moving) and the showAnimal flag is false
+					if (this.gamePiecesArray[i][j].piece.isAnimating && !this.gamePiecesArray[i][j].piece.showAnimal) {
+						this.gamePiecesArray[i][j].piece.move();
+					}
+					this.context.drawImage(this.spritesheet,
+							  this.gamePiecesArray[i][j].piece.sheet_left, 
+							  this.gamePiecesArray[i][j].piece.sheet_top,
+							  37, 37,
+							  this.gamePiecesArray[i][j].piece.left, 
+							  this.gamePiecesArray[i][j].piece.top,
+							  37, 37);
 				}
 			} 
 		}
@@ -1612,9 +1633,6 @@ LudoObj.prototype = {
 		piece.pathIndex = player.diceRoll + indexPath;
 		// console.log(player.color + " is moving from " + indexPath + " to " + (player.diceRoll + indexPath));
 		
-		// while moving this piece will show as one piece
-		piece.setSpritesheetCoordsTo(1);
-		
 		this.playSound(player.moveSound);
 		
 		piece.isAnimating = true;
@@ -1932,6 +1950,7 @@ document.getElementById('roll_num_btn').onclick = function() {
 document.getElementById('player_name').onkeydown = function(e) {
 	if (e.srcElement.value.length > 1) {
 		document.getElementById('new_player_btn').removeAttribute('disabled');
+		document.getElementById('new_computer_btn').setAttribute('disabled', true);
 	}
 }
 
@@ -1978,6 +1997,11 @@ document.getElementById('sounds_box').onclick =function () {
 	} else {
 		ludoObject.backgroundSound.pause();
 	}
+}
+
+document.getElementById('fx_box').onclick =function () {
+	
+	ludoObject.fxOn = this.checked;
 }
 
 /*

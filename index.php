@@ -29,8 +29,8 @@
 				<source src="sounds/cow.mp3" type="audio/mp3">
 			</audio>
 			
-			<audio id="merlin_sound">
-				<source src="sounds/merlin.mp3" type="audio/mp3">
+			<audio id="sheep_sound">
+				<source src="sounds/sheep.mp3" type="audio/mp3">
 			</audio>
 			
 			<audio id="duck_sound">
@@ -453,7 +453,8 @@
 				<option value="1">Roll a One</option>
 			</select>
 			<button id="roll_num_btn">Roll</button>
-			<input id="sounds_box" type="checkbox">Sounds</div>
+			<input id="sounds_box" type="checkbox">Background</input>
+			<input id="fx_box" type="checkbox">FX Sounds</input>
 		</div>
 		
 		</div>

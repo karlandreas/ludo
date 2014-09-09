@@ -34,11 +34,11 @@ Player.prototype = {
 		
 		if (this.color == "yellow") {
 			this.playerDiv = document.getElementById('player1_div');
-			this.moveSound = document.getElementById('rooster_sound');
+			this.moveSound = document.getElementById('duck_sound');
 		}
 		else if(this.color == "red") {
 			this.playerDiv = document.getElementById('player2_div');
-			this.moveSound = document.getElementById('duck_sound');
+			this.moveSound = document.getElementById('rooster_sound');
 		}
 		else if(this.color == "blue") {
 			this.playerDiv = document.getElementById('player3_div');
@@ -46,7 +46,7 @@ Player.prototype = {
 		}
 		else if(this.color == "green") {
 			this.playerDiv = document.getElementById('player4_div');
-			this.moveSound = document.getElementById('merlin_sound');
+			this.moveSound = document.getElementById('sheep_sound');
 		}
 		
 		this.moveSound.volume = 0.7;
