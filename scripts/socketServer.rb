@@ -22,26 +22,37 @@ class Game
 	end
 	
 	def remove_player(sid)
-		
+	
 		# we loop through the players in this game
 		@players_arr.each do |player|
 			# when we find the player to remove we push the color to the other players
 			if player.sid == sid
 				
+				# if the game has not started yet
 				if @started == false
+					# we just set count to -1, 
+					# giving the next player this players color
 					@count -= 1
 				else
+					# if the game has started we turn this player in to a computer player
 					player.computer = true
 				end
 				
-				remove_hash = Hash.new
-				remove_hash['remove'] = true
-				remove_hash['color'] = player.color
-				@channel.push(JSON.generate(remove_hash))
+				# if this is not the last player
+				if count_non_computer_players > 0
+					# we remove it from the other players browsers
+					remove_hash = Hash.new
+					remove_hash['remove'] = true
+					remove_hash['color'] = player.color
+					@channel.push(JSON.generate(remove_hash))
+				end
 			end
 		end
 		
+		# no mather what we unsubscribe the players channel
 		@channel.unsubscribe(sid)
+		# we return if the number of players is less than 2
+		return count_non_computer_players < 2
 	end
 	
 	def get_next_player(color)
@@ -55,6 +66,17 @@ class Game
 		elsif (color == "green")
 			return @players_arr[0]
 		end
+	end
+	
+	def count_non_computer_players
+		player_count = 0
+		
+		@players_arr.each do |player|
+			if !player.computer
+				player_count += 1
+			end
+		end
+		return player_count
 	end
 	
 	def get_player_for_color(color)
@@ -77,6 +99,14 @@ class Game
 			end
 			next if player.computer
 		end
+	end
+	
+	def make_local_game
+		# we create a hash to turn final player's game into a local game
+		make_local_hash = Hash.new 
+		make_local_hash['make_local'] = true
+		
+		@channel.push(JSON.generate(make_local_hash))
 	end
 	
 	def write_names_to_players
@@ -326,37 +356,29 @@ EM.run {
     }
 
     ws.onmessage { |msg|
-       
+       	# se parse the message in to a json object 
 		json_obj = JSON.parse(msg)
+		# we always get the game_index
+		game = @games_arr[json_obj['game_index'].to_i]
 		
 		# dice roll event
 		if json_obj['dice']
-			num = json_obj['number']
-			@games_arr[json_obj['game_index'].to_i].show_rolled_number(num)
-		end
+			game.show_rolled_number(json_obj['number'])
 		
 		# highlight position event 
-		if json_obj['highlight']
-			@games_arr[json_obj['game_index'].to_i].highlight(json_obj['color'], json_obj['piece_index'], json_obj['diceroll'])
-			
-		end
+		elsif json_obj['highlight']
+			game.highlight(json_obj['color'], json_obj['piece_index'], json_obj['diceroll'])
 		
 		# piece move event
-		if json_obj['move_piece']
-			@games_arr[json_obj['game_index'].to_i].move_piece(json_obj['color'], json_obj['piece_index'], json_obj['diceroll'])
-			
-		end
+		elsif json_obj['move_piece']
+			game.move_piece(json_obj['color'], json_obj['piece_index'], json_obj['diceroll'])
 		
 		# swich player event
-		if json_obj['switch_player']
-			@games_arr[json_obj['game_index'].to_i].switch_player(json_obj['color'])
-		end
+		elsif json_obj['switch_player']
+			game.switch_player(json_obj['color'])
 		
 		# computer roll event
-		if json_obj['computer_roll']
-			
-			# we get a reference to the game being played
-			game = @games_arr[json_obj['game_index'].to_i]
+		elsif json_obj['computer_roll']
 			
 			# we get the computer player
 			player = game.get_player_for_color(json_obj['computer_color'])
@@ -373,14 +395,9 @@ EM.run {
 			
 			player.diceRoll = nil
 			
-		end
-		
 		# computer has all in home event
-		if json_obj['all_in_home']
-			
-			# we get a reference to the game being played
-			game = @games_arr[json_obj['game_index'].to_i]
-			
+		elsif json_obj['all_in_home']
+						
 			# we get the computer player
 			player = game.get_player_for_color(json_obj['computer_color'])
 						
@@ -394,36 +411,24 @@ EM.run {
 				game.switch_player(player.color)
 			end
 					
-		end
-		
 		# no movable pieces event
-		if json_obj['no_movable']
-			@games_arr[json_obj['game_index'].to_i].no_movable(json_obj['color'])
-			
-		end
-		
+		elsif json_obj['no_movable']
+			game.no_movable(json_obj['color'])
+
 		# greyout fields event
-		if json_obj['greyout']
-			@games_arr[json_obj['game_index'].to_i].greyout(json_obj['color'], json_obj['piece_index'], json_obj['block_index'])
-			
-		end
+		elsif json_obj['greyout']
+			game.greyout(json_obj['color'], json_obj['piece_index'], json_obj['block_index'])
 		
 		# clear fields event
-		if json_obj['clear_fields']
-			@games_arr[json_obj['game_index'].to_i].clear_fields()
-			
-		end
+		elsif json_obj['clear_fields']
+			game.clear_fields()
 		
 		# move to goal event
-		if json_obj['to_goal']
-			@games_arr[json_obj['game_index'].to_i].move_to_goal(json_obj['color'], json_obj['piece_index'], json_obj['num_in_goal'])
-			
-		end
+		elsif json_obj['to_goal']
+			game.move_to_goal(json_obj['color'], json_obj['piece_index'], json_obj['num_in_goal'])
 				
 		# setting player names event
-		if json_obj['name']
-			
-			game = @games_arr[json_obj['game_index'].to_i]
+		elsif json_obj['name']
 			
 			if json_obj['color'] == "yellow"
 				game.players_arr[0].name = json_obj['name']
@@ -444,12 +449,15 @@ EM.run {
 				game.start_game()
 			end
 			
-		end
-		
 		# player leave game event
-		if json_obj['close']
+		elsif json_obj['close']
 			puts "--- Closing session \nin game #{json_obj['game_index']} \nfor player with sid #{json_obj['sid']} ---End"
-			@games_arr[json_obj['game_index'].to_i].remove_player(json_obj['sid'].to_i)
+			last_player = game.remove_player(json_obj['sid'].to_i)
+			
+			puts "Last player: #{last_player}"
+			if last_player
+				game.make_local_game()
+			end
 		end
    }
   end

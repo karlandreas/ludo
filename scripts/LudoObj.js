@@ -203,16 +203,11 @@ var LudoObj = function() {
 	this.onlineFirstCall = true;
 	
 	// messages
-	this.msgDiv 		= document.createElement('div');
-	this.winnerDiv 		= document.createElement('div');
-	this.pausedDiv		= document.createElement('div');
-	this.startDiv		= document.createElement('div');
+	this.messagesDiv 	= document.createElement('div');
+
 	// images
 	this.spritesheet 	= new Image();
-	this.msgImg			= new Image();
-	this.winnerImg		= new Image();
-	this.pauseImg		= new Image();
-	this.startImg		= new Image();
+
 	// game type chooser
 	this.gameTypeDiv	= document.getElementById('game_type_div');
 	this.isSimulation 	= false;
@@ -441,80 +436,22 @@ LudoObj.prototype = {
 	},
 	
 	setupImages: function() {
-		
+				
 		// set the spritesheet and images source
 		this.spritesheet.src = 'images/spritesheet2.png';
-		this.winnerImg.src	 = 'images/WeHaveaWinner.svg';
-		this.msgImg.src	 	 = 'images/NoMovesPossible.svg';
-		this.pauseImg.src	 = 'images/Paused.svg';
-		this.startImg.src	 = 'images/ClickDiceToStart.svg';
 		
 		// set the styles of the message divs
 		// the no moves possible div
-		this.msgDiv.style.position 	= "absolute";
-		this.msgDiv.style.width  	= "100%";
-		this.msgDiv.style.height 	= "100%";
-		this.msgDiv.style.top 		= "0px";
-		this.msgDiv.style.left 		= "0px";
-		this.msgDiv.style.zIndex 	= "10";
-		this.msgDiv.style.opacity 	= "0.2";
-		this.msgDiv.style.webkitTransition = "opacity 1s ease 0s";
-		this.msgDiv.style.minWidth	= "1024px";
-		// the we have a winner div
-		this.winnerDiv.style.position 	= "absolute";
-		this.winnerDiv.style.width  	= "100%";
-		this.winnerDiv.style.height 	= "100%";
-		this.winnerDiv.style.top 		= "0px";
-		this.winnerDiv.style.left 		= "0px";
-		this.winnerDiv.style.zIndex 	= "10";
-		this.winnerDiv.style.minWidth	= "1024px";
-		// the paused div
-		this.pausedDiv.style.position 	= "absolute";
-		this.pausedDiv.style.width  	= "100%";
-		this.pausedDiv.style.height 	= "100%";
-		this.pausedDiv.style.top 		= "0px";
-		this.pausedDiv.style.left 		= "0px";
-		this.pausedDiv.style.zIndex 	= "10";
-		// the start div
-		this.startDiv.style.position 	= "absolute";
-		this.startDiv.style.width  		= "100%";
-		this.startDiv.style.height 		= "100%";
-		this.startDiv.style.top 		= "-50px";
-		this.startDiv.style.left 		= "0px";
-		this.startDiv.style.zIndex 		= "10";
-		this.startDiv.style.minWidth	= "1024px";
-
-		// set the styles for the images
-		// the winner image
-		this.winnerImg.style.position 		= "relative";
-		this.winnerImg.style.marginLeft 	= "auto";
-		this.winnerImg.style.marginLeft 	= "auto";
-		this.winnerImg.style.marginTop	 	= "100px";
-		this.winnerImg.style.display	 	= "block";
-		// the message image
-		this.msgImg.style.position 			= "relative";
-		this.msgImg.style.marginLeft 		= "auto";
-		this.msgImg.style.marginRight 		= "auto";
-		this.msgImg.style.marginTop	 		= "100px";
-		this.msgImg.style.display	 		= "block";
-		// the pause image
-		this.pauseImg.style.position 		= "relative";
-		this.pauseImg.style.marginLeft 		= "auto";
-		this.pauseImg.style.marginRight 	= "auto";
-		this.pauseImg.style.marginTop	 	= "100px";
-		this.pauseImg.style.display	 		= "block";
-		// the start image
-		this.startImg.style.position 		= "relative";
-		this.startImg.style.marginLeft 		= "auto";
-		this.startImg.style.marginRight 	= "auto";
-		this.startImg.style.marginTop	 	= "100px";
-		this.startImg.style.display	 		= "block";
+		this.messagesDiv.style.position = "absolute";
+		this.messagesDiv.style.width  	= "100%";
+		this.messagesDiv.style.height 	= "100%";
+		this.messagesDiv.style.top 		= "0px";
+		this.messagesDiv.style.left 	= "0px";
+		this.messagesDiv.style.zIndex 	= "10";
+		this.messagesDiv.style.minWidth	= "1024px";
+		this.messagesDiv.style.opacity 	= "0";
+		this.messagesDiv.style.webkitTransition = "opacity 1s ease 0s";
 		
-		// add the images to the divs
-		this.msgDiv.appendChild(this.msgImg);
-		this.winnerDiv.appendChild(this.winnerImg);
-		this.pausedDiv.appendChild(this.pauseImg);
-		this.startDiv.appendChild(this.startImg);
 	},
 	
 	initializePlayers: function() {
@@ -915,6 +852,14 @@ LudoObj.prototype = {
 			return;
 		}
 		
+		// if we are the only online player left
+		if (msgObject.make_local) {
+			ludoObject.isOnlineGame = false;
+			var data={"close" : true, "game_index": ludoObject.onlineGameIndex, "sid": ludoObject.player.sid};
+			ludoObject.connection.send( JSON.stringify(data) );
+			confirm("You are the only online player left\nMaking this a Local game");
+		}
+		
 		// a player has left the game
 		if (msgObject.remove) {
 			
@@ -977,7 +922,7 @@ LudoObj.prototype = {
 			case 1: // player1 
 				this.player1.name = value;
 				this.player1.computer = false;
-				this.player1.init();
+				this.player1.reload();
 				this.player1.toggleNewPlayerForm();
 				this.activePlayer = 2;
 				setTimeout(function() {
@@ -987,7 +932,7 @@ LudoObj.prototype = {
 			case 2: // player2
 				this.player2.name = value;
 				this.player2.computer = false;
-				this.player2.init();
+				this.player2.reload();
 				this.player2.toggleNewPlayerForm();
 				this.activePlayer = 3;
 				setTimeout(function() {
@@ -997,7 +942,7 @@ LudoObj.prototype = {
 			case 3: // player3
 				this.player3.name = value;
 				this.player3.computer = false;
-				this.player3.init();
+				this.player3.reload();
 				this.player3.toggleNewPlayerForm();
 				this.activePlayer = 4;
 				setTimeout(function() {
@@ -1007,7 +952,7 @@ LudoObj.prototype = {
 			case 4: // player4
 				this.player4.name = value;
 				this.player4.computer = false;
-				this.player4.init();
+				this.player4.reload();
 				this.player4.toggleNewPlayerForm();
 				this.activePlayer = 1;
 				this.startGame();
@@ -1152,6 +1097,9 @@ LudoObj.prototype = {
 		
 		if (!this.player.computer) {
 			this.dice.disabled = false;
+			if (!this.isSimulation) {
+				this.player.displayStartGraphic();
+			}
 		}
 		else {
 			this.dice.disabled = true;
@@ -1959,6 +1907,8 @@ document.getElementById('new_player_btn').onclick = function() {
 	var enteredName = document.getElementById('player_name').value;
 	var nameChop = enteredName.substr(0, 7);
 	
+	document.getElementById('new_computer_btn').removeAttribute('disabled');
+	
 	// if this is a local game
 	if (!ludoObject.isOnlineGame) {
 		ludoObject.setPlayerName(nameChop);
@@ -2007,40 +1957,26 @@ document.getElementById('fx_box').onclick =function () {
 /*
 window.onblur = function() {
 	
-	// if the game is running (all players has been set and game has started)
-	if (ludoObject.gameIsRunning) {
-		
-		// if the current player is a computer player
-		if (ludoObject.player.computer) {
-			
-			// we pause the game and display the Paused sign
-			ludoObject.paused = true;
-			document.getElementsByTagName('body')[0].appendChild(ludoObject.pausedDiv);
-		}
+	if (!ludoObject.isOnlineGame && ludoObject.gameIsRunning && !ludoObject.paused) {
+		ludoObject.player.displayPausedGraphic();
 	}
-}
+}	
 
 window.onfocus = function() {
 	
-	// if the game is running (all players has been set and game has started)
-	if (ludoObject.gameIsRunning) {
+	if (!ludoObject.isOnlineGame && ludoObject.gameIsRunning && ludoObject.paused) {
+		ludoObject.player.displayPausedGraphic();
 		
-		// if the game actually is paused
-		if (ludoObject.paused) {
-			// if the current player is a computer player
-			if (ludoObject.player.computer) {
-				
-				// we unpause the game and remove the Paused sign
-				ludoObject.paused = false;
-				document.getElementsByTagName('body')[0].removeChild(ludoObject.pausedDiv);
-				
-				// we roll the dice for the computer player after 1 second
-				setTimeout(function() {
-					ludoObject.dice.rollDice();
-				}, 1000);
-			}
+		// if the current player is a computer player
+		if (ludoObject.player.computer) {
+
+			// we roll the dice for the computer player after 1 second
+			setTimeout(function() {
+				ludoObject.dice.rollDice();
+			}, 1000);
 		}
 	}
+	
 }
 */
 

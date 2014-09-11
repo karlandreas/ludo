@@ -103,9 +103,9 @@
 							   border-left:2px solid black;"></td>
 					
 					<!-- Game cells on row 15 -->
-					<td id="x7y15"  class="normalcell">x7y15</td>
-					<td id="x8y15"  class="normalcell">x8y15</td>
-					<td id="x9y15"  class="normalcell">x9y15</td>
+					<td id="x7y15"  class="normalcell"></td>
+					<td id="x8y15"  class="normalcell"></td>
+					<td id="x9y15"  class="normalcell"></td>
 					
 					<td class="blue" 
 						colspan="6" 
@@ -129,13 +129,13 @@
 						<table cellspacing="14">
 						
 							<tr>
-								<td id="g_H2" class="homecell green">g_H2</td>
-								<td id="g_H4" class="homecell green">g_H4</td>
+								<td id="g_H2" class="homecell green"></td>
+								<td id="g_H4" class="homecell green"></td>
 							</tr>
 							
 							<tr>
-								<td id="g_H1" class="homecell green">g_H1</td>
-								<td id="g_H3" class="homecell green">g_H3</td>
+								<td id="g_H1" class="homecell green"></td>
+								<td id="g_H3" class="homecell green"></td>
 							</tr>
 							
 						</table>
@@ -144,9 +144,9 @@
 					<td class="green wallcell"></td>
 					
 					<!-- Game cells on row 14 -->
-					<td id="x7y14"  class="normalcell">x7y14</td>
-					<td id="x8y14"  class="normalcell blue">x8y14</td>
-					<td id="x9y14"  class="normalcell blue">x9y14</td>
+					<td id="x7y14"  class="normalcell"></td>
+					<td id="x8y14"  class="normalcell blue"></td>
+					<td id="x9y14"  class="normalcell blue"></td>
 					
 					<td class="blue wallcell"></td>
 					
@@ -161,13 +161,13 @@
 						<table cellspacing="14">
 						
 							<tr>
-								<td id="b_H1" class="homecell blue">b_H1</td>
-								<td id="b_H2" class="homecell blue">b_H2</td>
+								<td id="b_H1" class="homecell blue"></td>
+								<td id="b_H2" class="homecell blue"></td>
 							</tr>
 							
 							<tr>
-								<td id="b_H3" class="homecell blue">b_H3</td>
-								<td id="b_H4" class="homecell blue">b_H4</td>
+								<td id="b_H3" class="homecell blue"></td>
+								<td id="b_H4" class="homecell blue"></td>
 							</tr>
 							
 						</table>
@@ -181,9 +181,9 @@
 					<td class="green wallcell"></td>
 					
 					<!-- Game cells on row 13 -->
-					<td id="x7y13"  class="normalcell">x7y13</td>
-					<td id="x8y13"  class="normalcell blue">x8y13</td>
-					<td id="x9y13"  class="normalcell">x9y13</td>
+					<td id="x7y13"  class="normalcell"></td>
+					<td id="x8y13"  class="normalcell blue"></td>
+					<td id="x9y13"  class="normalcell"></td>
 					
 					<td class="blue wallcell"></td>
 					<td class="blue wallcell"></td>
@@ -194,9 +194,9 @@
 					<td class="green wallcell"></td>
 					
 					<!-- Game cells on row 12 -->
-					<td id="x7y12"  class="normalcell">x7y12</td>
-					<td id="x8y12"  class="normalcell blue">x8y12</td>
-					<td id="x9y12"  class="normalcell">x9y12</td>
+					<td id="x7y12"  class="normalcell"></td>
+					<td id="x8y12"  class="normalcell blue"></td>
+					<td id="x9y12"  class="normalcell"></td>
 					
 					<td class="blue wallcell"></td>
 					<td class="blue wallcell"></td>
@@ -207,9 +207,9 @@
 					<td class="green wallcell"></td>
 					
 					<!-- Game cells on row 11 -->
-					<td id="x7y11"  class="normalcell">x7y11</td>
-					<td id="x8y11"  class="normalcell blue">x8y11</td>
-					<td id="x9y11"  class="normalcell">x9y11</td>
+					<td id="x7y11"  class="normalcell"></td>
+					<td id="x8y11"  class="normalcell blue"></td>
+					<td id="x9y11"  class="normalcell"></td>
 					
 					<td class="blue wallcell"></td>
 					<td class="blue wallcell"></td>
@@ -222,9 +222,9 @@
 							   border-left:2px solid black;"></td>
 					
 					<!-- Game cells on row 10 -->
-					<td id="x7y10"  class="normalcell">x7y10</td>
-					<td id="x8y10"  class="normalcell blue">x8y10</td>
-					<td id="x9y10"  class="normalcell">x9y10</td>
+					<td id="x7y10"  class="normalcell"></td>
+					<td id="x8y10"  class="normalcell blue"></td>
+					<td id="x9y10"  class="normalcell"></td>
 					
 					<td class="blue" 
 						colspan="6" 
@@ -235,12 +235,12 @@
 				<!-- Middle rows -->
 				<tr id="y9">
 					<!-- Game cells on row 9 -->
-					<td id="x1y9"  class="normalcell">x1y9</td>
-					<td id="x2y9"  class="normalcell green">x2y9</td>
-					<td id="x3y9"  class="normalcell">x3y9</td>
-					<td id="x4y9"  class="normalcell">x4y9</td>
-					<td id="x5y9"  class="normalcell">x5y9</td>
-					<td id="x6y9"  class="normalcell">x6y9</td>
+					<td id="x1y9"  class="normalcell"></td>
+					<td id="x2y9"  class="normalcell green"></td>
+					<td id="x3y9"  class="normalcell"></td>
+					<td id="x4y9"  class="normalcell"></td>
+					<td id="x5y9"  class="normalcell"></td>
+					<td id="x6y9"  class="normalcell"></td>
 					
 					<!-- Game Goal / Finnish -->
 					<td id="goal_cell" colspan="3" rowspan="3">
@@ -255,44 +255,44 @@
 					</td>
 					
 					<!-- Game cells on row 9 -->
-					<td id="x10y9"  class="normalcell">x10y9</td>
-					<td id="x11y9"  class="normalcell">x11y9</td>
-					<td id="x12y9"  class="normalcell">x12y9</td>
-					<td id="x13y9"  class="normalcell">x13y9</td>
-					<td id="x14y9"  class="normalcell">x14y9</td>
-					<td id="x15y9"  class="normalcell">x15y9</td>
+					<td id="x10y9"  class="normalcell"></td>
+					<td id="x11y9"  class="normalcell"></td>
+					<td id="x12y9"  class="normalcell"></td>
+					<td id="x13y9"  class="normalcell"></td>
+					<td id="x14y9"  class="normalcell"></td>
+					<td id="x15y9"  class="normalcell"></td>
 				</tr>
 				<tr id="y8">
 					<!-- Game cells on row 8 -->
-					<td id="x1y8"  class="normalcell">x1y8</td>
-					<td id="x2y8"  class="normalcell green">x2y8</td>
-					<td id="x3y8"  class="normalcell green">x3y8</td>
-					<td id="x4y8"  class="normalcell green">x4y8</td>
-					<td id="x5y8"  class="normalcell green">x5y8</td>
-					<td id="x6y8"  class="normalcell green">x6y8</td>
+					<td id="x1y8"  class="normalcell"></td>
+					<td id="x2y8"  class="normalcell green"></td>
+					<td id="x3y8"  class="normalcell green"></td>
+					<td id="x4y8"  class="normalcell green"></td>
+					<td id="x5y8"  class="normalcell green"></td>
+					<td id="x6y8"  class="normalcell green"></td>
 										
-					<td id="x10y8"  class="normalcell red">x10y8</td>
-					<td id="x11y8"  class="normalcell red">x11y8</td>
-					<td id="x12y8"  class="normalcell red">x12y8</td>
-					<td id="x13y8"  class="normalcell red">x13y8</td>
-					<td id="x14y8"  class="normalcell red">x14y8</td>
-					<td id="x15y8"  class="normalcell">x15y8</td>
+					<td id="x10y8"  class="normalcell red"></td>
+					<td id="x11y8"  class="normalcell red"></td>
+					<td id="x12y8"  class="normalcell red"></td>
+					<td id="x13y8"  class="normalcell red"></td>
+					<td id="x14y8"  class="normalcell red"></td>
+					<td id="x15y8"  class="normalcell"></td>
 				</tr>
 				<tr id="y7">
 					<!-- Game cells on row 7 -->
-					<td id="x1y7"  class="normalcell">x1y7</td>
-					<td id="x2y7"  class="normalcell">x2y7</td>
-					<td id="x3y7"  class="normalcell">x3y7</td>
-					<td id="x4y7"  class="normalcell">x4y7</td>
-					<td id="x5y7"  class="normalcell">x5y7</td>
-					<td id="x6y7"  class="normalcell">x6y7</td>
+					<td id="x1y7"  class="normalcell"></td>
+					<td id="x2y7"  class="normalcell"></td>
+					<td id="x3y7"  class="normalcell"></td>
+					<td id="x4y7"  class="normalcell"></td>
+					<td id="x5y7"  class="normalcell"></td>
+					<td id="x6y7"  class="normalcell"></td>
 										
-					<td id="x10y7"  class="normalcell">x10y7</td>
-					<td id="x11y7"  class="normalcell">x11y7</td>
-					<td id="x12y7"  class="normalcell">x12y7</td>
-					<td id="x13y7"  class="normalcell">x13y7</td>
-					<td id="x14y7"  class="normalcell red">x14y7</td>
-					<td id="x15y7"  class="normalcell">x15y7</td>
+					<td id="x10y7"  class="normalcell"></td>
+					<td id="x11y7"  class="normalcell"></td>
+					<td id="x12y7"  class="normalcell"></td>
+					<td id="x13y7"  class="normalcell"></td>
+					<td id="x14y7"  class="normalcell red"></td>
+					<td id="x15y7"  class="normalcell"></td>
 				</tr>
 				
 				<tr id="y6">
@@ -302,9 +302,9 @@
 							   border-left:2px solid black;"></td>
 					
 					<!-- Game cells on row 6 -->
-					<td id="x7y6"  class="normalcell">x7y6</td>
-					<td id="x8y6"  class="normalcell yellow">x8y6</td>
-					<td id="x9y6"  class="normalcell">x9y6</td>
+					<td id="x7y6"  class="normalcell"></td>
+					<td id="x8y6"  class="normalcell yellow"></td>
+					<td id="x9y6"  class="normalcell"></td>
 					
 					<td class="red" 
 						colspan="6" 
@@ -326,13 +326,13 @@
 						<table cellspacing="14">
 						
 							<tr>
-								<td id="y_H4" class="homecell yellow">y_H4</td>
-								<td id="y_H3" class="homecell yellow">y_H3</td>
+								<td id="y_H4" class="homecell yellow"></td>
+								<td id="y_H3" class="homecell yellow"></td>
 							</tr>
 							
 							<tr>
-								<td id="y_H2" class="homecell yellow">y_H2</td>
-								<td id="y_H1" class="homecell yellow">y_H1</td>
+								<td id="y_H2" class="homecell yellow"></td>
+								<td id="y_H1" class="homecell yellow"></td>
 							</tr>
 							
 						</table>
@@ -341,9 +341,9 @@
 					<td class="yellow wallcell"></td>
 					
 					<!-- Game cells on row 5 -->
-					<td id="x7y5"  class="normalcell">x7y5</td>
-					<td id="x8y5"  class="normalcell yellow">x8y5</td>
-					<td id="x9y5"  class="normalcell">x9y5</td>
+					<td id="x7y5"  class="normalcell"></td>
+					<td id="x8y5"  class="normalcell yellow"></td>
+					<td id="x9y5"  class="normalcell"></td>
 					
 					<td class="red wallcell"></td>
 					
@@ -358,13 +358,13 @@
 						<table cellspacing="14">
 						
 							<tr>
-								<td id="r_H3" class="homecell red">r_H3</td>
-								<td id="r_H1" class="homecell red">r_H1</td>
+								<td id="r_H3" class="homecell red"></td>
+								<td id="r_H1" class="homecell red"></td>
 							</tr>
 							
 							<tr>
-								<td id="r_H4" class="homecell red">r_H4</td>
-								<td id="r_H2" class="homecell red">r_H2</td>
+								<td id="r_H4" class="homecell red"></td>
+								<td id="r_H2" class="homecell red"></td>
 							</tr>
 							
 						</table>
@@ -378,9 +378,9 @@
 					<td class="yellow wallcell"></td>
 					
 					<!-- Game cells on row 4 -->
-					<td id="x7y4"  class="normalcell">x7y4</td>
-					<td id="x8y4"  class="normalcell yellow">x8y4</td>
-					<td id="x9y4"  class="normalcell">x9y4</td>
+					<td id="x7y4"  class="normalcell"></td>
+					<td id="x8y4"  class="normalcell yellow"></td>
+					<td id="x9y4"  class="normalcell"></td>
 					
 					<td class="red wallcell"></td>
 					<td class="red wallcell"></td>
@@ -391,9 +391,9 @@
 					<td class="yellow wallcell"></td>
 					
 					<!-- Game cells on row 3 -->
-					<td id="x7y3"  class="normalcell">x7y3</td>
-					<td id="x8y3"  class="normalcell yellow">x8y3</td>
-					<td id="x9y3"  class="normalcell">x9y3</td>
+					<td id="x7y3"  class="normalcell"></td>
+					<td id="x8y3"  class="normalcell yellow"></td>
+					<td id="x9y3"  class="normalcell"></td>
 					
 					<td class="red wallcell"></td>
 					<td class="red wallcell"></td>
@@ -404,9 +404,9 @@
 					<td class="yellow wallcell"></td>
 					
 					<!-- Game cells on row 2 -->
-					<td id="x7y2"  class="normalcell yellow">x7y2</td>
-					<td id="x8y2"  class="normalcell yellow">x8y2</td>
-					<td id="x9y2"  class="normalcell">x9y2</td>
+					<td id="x7y2"  class="normalcell yellow"></td>
+					<td id="x8y2"  class="normalcell yellow"></td>
+					<td id="x9y2"  class="normalcell"></td>
 					
 					<td class="red wallcell"></td>
 					<td class="red wallcell"></td>
@@ -421,9 +421,9 @@
 							   border-right:2px solid black;"></td>
 					
 					<!-- Game cells on row 1 -->
-					<td id="x7y1"  class="normalcell">x7y1</td>
-					<td id="x8y1"  class="normalcell">x8y1</td>
-					<td id="x9y1"  class="normalcell">x9y1</td>
+					<td id="x7y1"  class="normalcell"></td>
+					<td id="x8y1"  class="normalcell"></td>
+					<td id="x9y1"  class="normalcell"></td>
 					
 					<td class="red" 
 						colspan="6" 
@@ -510,6 +510,8 @@
 		</div>
 	</body>
 	<script src='scripts/requestNextAnimationframe.js' type='text/javascript'></script>
+	<script src='scripts/LudoSVG.js' type='text/javascript'></script>
+	<script src='scripts/LudoSVGimages.js' type='text/javascript'></script>
 	<script src='scripts/Piece.js' type='text/javascript'></script>
 	<script src='scripts/Dice.js' type='text/javascript'></script>
 	<script src='scripts/Player.js' type='text/javascript'></script>

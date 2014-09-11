@@ -59,8 +59,9 @@ Piece.prototype = {
 			this.left = (((offL - this.start_left) / this.stepLimit) * this.step) + this.start_left;
 			this.top = (((offT - this.start_top) / this.stepLimit) * this.step) + this.start_top;
 			this.step++;
-		} else {
-			// we don't want to set left and top on the last step in case
+		} 
+		// we don't want to set left and top on the last step in case
+		else {
 			// we have landed on a safe-field and have set a offset for left and top
 			this.step++;
 		}
