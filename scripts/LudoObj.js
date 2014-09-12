@@ -1,3 +1,27 @@
+/*
+ * License (MIT)
+ * 
+ * Copyright (c) 2014 KAjohansen http://www.kajohansen.com
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+*/
+
 // !  ---------------------- LudoObj object-------------------------------
 var LudoObj = function() {
 	
@@ -262,7 +286,7 @@ var LudoObj = function() {
 	// array of all pieces
 	this.gamePiecesArray = undefined;
 	
-	// sound 
+	// sound vars
 	this.soundOn	= true;
 	this.fxOn		= true;
 	this.backgroundSound = document.getElementById('background_sound');
@@ -294,6 +318,11 @@ var LudoObj = function() {
 	this.RS_MOVE 	  = {x:  50, y: 177};
 	this.YS_MOVE 	  = {x:   1, y: 177};
 	
+	this.GS_MOVE_HALF = {x: 158, y: 226};
+	this.BS_MOVE_HALF = {x: 101, y: 226};
+	this.RS_MOVE_HALF = {x:  57, y: 226};
+	this.YS_MOVE_HALF = {x:  10, y: 226};
+	
 	// pieces goal coordinates
 	this.G_GOAL = {gLeft: 194, gTop: 224};
 	this.B_GOAL = {gLeft: 224, gTop: 195};
@@ -323,10 +352,10 @@ var LudoObj = function() {
 	this.RH3 = {name: 'r_H3', x: 332, y: 337};
 	this.RH4 = {name: 'r_H4', x: 332, y: 391};
 	// Yellow Home Cells
-	this.YH1 = {name: 'y_H1', x: 101, y: 392};
-	this.YH2 = {name: 'y_H2', x:  46, y: 392};
-	this.YH3 = {name: 'y_H3', x: 101, y: 337};
-	this.YH4 = {name: 'y_H4', x:  46, y: 337};
+	this.YH1 = {name: 'y_H1', x:  99, y: 390};
+	this.YH2 = {name: 'y_H2', x:  44, y: 390};
+	this.YH3 = {name: 'y_H3', x:  99, y: 335};
+	this.YH4 = {name: 'y_H4', x:  44, y: 335};
 	// All Home Cell Array
 	this.HOME_CELLS_ARRAY = new Array(
 									new Array(
@@ -533,24 +562,31 @@ LudoObj.prototype = {
 	},
 	
 	simulateGame: function() {
+		
+		// we remove the game-type form
 		this.toggleGameTypeForm();
 		
+		// and set all players to be computer players
 		for (var i = 0; i < 4; i++) {
 			this.players[i].computer = true;
 		}
 		
+		// we set the is-simulation variable to true
 		this.isSimulation = true;
 		
+		// and start the game
 		this.startGame();
 	},
 	
 	onlineOpen: function(event) {
-		console.log("Connection: " + event.type);
+		
+		// we show a waiting screen
 		ludoObject.gameTypeDiv.innerHTML = "<h1>Connection: " + event.type + "</h1>";
 	},
 	
 	onlineMessage: function(msg) {
 		
+		// all messages are JSON objects
 		msgObject = JSON.parse(msg.data);
 		
 		// if another player has rolled the dice
@@ -889,17 +925,18 @@ LudoObj.prototype = {
 	},
 	
 	onlineError: function(err) {
-		console.log('WebSocket Error ' + err.reason);
+		
+		// if no connection could be established we show this in the screen
 		ludoObject.gameTypeDiv.innerHTML = "<h1>Socket: " + err.type + "</h1>";
 	},
 	
 	onlineClose: function(event) {
-		console.log('WebSocket Closed: ' + event.reason);
+		
+		// online socket closed message
 		ludoObject.gameTypeDiv.innerHTML = "<h1>Socket Closed: " + event.code + "</h1>";
 	},
 	
 	playSound: function (sound) {
-		var track, index;
 		
 		if (this.fxOn) {
 			if (!this.soundIsPlaying(sound)) {
@@ -1078,18 +1115,22 @@ LudoObj.prototype = {
 			case 1:
 				this.player = this.player1;
 				this.player.active = true;
+				this.controlsDiv.style.backgroundImage = "-webkit-linear-gradient(bottom, rgb(255,133,0), rgb(255,255,0))";
 				break;
 			case 2:
 				this.player = this.player2;
 				this.player.active = true;
+				this.controlsDiv.style.backgroundImage = "-webkit-linear-gradient(bottom, rgb(190,0,0), rgb(255,0,0))";
 				break;
 			case 3:
 				this.player = this.player3;
 				this.player.active = true;
+				this.controlsDiv.style.backgroundImage = "-webkit-linear-gradient(bottom, rgb(0,0,255), rgb(0,225,255))";
 				break;
 			case 4:
 				this.player = this.player4;
 				this.player.active = true;
+				this.controlsDiv.style.backgroundImage = "-webkit-linear-gradient(bottom, rgb(0,225,0), rgb(175,255,0))";
 				break;
 			default:
 				console.log("Error setting active player");
@@ -1104,9 +1145,7 @@ LudoObj.prototype = {
 		else {
 			this.dice.disabled = true;
 		}
-		
 		this.player.playerDiv.style.backgroundPositionY = "-75px";
-		this.controlsDiv.style.backgroundColor = this.player.color;
 	},
 	
 	checkForPieceOnCoord: function(offX, offY, pLeft, pTop) {

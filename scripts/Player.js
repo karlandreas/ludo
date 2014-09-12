@@ -89,6 +89,7 @@ Player.prototype = {
 		this.weHaveaWinner.init(674, 560);
 		this.paused.init(770, 336);
 		
+		// and pull ths svg from the objects
 		this.startImg   = this.clickDiceToStart.svg;
 		this.noMovesImg	= this.noMovesPossible.svg;
 		this.winnerImg  = this.weHaveaWinner.svg;

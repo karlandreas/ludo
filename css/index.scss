@@ -30,6 +30,7 @@ table {
 
 #gametable {
 	background-color: white;
+	box-shadow: 0px 0px 15px 5px rgba(255,255,255, 0.8);
 }
 
 .yellow {
@@ -121,7 +122,8 @@ linear-gradient(-45deg, yellow 25%, transparent 25%, transparent 75%, cyan 75%, 
 	top: 582px;
 	width: 100%;
 	height: 100px;
-	border: 1px solid black;
+	/* border: 1px solid black; */
+	box-shadow: 0px 5px 15px 2px rgba(0,0,0, 0.8);
 }
 
 #dice_div {
@@ -253,16 +255,21 @@ linear-gradient(-45deg, yellow 25%, transparent 25%, transparent 75%, cyan 75%, 
 
 #player1_div {
 	background-position-x: 0px;
+	box-shadow: 0px 0px 10px 3px rgba(255,255,255, 0.8);
 }
 
 #player2_div {
 	background-position-x: -75px;
+	box-shadow: 0px 0px 10px 3px rgba(255,255,255, 0.8);
 }
 
 #player3_div {
 	background-position-x: -151px;
+	box-shadow: 0px 0px 10px 3px rgba(255,255,255, 0.8);
 }
 
 #player4_div {
 	background-position-x: -226px;
+	box-shadow: 0px 0px 10px 3px rgba(255,255,255, 0.8);
 }
+
