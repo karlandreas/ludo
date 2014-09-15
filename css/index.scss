@@ -74,26 +74,10 @@ table {
 	width: 120px;
 }
 
-.goalcell_left {
-	width: 45px;
-	height: 90px;
-	background-color: lime;
-	background-image: linear-gradient(45deg, yellow 25%, transparent 25%, transparent 75%, cyan 75%, cyan), 
-linear-gradient(-45deg, yellow 25%, transparent 25%, transparent 75%, cyan 75%, cyan);
-	background-size: 98px 98px;
-	background-position-x: 48px;
-	background-position-y: -4px;
-}
-
-.goalcell_right {
-	width: 45px;
-	height: 90px;
-	background-color: red;
-	background-image: linear-gradient(45deg, yellow 25%, transparent 25%, transparent 75%, cyan 75%, cyan), 
-linear-gradient(-45deg, yellow 25%, transparent 25%, transparent 75%, cyan 75%, cyan);
-	background-size: 98px 98px;
-	background-position-x: 0px;
-	background-position-y: -4px;
+#goal_cell {
+	background-color: yellow;
+	background-image: url('../images/players.svg');
+	background-position: -334px -27px;
 }
 
 // ! Other styles ------------------------------------
@@ -190,6 +174,7 @@ linear-gradient(-45deg, yellow 25%, transparent 25%, transparent 75%, cyan 75%, 
 	font-size: x-large;
 	border: 10px solid #000;
 	-webkit-transition: margin-top 1s ease 0.3s;
+	-moz-transition: margin-top 1s ease 0.3s;
 	box-shadow: -5px 10px 15px 1px rgba(43,32,32,0.5);
 	
 	h1 {
@@ -255,21 +240,25 @@ linear-gradient(-45deg, yellow 25%, transparent 25%, transparent 75%, cyan 75%, 
 
 #player1_div {
 	background-position-x: 0px;
+	background-position: 0px 0px; // firefox
 	box-shadow: 0px 0px 10px 3px rgba(255,255,255, 0.8);
 }
 
 #player2_div {
 	background-position-x: -75px;
+	background-position: -75px 0px; // firefox
 	box-shadow: 0px 0px 10px 3px rgba(255,255,255, 0.8);
 }
 
 #player3_div {
 	background-position-x: -151px;
+	background-position: -151px 0px; // firefox
 	box-shadow: 0px 0px 10px 3px rgba(255,255,255, 0.8);
 }
 
 #player4_div {
 	background-position-x: -226px;
+	background-position: -226px 0px; // firefox
 	box-shadow: 0px 0px 10px 3px rgba(255,255,255, 0.8);
 }
 

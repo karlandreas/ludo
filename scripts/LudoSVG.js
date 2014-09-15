@@ -41,6 +41,26 @@ LudoSVG.prototype = {
 		return s;
 	},
 	
+	newFilter: function() {
+		return document.createElementNS("http://www.w3.org/2000/svg","filter");
+	},
+	
+	newGaussianBlur: function() {
+		return document.createElementNS("http://www.w3.org/2000/svg","feGaussianBlur");
+	},
+	
+	newOffset: function() {
+		return document.createElementNS("http://www.w3.org/2000/svg","feOffset");
+	},
+	
+	newMerge: function() {
+		return document.createElementNS("http://www.w3.org/2000/svg","feMerge");
+	},
+	
+	newMergeNode: function() {
+		return document.createElementNS("http://www.w3.org/2000/svg","feMergeNode");
+	},
+	
 	addStylesToSVG: function(green, turquise) {
 		
 		var styleTag = this.newStyle();
@@ -54,6 +74,45 @@ LudoSVG.prototype = {
 		styleTag.innerHTML += turquiseStyle;
 		
 		return styleTag;
+	},
+	
+	createAIShadow2: function() {
+		
+		var filter = this.newFilter();
+		filter.setAttribute('id', 'AI_Shadow_2');
+		filter.setAttribute('width', '140%');
+		filter.setAttribute('height', '130%');
+		filter.setAttribute('x', '-15%');
+		filter.setAttribute('y', '-15%');
+		filter.setAttribute('filterUnits', 'objectBoundingBox');
+		
+		var gaussianBlur = this.newGaussianBlur();
+		gaussianBlur.setAttribute("in", "SourceAlpha");
+		gaussianBlur.setAttribute("stdDeviation", "6");
+		gaussianBlur.setAttribute("result", "blur");
+		
+		var offset = this.newOffset();
+		offset.setAttribute("dx", "-8");
+		offset.setAttribute("dy", "8");
+		offset.setAttribute("in", "blur");
+		offset.setAttribute("result", "offsetBlurredAlpha");
+		
+		var merge = this.newMerge();
+		
+		var mergeNode1 = this.newMergeNode();
+		mergeNode1.setAttribute("in", "offsetBlurredAlpha");
+		
+		var mergeNode2 = this.newMergeNode();
+		mergeNode2.setAttribute("in", "SourceGraphic");
+		
+		merge.appendChild(mergeNode1);
+		merge.appendChild(mergeNode2);
+		
+		filter.appendChild(gaussianBlur);
+		filter.appendChild(offset);
+		filter.appendChild(merge);
+		
+		return filter;
 	}
 }
 

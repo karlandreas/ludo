@@ -61,15 +61,6 @@ var ClickDiceToStart = function(green, turquise) {
 	// all objects Array
 	this.allObjectsArray = new Array(this.blacksObject, this.greensObject, this.turquiseObject);
 	
-	// the filter
-	this.filter = "<filter  width='140%' height='130%' x='-15%' y='-15%' id='AI_Shadow_2' filterUnits='objectBoundingBox'>\
-				   		<feGaussianBlur  in='SourceAlpha' stdDeviation='6' result='blur'></feGaussianBlur>\
-				   		<feOffset  dx='-8' dy='8' in='blur' result='offsetBlurredAlpha'></feOffset>\
-							<feMerge>\
-								<feMergeNode  in='offsetBlurredAlpha'></feMergeNode>\
-								<feMergeNode  in='SourceGraphic'></feMergeNode>\
-							</feMerge>\
-				   </filter>";
 }
 
 ClickDiceToStart.prototype = {
@@ -79,7 +70,7 @@ ClickDiceToStart.prototype = {
 		this.svg = this.svgObject.newSVG(width, height);
 		
 		// setup the filter
-		this.svg.innerHTML = this.filter;
+		this.svg.appendChild(this.svgObject.createAIShadow2());
 		
 		for (var i = 0; i < this.allObjectsArray.length; i++) {
 		
@@ -134,12 +125,18 @@ ClickDiceToStart.prototype = {
 	} // end init
 }
 
+// --
 
 var NoMovesPossible = function(green, turquise) {
 	
 	this.svgObject = new LudoSVG("noMovablePieces");
-	this.svg       = undefined;
-	this.group     = undefined;
+	this.width = 960;
+	this.height = 337;
+	this.x = 0;
+	this.y = 0;
+	this.svg       = undefined; // variable to hold the SVG tag
+	this.group     = undefined; // variable to hold the SVG tag
+	this.filter = undefined; // variable to hold a filter 
 	
 	// colors
 	this.blackColor = "#000000";
@@ -180,15 +177,6 @@ var NoMovesPossible = function(green, turquise) {
 	// all objects in one array
 	this.allObjectsArray = new Array(this.blacksObject, this.greensObject, this.turquiseObject);
 	
-	// the filter
-	this.filter = "<filter  width='140%' height='130%' x='-15%' y='-15%' id='AI_Shadow_2' filterUnits='objectBoundingBox'>\
-				   		<feGaussianBlur  in='SourceAlpha' stdDeviation='6' result='blur'></feGaussianBlur>\
-				   		<feOffset  dx='-8' dy='8' in='blur' result='offsetBlurredAlpha'></feOffset>\
-							<feMerge>\
-								<feMergeNode  in='offsetBlurredAlpha'></feMergeNode>\
-								<feMergeNode  in='SourceGraphic'></feMergeNode>\
-							</feMerge>\
-				   </filter>";
 }
 
 NoMovesPossible.prototype = {
@@ -198,7 +186,8 @@ NoMovesPossible.prototype = {
 		this.svg = this.svgObject.newSVG(width, height);
 		
 		// setup the filter
-		this.svg.innerHTML = this.filter;
+		this.svg.appendChild(this.svgObject.createAIShadow2());
+	
 		
 		for (var i = 0; i < this.allObjectsArray.length; i++) {
 		
@@ -254,7 +243,7 @@ NoMovesPossible.prototype = {
 	} // end init
 }
 
-
+// --
 
 var WeHaveaWinner = function(green, turquise) {
 	
@@ -310,15 +299,6 @@ var WeHaveaWinner = function(green, turquise) {
 	// all objects in one array
 	this.allObjectsArray = new Array(this.blacksObject, this.greensObject, this.turquiseObject);
 	
-	// the filter
-	this.filter = "<filter  width='140%' height='130%' x='-15%' y='-15%' id='AI_Shadow_2' filterUnits='objectBoundingBox'>\
-				   		<feGaussianBlur  in='SourceAlpha' stdDeviation='6' result='blur'></feGaussianBlur>\
-				   		<feOffset  dx='-8' dy='8' in='blur' result='offsetBlurredAlpha'></feOffset>\
-							<feMerge>\
-								<feMergeNode  in='offsetBlurredAlpha'></feMergeNode>\
-								<feMergeNode  in='SourceGraphic'></feMergeNode>\
-							</feMerge>\
-				   </filter>";
 }
 
 WeHaveaWinner.prototype = {
@@ -328,7 +308,7 @@ WeHaveaWinner.prototype = {
 		this.svg = this.svgObject.newSVG(width, height);
 		
 		// setup the filter
-		this.svg.innerHTML = this.filter;
+		this.svg.appendChild(this.svgObject.createAIShadow2());
 		
 		for (var i = 0; i < this.allObjectsArray.length; i++) {
 		
@@ -384,6 +364,7 @@ WeHaveaWinner.prototype = {
 	} // end init
 }
 
+// --
 
 var Paused = function(green, turquise) {
 	
@@ -421,15 +402,6 @@ var Paused = function(green, turquise) {
 	// all objects in one array
 	this.allObjectsArray = new Array(this.blacksObject, this.greensObject, this.turquiseObject);
 	
-	// the filter
-	this.filter = "<filter  width='140%' height='130%' x='-15%' y='-15%' id='AI_Shadow_2' filterUnits='objectBoundingBox'>\
-				   		<feGaussianBlur  in='SourceAlpha' stdDeviation='6' result='blur'></feGaussianBlur>\
-				   		<feOffset  dx='-8' dy='8' in='blur' result='offsetBlurredAlpha'></feOffset>\
-							<feMerge>\
-								<feMergeNode  in='offsetBlurredAlpha'></feMergeNode>\
-								<feMergeNode  in='SourceGraphic'></feMergeNode>\
-							</feMerge>\
-				   </filter>";
 }
 
 Paused.prototype = {
@@ -439,7 +411,7 @@ Paused.prototype = {
 		this.svg = this.svgObject.newSVG(width, height);
 		
 		// setup the filter
-		this.svg.innerHTML = this.filter;
+		this.svg.appendChild(this.svgObject.createAIShadow2());
 		
 		for (var i = 0; i < this.allObjectsArray.length; i++) {
 		
@@ -495,7 +467,7 @@ Paused.prototype = {
 	} // end init
 }
 
-
+// --
 
 
 

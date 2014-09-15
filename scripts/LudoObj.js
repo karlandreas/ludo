@@ -480,7 +480,9 @@ LudoObj.prototype = {
 		this.messagesDiv.style.minWidth	= "1024px";
 		this.messagesDiv.style.opacity 	= "0";
 		this.messagesDiv.style.webkitTransition = "opacity 1s ease 0s";
-		
+		this.messagesDiv.style.mozTransition = "opacity 1s ease 0s";
+		this.messagesDiv.style.msTransition = "opacity 1s ease 0s";
+		this.messagesDiv.style.transition = "opacity 1s ease 0s";
 	},
 	
 	initializePlayers: function() {
@@ -812,7 +814,32 @@ LudoObj.prototype = {
 			
 			nextPlayer.giveControl();
 			nextPlayer.playerDiv.style.backgroundPositionY = "-75px";
-			ludoObject.controlsDiv.style.backgroundColor = nextPlayer.color;
+			nextPlayer.playerDiv.style.backgroundPosition  = "0px -75px"; //firefox
+			
+			if (nextPlayer.color == "yellow") {
+				ludoObject.controlsDiv.style.backgroundImage = "-webkit-linear-gradient(bottom, rgb(255,133,0), rgb(255,255,0))";
+				ludoObject.controlsDiv.style.backgroundImage = "-moz-linear-gradient(bottom, rgb(255,133,0), rgb(255,255,0))";
+				ludoObject.controlsDiv.style.backgroundImage = "-ms-linear-gradient(bottom, rgb(255,133,0) 0%, rgb(255,255,0) 100%)";
+				player.playerDiv.style.backgroundPosition 	 = "0px 0px"; //firefox
+			}
+			else if (nextPlayer.color == "red") {
+				ludoObject.controlsDiv.style.backgroundImage = "-webkit-linear-gradient(bottom, rgb(190,0,0), rgb(255,0,0))";
+				ludoObject.controlsDiv.style.backgroundImage = "-moz-linear-gradient(bottom, rgb(190,0,0), rgb(255,0,0))";
+				ludoObject.controlsDiv.style.backgroundImage = "-ms-linear-gradient(bottom, rgb(190,0,0) 0%, rgb(255,0,0) 100%)";
+				player.playerDiv.style.backgroundPosition 	 = "-75px 0px"; //firefox
+			}
+			else if (nextPlayer.color == "blue") {
+				ludoObject.controlsDiv.style.backgroundImage = "-webkit-linear-gradient(bottom, rgb(0,0,255), rgb(0,225,255))";
+				ludoObject.controlsDiv.style.backgroundImage = "-moz-linear-gradient(bottom, rgb(0,0,255), rgb(0,225,255))";
+				ludoObject.controlsDiv.style.backgroundImage = "-ms-linear-gradient(bottom, rgb(0,0,255) 0%, rgb(0,225,255) 100%)";
+				player.playerDiv.style.backgroundPosition 	 = "-151px 0px"; //firefox
+			}
+			else if (nextPlayer.color == "green") {
+				ludoObject.controlsDiv.style.backgroundImage = "-webkit-linear-gradient(bottom, rgb(0,225,0), rgb(175,255,0))";
+				ludoObject.controlsDiv.style.backgroundImage = "-moz-linear-gradient(bottom, rgb(0,225,0), rgb(175,255,0))";
+				ludoObject.controlsDiv.style.backgroundImage = "-ms-linear-gradient(bottom, rgb(0,225,0) 0%, rgb(175,255,0) 100%)";
+				player.playerDiv.style.backgroundPosition 	 = "-226px 0px"; //firefox
+			}
 			
 			
 			if (ludoObject.player.color == nextPlayer.color) {
@@ -1113,24 +1140,40 @@ LudoObj.prototype = {
 		
 		switch(this.activePlayer) {
 			case 1:
+				this.player4.playerDiv.style.backgroundPosition  = "-226px 0px"; // firefox
 				this.player = this.player1;
 				this.player.active = true;
+				this.player.playerDiv.style.backgroundPosition  = "0px -75px"; // firefox
 				this.controlsDiv.style.backgroundImage = "-webkit-linear-gradient(bottom, rgb(255,133,0), rgb(255,255,0))";
+				this.controlsDiv.style.backgroundImage = "-moz-linear-gradient(bottom, rgb(255,133,0), rgb(255,255,0))";
+				this.controlsDiv.style.backgroundImage = "-ms-linear-gradient(bottom, rgb(255,133,0) 0%, rgb(255,255,0) 100%)";
 				break;
 			case 2:
+				this.player1.playerDiv.style.backgroundPosition  = "0px 0px"; // firefox
 				this.player = this.player2;
 				this.player.active = true;
+				this.player.playerDiv.style.backgroundPosition  = "-75px -75px"; // firefox
 				this.controlsDiv.style.backgroundImage = "-webkit-linear-gradient(bottom, rgb(190,0,0), rgb(255,0,0))";
+				this.controlsDiv.style.backgroundImage = "-moz-linear-gradient(bottom, rgb(190,0,0), rgb(255,0,0))";
+				this.controlsDiv.style.backgroundImage = "-ms-linear-gradient(bottom, rgb(190,0,0) 0%, rgb(255,0,0) 100%)";
 				break;
 			case 3:
+				this.player2.playerDiv.style.backgroundPosition  = "-75px 0px"; // firefox
 				this.player = this.player3;
 				this.player.active = true;
+				this.player.playerDiv.style.backgroundPosition  = "-151px -75px"; // firefox
 				this.controlsDiv.style.backgroundImage = "-webkit-linear-gradient(bottom, rgb(0,0,255), rgb(0,225,255))";
+				this.controlsDiv.style.backgroundImage = "-moz-linear-gradient(bottom, rgb(0,0,255), rgb(0,225,255))";
+				this.controlsDiv.style.backgroundImage = "-ms-linear-gradient(bottom, rgb(0,0,255) 0%, rgb(0,225,255) 100%)";
 				break;
 			case 4:
+				this.player3.playerDiv.style.backgroundPosition  = "-151px 0px"; // firefox
 				this.player = this.player4;
 				this.player.active = true;
+				this.player.playerDiv.style.backgroundPosition  = "-226px -75px"; // firefox
 				this.controlsDiv.style.backgroundImage = "-webkit-linear-gradient(bottom, rgb(0,225,0), rgb(175,255,0))";
+				this.controlsDiv.style.backgroundImage = "-moz-linear-gradient(bottom, rgb(0,225,0), rgb(175,255,0))";
+				this.controlsDiv.style.backgroundImage = "-ms-linear-gradient(bottom, rgb(0,225,0) 0%, rgb(175,255,0) 100%)";
 				break;
 			default:
 				console.log("Error setting active player");
@@ -1677,7 +1720,7 @@ ludoObject.canvas.onmouseup = function(e) {
 	}
 	
 	// check for click on blank
-	if (ludoObject.checkForClickOnBlank(e.offsetX, e.offsetY) && !ludoObject.checkForClickOnHighlight(e.offsetX, e.offsetY)) {
+	if (ludoObject.checkForClickOnBlank(e.layerX, e.layerY) && !ludoObject.checkForClickOnHighlight(e.layerX, e.layerY)) {
 		
 		// if the click was on a blank we clear all previously highlighted fields
 		ludoObject.clearHighlightedFields();
@@ -1705,7 +1748,7 @@ ludoObject.canvas.onmouseup = function(e) {
 		if (ludoObject.player.readyToMove) {
 			
 			// we check if the click occurred in this piece's moveTo position
-			if (ludoObject.checkForClickOnHighlight(e.offsetX, e.offsetY)) {
+			if (ludoObject.checkForClickOnHighlight(e.layerX, e.layerY)) {
 				
 				// then loop through current players pieces
 				for (var i = 0; i < 4; i++) {
@@ -1750,7 +1793,7 @@ ludoObject.canvas.onmouseup = function(e) {
 				if (ludoObject.player.pieces[i].piece.inHome) {
 					
 					// we get the piece where the click 
-					if (ludoObject.checkForPieceOnCoord(e.offsetX, e.offsetY, ludoObject.player.pieces[i].piece.left, ludoObject.player.pieces[i].piece.top)) {
+					if (ludoObject.checkForPieceOnCoord(e.layerX, e.layerY, ludoObject.player.pieces[i].piece.left, ludoObject.player.pieces[i].piece.top)) {
 						
 						// if it did we move the piece to the first position
 						ludoObject.player.pieces[i].piece.moveToFirstPosition();
@@ -1775,7 +1818,7 @@ ludoObject.canvas.onmouseup = function(e) {
 				else {
 					
 					// we check if click happened on a piece in play
-					if (ludoObject.checkForPieceOnCoord(e.offsetX, e.offsetY, ludoObject.player.pieces[i].piece.left, ludoObject.player.pieces[i].piece.top)) {
+					if (ludoObject.checkForPieceOnCoord(e.layerX, e.layerY, ludoObject.player.pieces[i].piece.left, ludoObject.player.pieces[i].piece.top)) {
 						
 						ludoObject.player.pieces[i].piece.selected = true;
 						
@@ -1840,7 +1883,7 @@ ludoObject.canvas.onmouseup = function(e) {
 				if (!ludoObject.player.pieces[i].piece.inHome) {
 					
 					// we check if the click happened on this piece
-					if (ludoObject.checkForPieceOnCoord(e.offsetX, e.offsetY, ludoObject.player.pieces[i].piece.left, ludoObject.player.pieces[i].piece.top)) {
+					if (ludoObject.checkForPieceOnCoord(e.layerX, e.layerY, ludoObject.player.pieces[i].piece.left, ludoObject.player.pieces[i].piece.top)) {
 						
 						// we set the piece to be selected
 						ludoObject.player.pieces[i].piece.selected = true;
@@ -1935,7 +1978,8 @@ document.getElementById('roll_num_btn').onclick = function() {
 }
 
 document.getElementById('player_name').onkeydown = function(e) {
-	if (e.srcElement.value.length > 1) {
+		
+	if (e.target.value.length > 1) {
 		document.getElementById('new_player_btn').removeAttribute('disabled');
 		document.getElementById('new_computer_btn').setAttribute('disabled', true);
 	}
@@ -2021,7 +2065,7 @@ window.onfocus = function() {
 
 document.onkeydown = function(e) {
 	
-	var keycode = window.event.keyCode
+	var keycode = e.keyCode
 	
 	if (e.ctrlKey && keycode == 82) {
         if (!confirm("Do You Really Want to leave this session?")) {

@@ -439,7 +439,9 @@ Ludo.prototype = {
 		this.msgDiv.style.zIndex 	= "10";
 		this.msgDiv.style.opacity 	= "0.2";
 		this.msgDiv.style.webkitTransition = "opacity 1s ease 0s";
+		this.msgDiv.style.mozTransition = "opacity 1s ease 0s";
 		this.msgDiv.style.minWidth	= "1024px";
+		
 		// the we have a winner div
 		this.winnerDiv.style.position 	= "absolute";
 		this.winnerDiv.style.width  	= "100%";

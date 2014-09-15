@@ -2,6 +2,7 @@
 <html>
 	<head lang="en">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<meta charset="UTF-8">
 	<title> Ludo </title>
 	<link rel='stylesheet' href='css/index.css' type='text/css' />
 	<script>
@@ -244,14 +245,6 @@
 					
 					<!-- Game Goal / Finnish -->
 					<td id="goal_cell" colspan="3" rowspan="3">
-						
-						<table cellspacing="0">
-							<tr>
-								<td class="goalcell_left"></td>
-								<td class="goalcell_right"></td>
-							</tr>
-						</table>
-						
 					</td>
 					
 					<!-- Game cells on row 9 -->
@@ -471,7 +464,8 @@
 							   name="name" 
 							   type="text" 
 							   size="40" 
-							   class="input_text_field"></input>
+							   class="input_text_field"
+							   tabindex="1"></input>
 					</td>
 				</tr>
 				<tr>
@@ -480,14 +474,16 @@
 							   class="input_btn"
 							   style="height:50px;" 
 							   type="button" 
-							   value="Player is Computer"></input>
+							   value="Player is Computer"
+							   tabindex="2"></input>
 					</td>
 					<td>
 						<input id="new_player_btn"
 							   class="input_btn" 
 							   disabled="true" 
 							   type="button" 
-							   value="Set Name"></input>
+							   value="Set Name"
+							   tabindex="3"></input>
 					</td>
 				</tr>
 			</table>
