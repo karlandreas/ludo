@@ -437,15 +437,6 @@
 				<img id="dice_img" src="images/dice.svg" />
 			</div>
 			
-			<select id="select_dice_num">
-				<option value="6">Roll a Six</option>
-				<option value="5">Roll a Five</option>
-				<option value="4">Roll a Four</option>
-				<option value="3">Roll a Three</option>
-				<option value="2">Roll a Two</option>
-				<option value="1">Roll a One</option>
-			</select>
-			<button id="roll_num_btn">Roll</button>
 			<input id="sounds_box" type="checkbox">Background</input>
 			<input id="fx_box" type="checkbox">FX Sounds</input>
 		</div>
