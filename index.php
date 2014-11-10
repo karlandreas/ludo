@@ -10,7 +10,7 @@
 		var ip = new String("<?php echo($_SERVER['REMOTE_ADDR']); ?>");
 	</script>
 	</head>
-	<body>
+	<body id="body">
 		
 		<div id="sounds_container">
 		
@@ -78,16 +78,16 @@
 			</tr>
 		</table>
 		
-		<!-- Canvas container -->
-		<div id="canvascontainer" class="gamecontainer_div">
+		<!-- Game Canvas container -->
+		<div id="canvas_container" class="gamecontainer_div">
 		
 		<canvas id="game_canvas" width='480' height='480'>
 		</canvas>
 		
 		</div>
 		
-		<!-- Table container -->
-		<div id="gamecontainer" class="gamecontainer_div">
+		<!-- Game Table container -->
+		<div id="game_container" class="gamecontainer_div">
 		
 		<table id="gametable" 
 			   cellspacing="0" 
@@ -431,14 +431,337 @@
 		
 		</div>
 		
+		<!-- Game Trackers container -->
+		<div id="trackers_container">
+			
+			<div id="green_tracker" class="tracker">
+				<table id="green_tracker_tbl" 
+					   border="1" 
+					   cellspacing="0" 
+					   cellpadding="0"
+					   width="100%" 
+					   style="height:100%;border-collapse:collapse;border:1px solid lime;">
+					
+					<thead><tr><td colspan="4"><p>Green progress</p></td></tr></thead>
+					<tbody>
+					<tr id="green_tracker_row10">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="green_tracker_row09">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="green_tracker_row08">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="green_tracker_row07">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="green_tracker_row06">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="green_tracker_row05">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="green_tracker_row04">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="green_tracker_row03">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="green_tracker_row02">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="green_tracker_row01">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					</tbody>
+					<tfoot class="trackers_foot"><tr><td id="green_percent_cell" colspan="4"><p>0%</p></td></tr></tfoot>
+				</table>
+			</div>
+			
+			<div id="blue_tracker" class="tracker">
+				<table id="blue_tracker_tbl" 
+					   border="1" 
+					   cellspacing="0" 
+					   cellpadding="0"
+					   width="100%" 
+					   style="height:100%;border-collapse:collapse;border:1px solid aqua;">
+					<thead><tr><td colspan="4"><p>Blue progress</p></td></tr></thead>
+					<tbody>
+					
+					<tr id="blue_tracker_row10">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="blue_tracker_row09">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="blue_tracker_row08">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="blue_tracker_row07">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="blue_tracker_row06">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="blue_tracker_row05">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="blue_tracker_row04">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="blue_tracker_row03">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="blue_tracker_row02">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="blue_tracker_row01">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					</tbody>
+					<tfoot class="trackers_foot"><tr><td id="blue_percent_cell" colspan="4"><p>0%</p></td></tr></tfoot>
+				</table>
+			</div>
+			
+			<div id="yellow_tracker" class="tracker">
+				<table id="yellow_tracker_tbl" 
+					   border="1" 
+					   cellspacing="0" 
+					   cellpadding="0"
+					   width="100%" 
+					   style="height:100%;border-collapse:collapse;border:1px solid white;">
+					<thead><tr><td colspan="4"><p>Yellow progress</p></td></tr></thead>
+					<tbody>
+					
+					<tr id="yellow_tracker_row10">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="yellow_tracker_row09">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="yellow_tracker_row08">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="yellow_tracker_row07">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="yellow_tracker_row06">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="yellow_tracker_row05">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="yellow_tracker_row04">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="yellow_tracker_row03">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="yellow_tracker_row02">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="yellow_tracker_row01">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					
+					</tbody>
+					<tfoot class="trackers_foot"><tr><td id="yellow_percent_cell" colspan="4"><p>0%</p></td></tr></tfoot>
+				</table>
+			</div>
+			
+			<div id="red_tracker" class="tracker">
+				<table id="red_tracker_tbl" 
+					   border="1" 
+					   cellspacing="0" 
+					   cellpadding="0"
+					   width="100%" 
+					   style="height:100%;border-collapse:collapse;border:1px solid pink;">
+					<thead><tr><td colspan="4"><p>Red progress</p></td></tr></thead>
+					<tbody>
+					
+					<tr id="red_tracker_row10">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="red_tracker_row09">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="red_tracker_row08">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="red_tracker_row07">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="red_tracker_row06">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="red_tracker_row05">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="red_tracker_row04">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="red_tracker_row03">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="red_tracker_row02">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr id="red_tracker_row01">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					
+					</tbody>
+					<tfoot class="trackers_foot"><tr><td id="red_percent_cell" colspan="4"><p>0%</p></td></tr></tfoot>
+				</table>
+			</div>
+			
+		</div>
+		
 		<div id="controls_div">
 			
 			<div id="dice_div">
 				<img id="dice_img" src="images/dice.svg" />
 			</div>
 			
+<<<<<<< HEAD
 			<input id="sounds_box" type="checkbox">Background</input>
 			<input id="fx_box" type="checkbox">FX Sounds</input>
+=======
+			<select id="select_dice_num">
+				<option value="6">Roll a Six</option>
+				<option value="5">Roll a Five</option>
+				<option value="4">Roll a Four</option>
+				<option value="3">Roll a Three</option>
+				<option value="2">Roll a Two</option>
+				<option value="1">Roll a One</option>
+			</select>
+			<button id="roll_num_btn">Roll</button>
+			<div id="sounds_div" class="sounds"></div>
+			
+			<div id="fx_div" class="sounds"></div>
+			
+>>>>>>> master
 		</div>
 		
 		</div>
@@ -502,6 +825,7 @@
 	<script src='scripts/Piece.js' type='text/javascript'></script>
 	<script src='scripts/Dice.js' type='text/javascript'></script>
 	<script src='scripts/Player.js' type='text/javascript'></script>
+	<script src='scripts/LudoTracker.js' type='text/javascript'></script>
 	<script src='scripts/LudoObj.js' type='text/javascript'></script>
 <!-- 	<script src='scripts/Ludo.js' type='text/javascript'></script> -->
 </html>

@@ -3,9 +3,10 @@ body {
   margin: 0px;
   padding: 0px;
   width: 100%;
+  min-width: 1024px;
   font-family: helvetica, sans-serif;
   background-image: url("../images/farmland.svg");
-  background-size: 2000px 1035px;
+  background-size: 2000px 1115px;
   background-position: center top;
   background-repeat: no-repeat;
   background-color: black; }
@@ -62,6 +63,72 @@ table {
   background-image: url("../images/players.svg");
   background-position: -334px -27px; }
 
+#trackers_container {
+  position: relative;
+  margin: auto;
+  width: 70%;
+  font-size: smaller;
+  text-align: center; }
+
+#green_tracker {
+  float: left;
+  top: -20px;
+  border: 2px solid green; }
+  #green_tracker thead {
+    background-image: -webkit-linear-gradient(bottom, green, lime);
+    background-image: -moz-linear-gradient(bottom, green, lime);
+    background-image: -ms-linear-gradient(bottom, green 0%, lime 100%); }
+  #green_tracker tfoot {
+    background-color: #71d071; }
+
+#blue_tracker {
+  float: right;
+  top: -20px;
+  border: 2px solid blue; }
+  #blue_tracker thead {
+    background-image: -webkit-linear-gradient(bottom, blue, cyan);
+    background-image: -moz-linear-gradient(bottom, blue, cyan);
+    background-image: -ms-linear-gradient(bottom, blue 0%, cyan 100%); }
+  #blue_tracker tfoot {
+    background-color: #71a1d0; }
+
+#yellow_tracker {
+  float: left;
+  clear: left;
+  top: 0px;
+  border: 2px solid yellow; }
+  #yellow_tracker thead {
+    background-image: -webkit-linear-gradient(bottom, orange, yellow);
+    background-image: -moz-linear-gradient(bottom, orange, yellow);
+    background-image: -ms-linear-gradient(bottom, orange 0%, yellow 100%); }
+  #yellow_tracker tfoot {
+    background-color: #d0d071; }
+
+#red_tracker {
+  float: right;
+  top: 0px;
+  border: 2px solid red; }
+  #red_tracker thead {
+    background-image: -webkit-linear-gradient(bottom, red, pink);
+    background-image: -moz-linear-gradient(bottom, red, pink);
+    background-image: -ms-linear-gradient(bottom, red 0%, pink 100%); }
+  #red_tracker tfoot {
+    background-color: #d07171; }
+
+.tracker {
+  position: relative;
+  width: 100px;
+  height: 220px;
+  display: inline-block;
+  box-shadow: 0px 0px 10px 2px rgba(255, 255, 255, 0.8);
+  /* border: 2px solid black; */
+  z-index: 1;
+  color: white; }
+
+.trackers_foot {
+  font-size: large;
+  line-height: 0.1em; }
+
 .gamecontainer_div {
   position: absolute;
   margin-left: auto;
@@ -105,6 +172,33 @@ table {
   margin-left: -32px;
   margin-top: -23px;
   /* 	border: 1px solid black; */ }
+
+.sounds {
+  width: 76px;
+  height: 76px;
+  display: inline-block;
+  background-image: url("../images/players.svg");
+  cursor: pointer; }
+
+#sounds_div {
+  margin-top: -76px;
+  margin-left: 5px;
+  background-position-x: 0px;
+  background-position-y: 150px;
+  background-position: 0px 150px; }
+  #sounds_div:hover {
+    background-position-y: 76px;
+    background-position: 0px 76px; }
+
+#fx_div {
+  margin-top: -76px;
+  margin-left: 5px;
+  background-position-x: -76px;
+  background-position-y: 150px;
+  background-position: -76px 150px; }
+  #fx_div:hover {
+    background-position-y: 76px;
+    background-position: -76px 76px; }
 
 .input_text_field {
   height: 25px; }
