@@ -7,9 +7,10 @@ body {
 	margin: 0px;
 	padding: 0px;
 	width: 100%;
+	min-width: 1024px;
 	font-family: helvetica, sans-serif;
 	background-image: url('../images/farmland.svg');
-	background-size: 2000px 1035px;
+	background-size: 2000px 1115px;
 	background-position: center top;
 	background-repeat: no-repeat;
 	background-color: black;
@@ -80,6 +81,84 @@ table {
 	background-position: -334px -27px;
 }
 
+// ! Tracker styles ----------------------------------
+#trackers_container {
+	position: relative;
+	margin: auto;
+	width: 70%;
+	font-size: smaller;
+	text-align: center;
+}
+
+#green_tracker {
+	float: left;
+	top: -20px;
+	border: 2px solid green;
+	
+	thead {
+		@include colorGradientBottom(green, lime);
+	}
+	tfoot {
+		background-color: hsl(120, 50%, 63%);
+	}
+}
+
+#blue_tracker {
+	float: right;
+	top: -20px;
+	border: 2px solid blue;
+	
+	thead {
+		@include colorGradientBottom(blue, aqua);
+	}
+	tfoot {
+		background-color: hsl(210, 50%, 63%);
+	}
+}
+
+#yellow_tracker {
+	float: left;
+	clear: left;
+	top: 0px;
+	border: 2px solid yellow;
+	
+	thead {
+		@include colorGradientBottom(orange, yellow);
+	}
+	tfoot {
+		background-color: hsl(60, 50%, 63%);
+	}
+}
+
+#red_tracker {
+	float: right;
+	top: 0px;
+	border: 2px solid red;
+	
+	thead {
+		@include colorGradientBottom(red, pink);
+	}
+	tfoot {
+		background-color: hsl(0, 50%, 63%);
+	}
+}
+
+.tracker {
+	position: relative;
+	width: 100px;
+	height: 220px;
+	display: inline-block;
+	box-shadow: 0px 0px 10px 2px rgba(255,255,255, 0.8);
+	/* border: 2px solid black; */
+	z-index: 1;
+	color: white;
+}
+
+.trackers_foot {
+	font-size: large;
+	line-height: 0.1em;
+}
+
 // ! Other styles ------------------------------------
 .gamecontainer_div {
 	position: absolute;
@@ -128,6 +207,42 @@ table {
 	margin-left: -32px;
 	margin-top: -23px;
 /* 	border: 1px solid black; */
+}
+
+.sounds {
+	width: 76px;
+	height: 76px;
+	display: inline-block;
+	background-image: url('../images/players.svg');
+	cursor: pointer;
+	
+}
+
+#sounds_div {
+	margin-top: -76px;
+	margin-left: 5px;
+	background-position-x: 0px;
+	background-position-y: 150px;
+	background-position: 0px 150px;
+	
+	&:hover {
+		background-position-y: 76px;
+		background-position: 0px 76px;
+	}
+}
+
+#fx_div {
+	margin-top: -76px;
+	margin-left: 5px;
+	background-position-x: -76px;
+	background-position-y: 150px;
+	
+	background-position: -76px 150px;
+	
+	&:hover {
+		background-position-y: 76px;
+		background-position: -76px 76px;
+	}
 }
 
 .input_text_field {

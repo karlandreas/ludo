@@ -1,21 +1,27 @@
-var Piece = function(color, X, Y, sheet_left, sheet_top) {
+
+var Piece = function(color, home, spritesheet) {
 	
-	this.color = color;
+	// color = "yellow"
+	// home = {name: 'g_H1', x:  48, y: 103};
+	// spritesheet = {x: 156, y: 5};
 	
-	this.home_left  = X;
-	this.home_top   = Y;
+	this.id	  		= home.name;
+	this.color 		= color;
 	
-	this.start_left = X;
-	this.start_top  = Y;
+	this.home_left  = home.x; // position of home cell
+	this.home_top   = home.y; 
 	
-	this.goal_left  = undefined;
+	this.start_left = home.x;
+	this.start_top  = home.y;
+	
+	this.left		= home.x;
+	this.top		= home.y;
+	
+	this.goal_left  = undefined; // pieces position in the goal cell
 	this.goal_top   = undefined;
 	
-	this.sheet_left = sheet_left, // X position in spritesheet
-	this.sheet_top  = sheet_top,  // Y position in spritesheet
-	
-	this.left		= X;
-	this.top		= Y;
+	this.sheet_left = spritesheet.x,  // position in spritesheet
+	this.sheet_top  = spritesheet.y,  
 	
 	this.inHome		= true;
 	this.inGoal		= false;
@@ -38,11 +44,14 @@ var Piece = function(color, X, Y, sheet_left, sheet_top) {
 
 Piece.prototype = {
 
-	init: function(path, gLeft, gTop) {
-		this.path = path;
+	init: function(path, goalCoords) {
 		
-		this.goal_left  = gLeft;
-		this.goal_top   = gTop;
+		// goalCoords = {gLeft: 194, gTop: 224};
+		
+		this.path = path; // this piece's path to the goal in a gameboard cells array
+		
+		this.goal_left  = goalCoords.gLeft;
+		this.goal_top   = goalCoords.gTop;
 		
 		this.cheeringSound.volume = 0.25;
 		this.woffSound.volume = 0.5;
@@ -197,14 +206,21 @@ Piece.prototype = {
 	
 	moveToFirstPosition: function() {
 		
+		var player = ludoObject.getPlayerForColor(this.color);
+		
 		this.pathIndex 		= 0;
 		this.isAnimating 	= true;
 		this.inHome 		= false;
 		
+		// we play a cheering sound
 		ludoObject.playSound(this.cheeringSound);
+		// we update the players progress bar 
+		player.tracker.update(player.pieces);
 	},
 	
 	moveToHomePosition: function() {
+	
+		var player = ludoObject.getPlayerForColor(this.color);
 		
 		this.pathIndex 		= undefined;
 		this.pathID 		= undefined;
@@ -215,10 +231,15 @@ Piece.prototype = {
 		this.inHome		 	= true;
 		this.setSpritesheetCoordsTo(5);
 		
+		// we play a woff sound
 		ludoObject.playSound(this.woffSound);
+		// we update the players progress bar 
+		player.tracker.animateToZero(this.id, player);
 	},
 	
 	moveToGoal: function(numInGoal) {
+		
+		var player = ludoObject.getPlayerForColor(this.color);
 		
 		this.pathIndex 	= undefined;
 		this.inGoal		= true;
@@ -227,8 +248,9 @@ Piece.prototype = {
 		
 		this.setSpritesheetCoordsTo(numInGoal);
 		
-		console.log(ludoObject.player.name + " has: " + numInGoal + " Pieces in Goal");
-		
+		// we update the players progress bar 
+		player.tracker.update(player.pieces);
+				
 		if (numInGoal == 4) {
 			console.log("Play winner animation");
 			ludoObject.player.displayWinnerGraphic();
@@ -244,7 +266,7 @@ Piece.prototype = {
 		for (var i = 0; i < 4; i++) {
 			
 			// if we find a piece on the destination field we set it's spritsheet coords to the same as this piece
-			if (player.pieces[i].piece.pathIndex == this.pathIndex) {
+			if (player.pieces[i].piece.pathIndex == this.pathIndex && !player.pieces[i].piece.inHome) {
 				player.pieces[i].piece.sheet_left = sheet_left;
 				player.pieces[i].piece.sheet_top = sheet_top;
 			}

@@ -151,6 +151,7 @@ Dice.prototype = {
 			
 			// we set allInHome to false and move the first piece to the safe-field
 			ludoObject.player.pieces[0].piece.moveToFirstPosition();
+						
 			ludoObject.player.allInHome = false;
 			ludoObject.player.diceRoll = undefined;
 			ludoObject.player.turnsLeft = 1;

@@ -37,6 +37,9 @@ var Player = function(color, name) {
 	this.moveSound	  	= undefined;
 	this.noMovableSound	= document.getElementById('cuckoo_sound');
 	
+	// the tracker
+	this.tracker 		= undefined;
+	
 	// online
 	this.sid			= undefined;
 	this.firstThrow 	= true;
@@ -44,7 +47,9 @@ var Player = function(color, name) {
 
 Player.prototype = {
 	
-	init: function() {
+	init: function(tracker) {
+		
+		this.tracker = tracker;
 		
 		// set special options for yellow color
 		if (this.color == "yellow") {
