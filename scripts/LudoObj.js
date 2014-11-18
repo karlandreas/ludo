@@ -1969,33 +1969,6 @@ ludoObject.canvas.onmouseup = function(e) {
 	} // end click not on blanc
 } // end function onmousedown
 
-document.getElementById('roll_num_btn').onclick = function() {
-	
-	var select_div = document.getElementById('select_dice_num');
-	var index = select_div.selectedIndex;
-	var value = select_div.options[index].value;
-	ludoObject.dice.faceNum = new Number(value);
-	if (value == "6") {
-		ludoObject.dice.displaySix();
-	}
-	else if (value == "5") {
-		ludoObject.dice.displayFive();
-	}
-	else if (value == "4") {
-		ludoObject.dice.displayFour();
-	}
-	else if (value == "3") {
-		ludoObject.dice.displayThree();
-	}
-	else if (value == "2") {
-		ludoObject.dice.displayTwo();
-	}
-	else if (value == "1") {
-		ludoObject.dice.displayOne();
-	}
-	ludoObject.dice.handleRolledNumber();
-	
-}
 
 document.getElementById('player_name').onkeydown = function(e) {
 		
